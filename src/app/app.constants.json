@@ -1,11 +1,12 @@
 {
-  "appname": "Angular Buyer",
+  "appname": "Cafe Rio",
   "scope": "FullAccess",
   "clientid": "7FC87166-D42A-4F2D-9587-159D98156314",
   "buyerid": "caferio",
+  "anonymous": false,
   "catalogid": "caferio",
   "environment": "prod",
   "defaultstate": "home",
-  "anonymous": false,
+  "html5mode": false,
   "bootswatchtheme": "yeti"
 }
