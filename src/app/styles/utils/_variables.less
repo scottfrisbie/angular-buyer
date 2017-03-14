@@ -1,15 +1,24 @@
-//These are the variables used throughout the application. This is where
-//overwrites that are not specific to components should be maintained.
-//Interconnected table color styles
-
-//Table Infinite Scroll
-@table-header-height:@table-cell-padding*2 + @line-height-computed;
-@infinite-scroll-size: ~'calc(100vh - 420px)';
-
-//Global Component Styles
-@global-component-bg:@body-bg;
-
 @body-padding-top: @navbar-height + @navbar-margin-bottom;
 
 // from catalog/less
 @aside-tree-width: 350px;
+
+// Primary Color Cafe Rio Red
+@brand-primary: #D83827;
+
+// Jumbotron Background Image
+.jumbotron {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-image: url(http://blog.etundra.com/wp-content/Media/2017/03/cafe-rio-hero.jpg); 
+    position: relative;
+    height: 100%;
+}
+
+// Cards for homepage
+.homepage-card {
+    border: 1px solid #ddd;
+    padding: 5px 10px;
+    height: 177px;
+}
