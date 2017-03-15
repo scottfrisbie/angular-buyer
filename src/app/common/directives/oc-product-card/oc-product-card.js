@@ -24,13 +24,6 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
             ProductID: vm.product.ID,
             Quantity: vm.product.Quantity
         };
-        if(vm.product.SpecCount > 0){
-            ProductQuickView.Open(vm.currentOrder, vm.product)
-                .then(function(){
-                    vm.product.Quantity = 1;
-                return
-                    });
-        }else{
             return OrderCloud.LineItems.List(vm.currentOrder.ID, null, null, null, null, null, {ProductID: vm.product.ID}, buyerid)
                 .then(function(lineItem) {
                     if(lineItem.Items.length) {
@@ -58,7 +51,6 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
                             });
                     }
                 });
-        }
 
     };
 
