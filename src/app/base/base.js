@@ -32,10 +32,11 @@ function BaseConfig($stateProvider) {
                         return data.Items[0];
                     });
             },
-            CurrentOrder: function(ExistingOrder, NewOrder, CurrentUser) {
+            CurrentOrder: function(ExistingOrder, NewOrder, AddRebate) {
                 if (!ExistingOrder) {
                     return NewOrder.Create({});
                 } else {
+                    AddRebate.ApplyPromo(ExistingOrder);
                     return ExistingOrder;
                 }
             },

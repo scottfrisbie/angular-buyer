@@ -38,6 +38,25 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
 
                     return deferred.promise;
                 },
+                //CostCenter: function($q, OrderCloud, CurrentUser, buyerid) {
+                //    var deferred = $q.defer();
+                //    OrderCloud.UserGroups.ListUserAssignments(null, CurrentUser.ID, null, null, buyerid)
+                //        .then(function(userGroups) {
+                //            _.each(userGroups.Items, function(userGroup) {
+                //                OrderCloud.CostCenters.ListAssignments(null, null, userGroup.UserGroupID, null, null, null, buyerid)
+                //                    .then(function(costCenters) {
+                //                        var centers = costCenters.Items;
+                //                        _.each(centers, function(center){
+                //                            OrderCloud.CostCenters.Get(center.CostCenterID, buyerid)
+                //                                .then(function(costCenterObj){
+                //                                    deferred.resolve(costCenterObj);
+                //                                })
+                //                        })
+                //                    });
+                //            })
+                //        });
+                //    return deferred.promise;
+                //},
                 CurrentPromotions: function(CurrentOrder, OrderCloud) {
                     return OrderCloud.Orders.ListPromotions(CurrentOrder.ID);
                 },
@@ -69,6 +88,7 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
+    //vm.costCenter = CostCenter;
 
     vm.submitOrder = function(order) {
         OrderCloud.Orders.Submit(order.ID)
