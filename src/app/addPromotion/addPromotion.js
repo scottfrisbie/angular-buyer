@@ -28,7 +28,7 @@ function AddRebate(OrderCloud, $rootScope) {
     };
 
     function _apply(order) {
-        return OrderCloud.Promotions.List(null, null, null, null, null, {ID: 'OnePercentRebate'})
+        return OrderCloud.Promotions.List(null, null, null, null, null, {ValueExpression: 'order.Total * .01'})
             .then(function(promos) {
                 var promo = promos.Items[0];
                 return OrderCloud.Orders.AddPromotion(order.ID, promo.Code)

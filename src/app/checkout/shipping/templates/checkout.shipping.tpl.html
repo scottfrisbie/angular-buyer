@@ -52,7 +52,7 @@
                     <hr ng-if="checkout.promotions.length">
                     <h5 ng-repeat="promotion in checkout.promotions" class="text-danger">
                         {{promotion.Name}}
-                        <div ng-if="promotion.ID !== 'OnePercentRebate'">
+                        <div ng-if="promotion.ValueExpression !== 'order.Total * .01'">
                             <a href="" ng-click="checkout.removePromotion(base.currentOrder, promotion)">remove</a>
                         </div>
                         <span class="pull-right">- {{promotion.Amount | currency}}</span></h5>
