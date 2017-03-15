@@ -41,7 +41,6 @@
     "express": "4.13.4",
     "fs": "0.0.2",
     "git-repo-name": "0.6.0",
-    "gulp": "3.9.1",
     "gulp-angular-filesort": "1.1.1",
     "gulp-angular-templatecache": "1.8.0",
     "gulp-autoprefixer": "3.1.0",
