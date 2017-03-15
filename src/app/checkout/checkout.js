@@ -69,7 +69,6 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
-    //vm.costCenter = CostCenter;
 
     vm.submitOrder = function(order) {
         OrderCloud.Orders.Submit(order.ID)
