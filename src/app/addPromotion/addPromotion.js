@@ -22,7 +22,7 @@ function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, to
     };
 }
 
-function AddRebate(OrderCloud, $rootScope) {
+function AddRebate(OrderCloud, $rootScope, toastr) {
     //This Service is called from the base.js on CurrentOrder
     var service = {
         ApplyPromo: _apply
@@ -31,13 +31,16 @@ function AddRebate(OrderCloud, $rootScope) {
     function _apply(order) {
         return OrderCloud.Promotions.List(null, null, null, null, null, {ValueExpression: 'order.Total * .01'})
             .then(function(promos) {
-                var promo = promos.Items[0];
-                return OrderCloud.Orders.AddPromotion(order.ID, promo.Code)
-                    .then(function() {
-                        $rootScope.$broadcast('OC:UpdateOrder', order.ID);
-                    })
+                if(promos.Items.length) {
+                    var promo = promos.Items[0];
+                    return OrderCloud.Orders.AddPromotion(order.ID, promo.Code)
+                        .then(function() {
+                            $rootScope.$broadcast('OC:UpdateOrder', order.ID);
+                        })
+                } else {
+                    toastr.error('1% online order rebate not applied', 'Error');
+                }
             })
     }
-
     return service;
 }

@@ -28,8 +28,10 @@
                     <hr>
                     <oc-add-promotion order="base.currentOrder"></oc-add-promotion>
                     <h5 ng-repeat="promotion in cart.promotions" class="text-danger">
-                        {{promotion.Code}}
-                        <a href="" ng-click="cart.removePromotion(base.currentOrder, this)">remove</a>
+                        {{promotion.Name}}
+                        <div ng-if="promotion.ValueExpression !== 'order.Total * .01'">
+                            <a href="" ng-click="checkout.removePromotion(base.currentOrder, promotion)">remove</a>
+                        </div>
                         <span class="pull-right">- {{promotion.Amount | currency}}</span></h5>
                 </div>
                 <div class="panel-footer">
