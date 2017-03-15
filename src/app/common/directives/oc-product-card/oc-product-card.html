@@ -1,0 +1,42 @@
+<div class="c-product-card__img-wrap">
+    <a ui-sref="productDetail({productid: productCard.product.ID})">
+        <img class="img-responsive c-product-card__img"
+             ng-src="{{productCard.product.xp.image.URL || 'http://placehold.it/300x300'}}">
+    </a>
+</div>
+<div class="caption c-product-card__body">
+    <h4 class="c-product-card__name" ng-if="productCard.product.Name">{{productCard.product.ID | limitTo:
+        12}}{{productCard.product.ID.length > 8 ? '...' : ''}}</h4>
+    <div class="clearfix">
+        <h4 class="c-product-card__price text-primary">
+            {{productCard.product.StandardPriceSchedule.PriceBreaks[0].Price | currency}}</h4>
+        <div class="c-product-card__icons pull-right hidden-xs" prevent-click>
+            <ordercloud-product-quick-view product="productCard.product"
+                                           current-order="productCard.currentOrder"></ordercloud-product-quick-view>
+            <ordercloud-favorite-product product="productCard.product"
+                                         current-user="productCard.currentUser"></ordercloud-favorite-product>
+        </div>
+    </div>
+    <div ng-if="productCard.product.xp.Unit">
+        <p class="text-muted">{{productCard.product.xp.Unit}}</p>
+    </div>
+    <!--<h4  class="c-product-card__name"> {{productCard.product.Name || productCard.product.ID}} </h4>-->
+
+
+    <!--<small class="text-muted">x {{productCard.product.StandardPriceSchedule.PriceBreaks[0].Quantity}}</small>-->
+
+
+    <!--<h4 class="c-product-card__name" ng-class="">{{productCard.product.Name || productCard.product.ID}}</h4>-->
+    <!--<div class="c-product-card__descrip hidden-xs" ng-if="productCard.product.Description">-->
+    <!--<p>{{productCard.product.Description | limitTo: 40}}{{productCard.product.Description.length > 40 ? '...' :-->
+    <!--''}}</p>-->
+    <!--</div>-->
+
+    <form name="OCProductForm" class="c-product-card__add-to-cart" ng-submit="productCard.addToCart(OCProductForm)"
+          prevent-click="">
+        <oc-quantity-input product="productCard.product"></oc-quantity-input>
+        <fieldset class="form-group c-product-card__add-to-cart-btn">
+            <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
+        </fieldset>
+    </form>
+</div>
