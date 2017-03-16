@@ -22,52 +22,34 @@ function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, to
     };
 }
 
-function AddRebate(OrderCloud, $rootScope, $exceptionHandler, toastr) {
+function AddRebate(OrderCloud, $rootScope) {
     //This Service is called from the base.js on CurrentOrder
     var service = {
         ApplyPromo: _apply
     };
 
-    function _apply(order, catalogid, buyerid) {
-        if(order.Total > 0) {
-            return OrderCloud.Catalogs.Get(catalogid)
-                .then(function(catalog) {
-                    _.each(catalog.xp.AutoAppliedPromos, function(promo) {
-                        OrderCloud.Promotions.List(null, null, null, null, null, {ID: promo})
-                            .then(function(promotions) {
-                                if(promotions.Items.length > 1) {
-                                    _.each(promotions.Items, function(promotion) {
-                                        return OrderCloud.Orders.AddPromotion(order.ID, promotion.Code)
-                                    })
-                                } else {
-                                    return OrderCloud.Orders.AddPromotion(order.ID, promotions.Items[0].Code)
-                                }
-                                $rootScope.$broadcast('OC:UpdateOrder', order.ID);
-                            })
-                            .catch(function(ex) {
-                                if(ex.status === 400) {
-                                    if(order.PromotionDiscount !== order.Subtotal * .01) {
-                                        return OrderCloud.Promotions.List(null, null, null, null, null, {ID: promo})
-                                            .then(function(promotions) {
-                                                _.each(promotions.Items, function(promo) {
-                                                    return OrderCloud.Orders.RemovePromotion(order.ID, promo.Code, buyerid)
-                                                        .then(function(newOrderData){
-                                                            _apply(newOrderData, catalogid, buyerid);
-                                                        })
-                                                })
-                                            })
-                                    } else {
-                                        angular.noop();
-                                    }
-                                } else {
-                                    toastr.error('1% online order rebate not applied', 'Error');
-                                    $exceptionHandler(ex);
-                                }
-                            })
-                    })
-                });
-        } else {
-            return order;
+    function _apply(order, buyerid) {
+        if (order.Total > 0) {
+            return OrderCloud.Orders.ListPromotions(order.ID)
+                .then(function (promos) {
+                        if (promos.Items.length) {
+                            var code = promos.Items[0].Code;
+                            return OrderCloud.Orders.RemovePromotion(order.ID, code, buyerid)
+                                .then(function (updatedOrder) {
+                                    return OrderCloud.Orders.AddPromotion(updatedOrder.ID, code, buyerid)
+                                        .then(function() {
+                                            $rootScope.$broadcast('OC:UpdateOrder', order.ID);
+                                        })
+                                })
+                        } else {
+                            return OrderCloud.Orders.AddPromotion(order.ID, 'OnePercentRebate', buyerid)
+                                .then(function (order) {
+                                    $rootScope.$broadcast('OC:UpdateOrder', order.ID);
+                                })
+                        }
+                    }
+                )
+
         }
     }
     return service;

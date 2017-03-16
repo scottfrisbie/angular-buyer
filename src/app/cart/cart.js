@@ -39,26 +39,26 @@ function CartConfig($stateProvider) {
                     return OrderCloud.Orders.ListPromotions(CurrentOrder.ID);
                 },
                 ApplyPromotion: function($rootScope, AddRebate, CatalogID, ExistingOrder, buyerid) {
-                    console.log(ExistingOrder.Subtotal);
-                    AddRebate.ApplyPromo(ExistingOrder, CatalogID, buyerid);
-                    $rootScope.$broadcast('OC:UpdateOrder', ExistingOrder.ID);
-                    return ExistingOrder;
+                    return AddRebate.ApplyPromo(ExistingOrder, buyerid)
                 }
             }
         });
 }
 
-function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, ocConfirm) {
+function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, ocConfirm, AddRebate) {
     var vm = this;
     vm.lineItems = LineItemsList;
     vm.promotions = CurrentPromotions.Meta ? CurrentPromotions.Items : CurrentPromotions;
+
     vm.removeItem = function(order, scope) {
         vm.lineLoading = [];
         vm.lineLoading[scope.$index] = OrderCloud.LineItems.Delete(order.ID, scope.lineItem.ID)
             .then(function () {
-                $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                 vm.lineItems.Items.splice(scope.$index, 1);
-                toastr.success('Line Item Removed');
+                return AddRebate.ApplyPromo(order)
+                    .then(function() {
+                        toastr.success('Line Item Removed');
+                    })
             });
     };
 
