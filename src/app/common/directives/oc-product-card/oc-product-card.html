@@ -20,17 +20,6 @@
     <div ng-if="productCard.product.xp.Unit">
         <p class="text-muted">{{productCard.product.xp.Unit}}</p>
     </div>
-    <!--<h4  class="c-product-card__name"> {{productCard.product.Name || productCard.product.ID}} </h4>-->
-
-
-    <!--<small class="text-muted">x {{productCard.product.StandardPriceSchedule.PriceBreaks[0].Quantity}}</small>-->
-
-
-    <!--<h4 class="c-product-card__name" ng-class="">{{productCard.product.Name || productCard.product.ID}}</h4>-->
-    <!--<div class="c-product-card__descrip hidden-xs" ng-if="productCard.product.Description">-->
-    <!--<p>{{productCard.product.Description | limitTo: 40}}{{productCard.product.Description.length > 40 ? '...' :-->
-    <!--''}}</p>-->
-    <!--</div>-->
     <fieldset class="form-group" ng-if="productCard.product.SpecCount > 0">
         <button type="button" class="btn btn-block btn-primary" ui-sref="productDetail({productid: productCard.product.ID})">Product Details</button>
     </fieldset>
