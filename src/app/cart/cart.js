@@ -37,6 +37,12 @@ function CartConfig($stateProvider) {
                 },
                 CurrentPromotions: function(CurrentOrder, OrderCloud) {
                     return OrderCloud.Orders.ListPromotions(CurrentOrder.ID);
+                },
+                ApplyPromotion: function($rootScope, AddRebate, CatalogID, ExistingOrder, buyerid) {
+                    console.log(ExistingOrder.Subtotal);
+                    AddRebate.ApplyPromo(ExistingOrder, CatalogID, buyerid);
+                    $rootScope.$broadcast('OC:UpdateOrder', ExistingOrder.ID);
+                    return ExistingOrder;
                 }
             }
         });

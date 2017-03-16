@@ -19,9 +19,16 @@ function BaseConfig($stateProvider) {
             }
         },
         resolve: {
+            CatalogID: function(OrderCloud, buyerid) {
+                return OrderCloud.Buyers.Get(buyerid)
+                    .then(function(buyerObj) {
+                        return buyerObj.DefaultCatalogID;
+                    })
+            },
             CurrentUser: function($q, $state, OrderCloud, buyerid) {
                 return OrderCloud.Me.Get()
                     .then(function(data) {
+                        console.log('data', data);
                         OrderCloud.BuyerID.Set(buyerid);
                         return data;
                     })
@@ -32,11 +39,11 @@ function BaseConfig($stateProvider) {
                         return data.Items[0];
                     });
             },
-            CurrentOrder: function(ExistingOrder, NewOrder, AddRebate) {
+            CurrentOrder: function(ExistingOrder, NewOrder) {
                 if (!ExistingOrder) {
                     return NewOrder.Create({});
                 } else {
-                    AddRebate.ApplyPromo(ExistingOrder);
+                    //AddRebate.ApplyPromo(ExistingOrder, CatalogID, buyerid);
                     return ExistingOrder;
                 }
             },
@@ -47,7 +54,7 @@ function BaseConfig($stateProvider) {
     });
 }
 
-function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder, OrderCloud) {
+function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder,  OrderCloud) {
     var vm = this;
     vm.currentUser = CurrentUser;
     vm.currentOrder = CurrentOrder;
