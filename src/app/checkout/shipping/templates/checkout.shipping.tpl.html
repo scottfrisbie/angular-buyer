@@ -41,6 +41,14 @@
                     </h3>
                 </div>
                 <div class="panel-body">
+                    <div class="well text-center">
+                        <div ng-if="base.currentOrder.Total >= 250">
+                            Your order $250 or over will be shipped freight free
+                        </div>
+                        <div ng-if="base.currentOrder.Total < 250">
+                            Freight will be calculated at time of shipment
+                        </div>
+                    </div>
                     <p>
                         <ng-pluralize count="base.currentOrder.LineItemCount" when="{
 							'1': 'Checking Out With 1 Item',
