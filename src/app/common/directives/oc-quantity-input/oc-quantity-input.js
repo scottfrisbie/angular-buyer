@@ -17,7 +17,9 @@ function OCQuantityInput(toastr, OrderCloud, $rootScope) {
         link: function (scope) {
             if (scope.product){
                 scope.item = scope.product;
-                scope.content = "product"
+                scope.content = "product";
+                if(!scope.item.Quantity ){scope.item.Quantity = scope.product.StandardPriceSchedule.PriceBreaks[0].Quantity;}
+
             }
             else if(scope.lineitem){
                 scope.item = scope.lineitem;
