@@ -96,7 +96,7 @@
                                     </div>
                                     <div class="col-xs-4">
                                         <div class="c-line-item__qty-input">
-                                            <oc-quantity-input lineitem="lineItem" order="base.currentOrder"></oc-quantity-input>
+                                            <oc-quantity-input lineitem="lineItem" index="$index" order="base.currentOrder" on-update="cart.updatePromo(li)"></oc-quantity-input>
                                         </div>
                                     </div>
                                     <div class="col-xs-3">

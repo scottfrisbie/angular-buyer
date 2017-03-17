@@ -45,10 +45,14 @@ function CartConfig($stateProvider) {
         });
 }
 
-function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, ocConfirm, AddRebate) {
+function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, ExistingOrder, ocConfirm, AddRebate) {
     var vm = this;
     vm.lineItems = LineItemsList;
     vm.promotions = CurrentPromotions.Meta ? CurrentPromotions.Items : CurrentPromotions;
+
+    vm.updatePromo = function(){
+        return AddRebate.ApplyPromo(ExistingOrder);
+    }
 
     vm.removeItem = function(order, scope) {
         vm.lineLoading = [];
@@ -86,7 +90,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
 
     //TODO: missing unit tests
     $rootScope.$on('OC:UpdatePromotions', function(event, orderid) {
-        OrderCloud.Orders.ListPromotions(orderid)
+        return OrderCloud.Orders.ListPromotions(orderid)
             .then(function(data) {
                 if (data.Meta) {
                     vm.promotions = data.Items;

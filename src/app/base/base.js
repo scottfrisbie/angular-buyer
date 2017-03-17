@@ -28,7 +28,6 @@ function BaseConfig($stateProvider) {
             CurrentUser: function($q, $state, OrderCloud, buyerid) {
                 return OrderCloud.Me.Get()
                     .then(function(data) {
-                        console.log('data', data);
                         OrderCloud.BuyerID.Set(buyerid);
                         return data;
                     })
