@@ -39,6 +39,7 @@ function AddRebate(OrderCloud, $rootScope) {
                                     return OrderCloud.Orders.AddPromotion(updatedOrder.ID, code, buyerid)
                                         .then(function() {
                                             $rootScope.$broadcast('OC:UpdateOrder', order.ID);
+                                            $rootScope.$broadcast('OC: UpdatePromotion', order.ID);
                                         })
                                 })
                         } else {
