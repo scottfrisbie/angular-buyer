@@ -65,6 +65,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
         vm.lineLoading[scope.$index] = OrderCloud.LineItems.Delete(order.ID, scope.lineItem.ID)
             .then(function () {
                 vm.lineItems.Items.splice(scope.$index, 1);
+                $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                 return AddRebate.ApplyPromo(order)
                     .then(function() {
                         $rootScope.$broadcast('OC:UpdateOrder', order.ID);

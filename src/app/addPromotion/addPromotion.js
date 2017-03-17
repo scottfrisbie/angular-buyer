@@ -33,10 +33,9 @@ function AddRebate(OrderCloud, $rootScope, buyerid, rebateCode) {
             return OrderCloud.Orders.ListPromotions(order.ID)
                 .then(function (promos) {
                         if (promos.Items.length) {
-                            var code = promos.Items[0].Code;
-                            return OrderCloud.Orders.RemovePromotion(order.ID, code, buyerid)
+                            return OrderCloud.Orders.RemovePromotion(order.ID, rebateCode, buyerid)
                                 .then(function (updatedOrder) {
-                                    return OrderCloud.Orders.AddPromotion(updatedOrder.ID, code, buyerid)
+                                    return OrderCloud.Orders.AddPromotion(updatedOrder.ID, rebateCode, buyerid)
                                         .then(function() {
                                             $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
                                             $rootScope.$broadcast('OC:UpdateOrder', order.ID);

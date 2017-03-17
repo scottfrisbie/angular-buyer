@@ -42,10 +42,13 @@ function BaseConfig($stateProvider) {
                 if (!ExistingOrder) {
                     return NewOrder.Create({});
                 } else {
-                    AddRebate.ApplyPromo(ExistingOrder);
+                    AddRebate.ApplyPromo(ExistingOrder)
                     return ExistingOrder;
                 }
             },
+            //ApplyPromotion: function($rootScope, AddRebate, CatalogID, CurrentOrder) {
+            //    return AddRebate.ApplyPromo(CurrentOrder)
+            //},
             AnonymousUser: function($q, OrderCloud, CurrentUser) {
                 CurrentUser.Anonymous = angular.isDefined(JSON.parse(atob(OrderCloud.Auth.ReadToken().split('.')[1])).orderid);
             }
