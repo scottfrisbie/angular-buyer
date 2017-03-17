@@ -49,7 +49,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
     var vm = this;
     vm.lineItems = LineItemsList;
     vm.promotions = CurrentPromotions.Meta ? CurrentPromotions.Items : CurrentPromotions;
-    vm.rebateCode = rebateCode
+    vm.rebateCode = rebateCode;
 
     vm.updatePromo = updatePromo;
     vm.removeItem = removeItem;
@@ -67,6 +67,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
                 vm.lineItems.Items.splice(scope.$index, 1);
                 return AddRebate.ApplyPromo(order)
                     .then(function() {
+                        $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                         toastr.success('Line Item Removed');
                     })
             });
