@@ -42,7 +42,6 @@ function BaseConfig($stateProvider) {
                 if (!ExistingOrder) {
                     return NewOrder.Create({});
                 } else {
-                    //AddRebate.ApplyPromo(ExistingOrder, CatalogID, buyerid);
                     return ExistingOrder;
                 }
             },

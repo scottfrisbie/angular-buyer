@@ -38,8 +38,8 @@ function CartConfig($stateProvider) {
                 CurrentPromotions: function(CurrentOrder, OrderCloud) {
                     return OrderCloud.Orders.ListPromotions(CurrentOrder.ID);
                 },
-                ApplyPromotion: function($rootScope, AddRebate, CatalogID, ExistingOrder, buyerid) {
-                    return AddRebate.ApplyPromo(ExistingOrder, buyerid)
+                ApplyPromotion: function($rootScope, AddRebate, CatalogID, ExistingOrder) {
+                    return AddRebate.ApplyPromo(ExistingOrder)
                 }
             }
         });
@@ -50,11 +50,16 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
     vm.lineItems = LineItemsList;
     vm.promotions = CurrentPromotions.Meta ? CurrentPromotions.Items : CurrentPromotions;
 
-    vm.updatePromo = function(){
+    vm.updatePromo = updatePromo;
+    vm.removeItem = removeItem;
+    vm.removePromotion = removePromotion;
+    vm.cancelOrder = cancelOrder;
+
+    function updatePromo(){
         return AddRebate.ApplyPromo(ExistingOrder);
     }
 
-    vm.removeItem = function(order, scope) {
+    function removeItem(order, scope) {
         vm.lineLoading = [];
         vm.lineLoading[scope.$index] = OrderCloud.LineItems.Delete(order.ID, scope.lineItem.ID)
             .then(function () {
@@ -64,18 +69,18 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
                         toastr.success('Line Item Removed');
                     })
             });
-    };
+    }
 
     //TODO: missing unit tests
-    vm.removePromotion = function(order, scope) {
+    function removePromotion(order, scope) {
         OrderCloud.Orders.RemovePromotion(order.ID, scope.promotion.Code)
             .then(function() {
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                 vm.promotions.splice(scope.$index, 1);
             });
-    };
+    }
 
-    vm.cancelOrder = function(order){
+    function cancelOrder(order){
         ocConfirm.Confirm({
                 message:'Are you sure you want to cancel this order?',
                 confirmText: 'Yes, cancel order',
@@ -86,7 +91,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
                         $state.go("home",{}, {reload:'base'})
                     });
             });
-    };
+    }
 
     //TODO: missing unit tests
     $rootScope.$on('OC:UpdatePromotions', function(event, orderid) {
