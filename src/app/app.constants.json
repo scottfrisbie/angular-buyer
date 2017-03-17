@@ -1,12 +1,12 @@
 {
-  "appname": "Angular Buyer",
-  "scope": "MeAdmin MeXpAdmin MeAddressAdmin MeCreditCardAdmin",
-  "clientid": "XXXXXXXX-XXXX-XXXX-XXXXXXXXXXXX",
-  "buyerid": "XXXX",
+  "appname": "Cafe Rio",
+  "scope": "FullAccess",
+  "clientid": "7FC87166-D42A-4F2D-9587-159D98156314",
+  "buyerid": "caferio",
   "anonymous": false,
-  "catalogid": "XXXX",
+  "catalogid": "caferio",
   "environment": "prod",
   "defaultstate": "home",
   "html5mode": false,
-  "bootswatchtheme": null
+  "bootswatchtheme": "yeti"
 }
