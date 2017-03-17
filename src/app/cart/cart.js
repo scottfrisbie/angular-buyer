@@ -38,17 +38,18 @@ function CartConfig($stateProvider) {
                 CurrentPromotions: function(CurrentOrder, OrderCloud) {
                     return OrderCloud.Orders.ListPromotions(CurrentOrder.ID);
                 },
-                ApplyPromotion: function($rootScope, AddRebate, CatalogID, ExistingOrder) {
-                    return AddRebate.ApplyPromo(ExistingOrder)
+                ApplyPromotion: function($rootScope, AddRebate, CatalogID, CurrentOrder) {
+                    return AddRebate.ApplyPromo(CurrentOrder)
                 }
             }
         });
 }
 
-function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, ExistingOrder, ocConfirm, AddRebate) {
+function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, CurrentOrder, ocConfirm, AddRebate, rebateCode) {
     var vm = this;
     vm.lineItems = LineItemsList;
     vm.promotions = CurrentPromotions.Meta ? CurrentPromotions.Items : CurrentPromotions;
+    vm.rebateCode = rebateCode
 
     vm.updatePromo = updatePromo;
     vm.removeItem = removeItem;
@@ -56,7 +57,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
     vm.cancelOrder = cancelOrder;
 
     function updatePromo(){
-        return AddRebate.ApplyPromo(ExistingOrder);
+        return AddRebate.ApplyPromo(CurrentOrder);
     }
 
     function removeItem(order, scope) {
@@ -81,15 +82,18 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
     }
 
     function cancelOrder(order){
-        ocConfirm.Confirm({
+        return ocConfirm.Confirm({
                 message:'Are you sure you want to cancel this order?',
                 confirmText: 'Yes, cancel order',
                 type: 'delete'})
             .then(function() {
-                OrderCloud.Orders.Delete(order.ID)
-                    .then(function(){
-                        $state.go("home",{}, {reload:'base'})
-                    });
+                return OrderCloud.Orders.RemovePromotion(order.ID, vm.rebateCode)
+                    .then(function() {
+                        return OrderCloud.Orders.Delete(order.ID)
+                            .then(function(){
+                                $state.go("home",{}, {reload:'base'})
+                            });
+                    })
             });
     }
 

@@ -10,7 +10,7 @@ angular.module('orderCloud')
         }
     });
 
-function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, buyerid, ProductQuickView){
+function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, buyerid, AddRebate){
     var vm = this;
 
     $scope.$watch(function(){
@@ -32,6 +32,7 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
                             Quantity: lineItemObj.Quantity + li.Quantity
                         })
                             .then(function(){
+                                AddRebate.ApplyPromo(vm.currentOrder);
                                 toastr.success(vm.product.Name + ' added to cart', 'Success!');
                                 vm.product.Quantity = 1;
                             })
@@ -41,6 +42,7 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
                     } else {
                         OrderCloud.LineItems.Create(vm.currentOrder.ID, li)
                             .then(function(lineItem) {
+                                AddRebate.ApplyPromo(vm.currentOrder);
                                 $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID);
                                 toastr.success(vm.product.Name + ' added to cart', 'Success!');
                                 vm.product.Quantity = 1;
