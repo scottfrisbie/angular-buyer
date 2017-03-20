@@ -25,33 +25,15 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
             Quantity: vm.product.Quantity
         };
 
-        return OrderCloud.LineItems.List(vm.currentOrder.ID, null, null, null, null, null, {ProductID: vm.product.ID}, buyerid)
-                .then(function(lineItem) {
-                    if(lineItem.Items.length) {
-                        var lineItemObj = lineItem.Items[0];
-                        return OrderCloud.LineItems.Patch(vm.currentOrder.ID, lineItemObj.ID, {
-                            Quantity: lineItemObj.Quantity + li.Quantity
-                        })
-                            .then(function(){
-                                toastr.success(vm.product.Name + ' added to cart', 'Success!');
-                                vm.product.Quantity = 1;
-                            })
-                            .catch(function(ex){
-                                toastr.error(ex.data.Errors[0].ErrorCode, 'Error!');
-                            });
-                    } else {
-                        return OrderCloud.LineItems.Create(vm.currentOrder.ID, li)
-                            .then(function(lineItem) {
-                                $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID);
-                                toastr.success(vm.product.Name + ' added to cart', 'Success!');
-                                vm.product.Quantity = 1;
-                            })
-                            .catch(function(ex) {
-
-                                $exceptionHandler(ex);
-                            });
-                    }
-                });
+        return OrderCloud.LineItems.Create(vm.currentOrder.ID, li)
+            .then(function(lineItem) {
+                $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID, 'Updating Order');
+                vm.product.Quantity = 1;
+                toastr.success('Product added to cart', 'Success');
+            })
+            .catch(function(ex) {
+                $exceptionHandler(ex);
+            })
 
     };
 
