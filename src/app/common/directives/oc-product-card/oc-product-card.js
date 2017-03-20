@@ -24,15 +24,16 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
             ProductID: vm.product.ID,
             Quantity: vm.product.Quantity
         };
-            return OrderCloud.LineItems.List(vm.currentOrder.ID, null, null, null, null, null, {ProductID: vm.product.ID}, buyerid)
+
+        return OrderCloud.LineItems.List(vm.currentOrder.ID, null, null, null, null, null, {ProductID: vm.product.ID}, buyerid)
                 .then(function(lineItem) {
                     if(lineItem.Items.length) {
                         var lineItemObj = lineItem.Items[0];
-                        OrderCloud.LineItems.Patch(vm.currentOrder.ID, lineItemObj.ID, {
+                        return OrderCloud.LineItems.Patch(vm.currentOrder.ID, lineItemObj.ID, {
                             Quantity: lineItemObj.Quantity + li.Quantity
                         })
                             .then(function(){
-                                AddRebate.ApplyPromo(vm.currentOrder);
+                                //AddRebate.ApplyPromo(vm.currentOrder);
                                 toastr.success(vm.product.Name + ' added to cart', 'Success!');
                                 vm.product.Quantity = 1;
                             })
@@ -40,10 +41,10 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
                                 toastr.error(ex.data.Errors[0].ErrorCode, 'Error!');
                             });
                     } else {
-                        OrderCloud.LineItems.Create(vm.currentOrder.ID, li)
+                        return OrderCloud.LineItems.Create(vm.currentOrder.ID, li)
                             .then(function(lineItem) {
-                                AddRebate.ApplyPromo(vm.currentOrder);
                                 $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID);
+                                //AddRebate.ApplyPromo(vm.currentOrder);
                                 toastr.success(vm.product.Name + ' added to cart', 'Success!');
                                 vm.product.Quantity = 1;
                             })

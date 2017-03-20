@@ -38,17 +38,13 @@ function BaseConfig($stateProvider) {
                         return data.Items[0];
                     });
             },
-            CurrentOrder: function(ExistingOrder, NewOrder, AddRebate) {
+            CurrentOrder: function(ExistingOrder, NewOrder) {
                 if (!ExistingOrder) {
                     return NewOrder.Create({});
                 } else {
-                    AddRebate.ApplyPromo(ExistingOrder)
-                    return ExistingOrder;
+                    return ExistingOrder
                 }
             },
-            //ApplyPromotion: function($rootScope, AddRebate, CatalogID, CurrentOrder) {
-            //    return AddRebate.ApplyPromo(CurrentOrder)
-            //},
             AnonymousUser: function($q, OrderCloud, CurrentUser) {
                 CurrentUser.Anonymous = angular.isDefined(JSON.parse(atob(OrderCloud.Auth.ReadToken().split('.')[1])).orderid);
             }

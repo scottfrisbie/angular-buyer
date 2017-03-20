@@ -22,35 +22,42 @@ function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, to
     };
 }
 
-function AddRebate(OrderCloud, $rootScope, buyerid, rebateCode) {
+function AddRebate($q, OrderCloud, $rootScope, buyerid, rebateCode) {
     //This Service is called from the base.js on CurrentOrder
     var service = {
         ApplyPromo: _apply
     };
 
     function _apply(order) {
+        var dfd = $q.defer();
         if (order.Total > 0) {
-            return OrderCloud.Orders.ListPromotions(order.ID)
+            OrderCloud.Orders.ListPromotions(order.ID)
                 .then(function (promos) {
                         if (promos.Items.length) {
-                            return OrderCloud.Orders.RemovePromotion(order.ID, rebateCode, buyerid)
+                            OrderCloud.Orders.RemovePromotion(order.ID, rebateCode, buyerid)
                                 .then(function (updatedOrder) {
-                                    return OrderCloud.Orders.AddPromotion(updatedOrder.ID, rebateCode, buyerid)
+                                    OrderCloud.Orders.AddPromotion(updatedOrder.ID, rebateCode, buyerid)
                                         .then(function() {
                                             $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
                                             $rootScope.$broadcast('OC:UpdateOrder', order.ID);
+                                            dfd.resolve(order);
                                         })
                                 })
                         } else {
-                            return OrderCloud.Orders.AddPromotion(order.ID, rebateCode, buyerid)
-                                .then(function (order) {
-                                    $rootScope.$broadcast('OC:UpdateOrder', order.ID);
+                            OrderCloud.Orders.AddPromotion(order.ID, rebateCode, buyerid)
+                                .then(function (promoData) {
+                                    OrderCloud.Orders.Patch(order.ID, order, buyerid)
+                                        .then(function(orderData) {
+                                            $rootScope.$broadcast('OC:UpdateOrder', orderData.ID);
+                                            dfd.resolve(orderData);
+                                        })
                                 })
                         }
                     }
                 )
 
         }
+        return dfd.promise;
     }
     return service;
 }

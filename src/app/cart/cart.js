@@ -35,17 +35,30 @@ function CartConfig($stateProvider) {
                         });
                     return dfd.promise;
                 },
-                CurrentPromotions: function(CurrentOrder, OrderCloud) {
-                    return OrderCloud.Orders.ListPromotions(CurrentOrder.ID);
+                ExistingOrder: function($q, OrderCloud, CurrentUser) {
+                    return OrderCloud.Me.ListOutgoingOrders(null, 1, 1, null, "!DateCreated", {Status:"Unsubmitted"})
+                        .then(function(data) {
+                            return data.Items[0];
+                        });
                 },
-                ApplyPromotion: function($rootScope, AddRebate, CatalogID, CurrentOrder) {
-                    return AddRebate.ApplyPromo(CurrentOrder)
+                CurrentOrderCart: function(ExistingOrder, NewOrder, AddRebate) {
+                    if (!ExistingOrder) {
+                        return NewOrder.Create({});
+                    } else {
+                        return AddRebate.ApplyPromo(ExistingOrder)
+                            .then(function(orderData) {
+                                return orderData
+                            })
+                    }
+                },
+                CurrentPromotions: function(CurrentOrderCart, OrderCloud) {
+                    return OrderCloud.Orders.ListPromotions(CurrentOrderCart.ID);
                 }
             }
         });
 }
 
-function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, CurrentOrder, ocConfirm, AddRebate, rebateCode) {
+function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, CurrentOrderCart, ocConfirm, AddRebate, rebateCode) {
     var vm = this;
     vm.lineItems = LineItemsList;
     vm.promotions = CurrentPromotions.Meta ? CurrentPromotions.Items : CurrentPromotions;
@@ -57,7 +70,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
     vm.cancelOrder = cancelOrder;
 
     function updatePromo(){
-        return AddRebate.ApplyPromo(CurrentOrder);
+        return AddRebate.ApplyPromo(CurrentOrderCart);
     }
 
     function removeItem(order, scope) {
@@ -91,6 +104,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
             .then(function() {
                 return OrderCloud.Orders.RemovePromotion(order.ID, vm.rebateCode)
                     .then(function() {
+                        $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
                         return OrderCloud.Orders.Delete(order.ID)
                             .then(function(){
                                 $state.go("home",{}, {reload:'base'})
