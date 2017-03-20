@@ -1,7 +1,7 @@
 <article id="myPayments">
     <div >
         <!--PERSONAL CREDIT CARDS-->
-        <!--<button class="btn btn-primary pull-right" ng-click="myPayments.createCreditCard()"><i
+        <button class="btn btn-primary pull-right" ng-click="myPayments.createCreditCard()"><i
                 class="fa fa-plus-circle"></i> New Credit Card
         </button>
         <h3><i class="fa fa-credit-card"></i> Personal Credit Cards</h3>
@@ -29,10 +29,10 @@
     <div class="no-matches" ng-if="!myPayments.personalCreditCards">
         You have not created any personal credit cards. <br>
         <a href="" ng-click="myPayments.createCreditCard()">Creat one now!</a>
-    </div>-->
+    </div>
     <br  ng-if="myPayments.personalSpendingAccounts">
     <div ng-if="myPayments.personalSpendingAccounts">
-        <h3><i class="fa fa-money"></i> Budget</h3>
+        <h3><i class="fa fa-money"></i> Available Spending Accounts</h3>
         <hr>
         <div class="panel panel-default" ng-repeat="spendingAccount in myPayments.personalSpendingAccounts.Items">
             <div class="panel-body">
@@ -59,7 +59,7 @@
             </div>
         </div>
     </div>
-    <!--<br ng-if="myPayments.giftCards">
+    <br ng-if="myPayments.giftCards">
     <div ng-if="myPayments.giftCards">
         <h3><i class="fa fa-gift"></i> Available Gift Cards</h3>
         <hr>
@@ -83,7 +83,7 @@
                     </div>
                     <div class="col-xs-6 text-right">
                         <p style="margin:0;" class="lead text-primary" ng-if="giftCard.Balance">{{giftCard.Balance | currency}}</p>
-                    </div>-->
+                    </div>
                 </div>
             </div>
         </div>
