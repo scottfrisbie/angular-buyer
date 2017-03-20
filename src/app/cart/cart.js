@@ -46,9 +46,6 @@ function CartConfig($stateProvider) {
                         return NewOrder.Create({});
                     } else {
                         return AddRebate.ApplyPromo(ExistingOrder)
-                            .then(function(orderData) {
-                                return orderData
-                            })
                     }
                 },
                 CurrentPromotions: function(CurrentOrderCart, OrderCloud) {
