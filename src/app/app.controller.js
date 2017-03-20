@@ -1,5 +1,6 @@
 angular.module('orderCloud')
     .controller('AppCtrl', AppController)
+    .constant()
 ;
 
 function AppController($state, $ocMedia, LoginService, appname, ocStateLoading, ocIsTouchDevice, ocRolesService) {
