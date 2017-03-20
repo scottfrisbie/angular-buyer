@@ -10,6 +10,13 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
     vm.fromDate = Parameters.fromDate;
     vm.toDate = Parameters.toDate;
 
+    vm.orderStatuses = [
+        {Value: 'Open', Name: 'Open'},
+        {Value: 'AwaitingApproval', Name: 'Awaiting Approval'},
+        {Value: 'Completed', Name: 'Completed'},
+        {Value: 'Declined', Name: 'Declined'}
+    ];
+
     vm.sortSelection = Parameters.sortBy ? (Parameters.sortBy.indexOf('!') == 0 ? Parameters.sortBy.split('!')[1] : Parameters.sortBy) : null;
     vm.filtersApplied = vm.parameters.fromDate || vm.parameters.toDate || ($ocMedia('max-width:767px') && vm.sortSelection); //Check if filters are applied, Sort by is a filter on mobile devices
     vm.showFilters = vm.filtersApplied;
@@ -21,12 +28,12 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
     vm.filter = filter; //Reload the state with new parameters
     vm.search = search; //Reload the state with new search parameter & reset the 
     vm.clearSearch = clearSearch; //Clear the search parameter, reload the state & reset the page
-    vm.clearFilters = clearFilters; //Clear relevant filters, reload the state & reset the page
     vm.updateSort = updateSort;  //Conditionally set, reverse, remove the sortBy parameter & reload the state
     vm.reverseSort = reverseSort; //Used on mobile devices
     vm.pageChanged = pageChanged; //Reload the state with the incremented page parameter
     vm.loadMore = loadMore; //Load the next page of results with all of the same parameters, used on mobile
 
+    vm.formatDate = formatDate;
     vm.selectTab = selectTab;
     vm.goToOrder = goToOrder;
 
@@ -63,15 +70,6 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
         vm.filter(true);
     }
 
-    function clearFilters() {
-        vm.parameters.status = null;
-        vm.parameters.coffeeshop = null;
-        vm.parameters.from = null;
-        vm.parameters.to = null;
-        $ocMedia('max-width:767px') ? vm.parameters.sortBy = null : angular.noop(); //Clear out sort by on mobile devices
-        vm.filter(true);
-    }
-
     function updateSort(value) {
         value ? angular.noop() : value = vm.sortSelection;
         switch(vm.parameters.sortBy) {
@@ -97,7 +95,7 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
     }
 
     function loadMore() {
-        return ocOrders.ListOrders(vm.parameters)
+        return ocOrders.List(vm.parameters)
             .then(function(data){
                 vm.list.Items = vm.list.Items.concat(data.Items);
                 vm.list.Meta = data.Meta;
