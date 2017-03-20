@@ -10,7 +10,7 @@ angular.module('orderCloud')
         }
     });
 
-function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, buyerid, ProductQuickView){
+function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, buyerid){
     var vm = this;
 
     $scope.$watch(function(){
@@ -24,11 +24,12 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
             ProductID: vm.product.ID,
             Quantity: vm.product.Quantity
         };
-            return OrderCloud.LineItems.List(vm.currentOrder.ID, null, null, null, null, null, {ProductID: vm.product.ID}, buyerid)
+
+        return OrderCloud.LineItems.List(vm.currentOrder.ID, null, null, null, null, null, {ProductID: vm.product.ID}, buyerid)
                 .then(function(lineItem) {
                     if(lineItem.Items.length) {
                         var lineItemObj = lineItem.Items[0];
-                        OrderCloud.LineItems.Patch(vm.currentOrder.ID, lineItemObj.ID, {
+                        return OrderCloud.LineItems.Patch(vm.currentOrder.ID, lineItemObj.ID, {
                             Quantity: lineItemObj.Quantity + li.Quantity
                         })
                             .then(function(){
@@ -39,7 +40,7 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
                                 toastr.error(ex.data.Errors[0].ErrorCode, 'Error!');
                             });
                     } else {
-                        OrderCloud.LineItems.Create(vm.currentOrder.ID, li)
+                        return OrderCloud.LineItems.Create(vm.currentOrder.ID, li)
                             .then(function(lineItem) {
                                 $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID);
                                 toastr.success(vm.product.Name + ' added to cart', 'Success!');
