@@ -109,7 +109,6 @@ function FavoriteProductDirective(){
 
 function FavoriteProductController($scope, OrderCloud, toastr){
     var vm = this;
-
     if($scope.currentUser && $scope.currentUser.xp && $scope.currentUser.xp.FavoriteProducts){
         vm.hasFavorites = true;
     }
@@ -125,7 +124,7 @@ function FavoriteProductController($scope, OrderCloud, toastr){
                 vm.hasFavorites = true;
             })
             .catch(function(ex){
-               console.log(ex);
+                console.log(ex);
             });
     }
     vm.isFavorited = vm.hasFavorites && $scope.currentUser.xp.FavoriteProducts.indexOf($scope.product.ID) > -1;
