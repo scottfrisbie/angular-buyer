@@ -36,8 +36,10 @@
                     <hr>
                     <oc-add-promotion order="base.currentOrder"></oc-add-promotion>
                     <h5 ng-repeat="promotion in cart.promotions" class="text-danger">
-                        {{promotion.Code}}
-                        <a href="" ng-click="cart.removePromotion(base.currentOrder, this)">remove</a>
+                        {{promotion.Name}}
+                        <div ng-if="promotion.ValueExpression !== 'order.Subtotal * .01'">
+                            <a href="" ng-click="checkout.removePromotion(base.currentOrder, promotion)">remove</a>
+                        </div>
                         <span class="pull-right">- {{promotion.Amount | currency}}</span></h5>
                 </div>
                 <div class="panel-footer">
@@ -94,7 +96,7 @@
                                     </div>
                                     <div class="col-xs-4">
                                         <div class="c-line-item__qty-input">
-                                            <oc-quantity-input lineitem="lineItem" order="base.currentOrder"></oc-quantity-input>
+                                            <oc-quantity-input lineitem="lineItem" index="$index" order="base.currentOrder" on-update="cart.updatePromo(li)"></oc-quantity-input>
                                         </div>
                                     </div>
                                     <div class="col-xs-3">
