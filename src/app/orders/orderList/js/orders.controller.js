@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .controller('OrdersCtrl', OrdersController)
 ;
 
-function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, ocOrders, OrderList, Parameters) {
+function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, ocOrders, ocReporting, OrderList, Parameters) {
     var vm = this;
     vm.list = OrderList;
     vm.parameters = Parameters;
@@ -36,6 +36,11 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
     vm.formatDate = formatDate;
     vm.selectTab = selectTab;
     vm.goToOrder = goToOrder;
+    vm.downloadReport = downloadReport;
+
+    function downloadReport(){
+        return ocReporting.ExportOrders(vm.list.Items);
+    }
 
     function selectTab(tab){
         vm.parameters.tab = tab;
