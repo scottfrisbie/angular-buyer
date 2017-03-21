@@ -41,18 +41,11 @@ function CartConfig($stateProvider) {
                             return data.Items[0];
                         });
                 },
-                CurrentOrderCart: function(OrderCloud, ExistingOrder, NewOrder, AddRebate, buyerid) {
+                CurrentOrderCart: function(OrderCloud, ExistingOrder, NewOrder, AddRebate) {
                     if (!ExistingOrder) {
                         return NewOrder.Create({});
                     } else {
-                        if(ExistingOrder.xp && !ExistingOrder.xp.sellerOrderID) {
-                            return AddRebate.ApplyPromo(ExistingOrder)
-                        } else {
-                            return OrderCloud.Orders.Patch(ExistingOrder.ID, {xp: {sellerOrderID: 0}}, buyerid)
-                                .then(function(order) {
-                                    return AddRebate.ApplyPromo(order);
-                                })
-                        }
+                        return AddRebate.ApplyPromo(ExistingOrder)
                     }
                 },
                 CurrentPromotions: function(CurrentOrderCart, OrderCloud) {
