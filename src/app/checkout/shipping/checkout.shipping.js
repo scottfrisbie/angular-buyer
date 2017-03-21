@@ -18,6 +18,7 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
     vm.changeShippingAddress = changeShippingAddress;
     vm.saveShipAddress = saveShipAddress;
     vm.shipperSelected = shipperSelected;
+    vm.toggleShipping = toggleShipping;
     vm.initShippingRates = initShippingRates;
     vm.getShippingRates = getShippingRates;
     vm.analyzeShipments = analyzeShipments;
@@ -79,5 +80,12 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
             .then(function() {
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);
             });
+    }
+
+    function toggleShipping(willEnable, order) {
+        OrderCloud.Orders.Patch(order.ID, {xp: {ExpeditedShipping: willEnable}})
+            .then(function(updatedOrder) {
+                $rootScope.$broadcast('OC:UpdateOrder', updatedOrder.ID);
+            })
     }
 }
