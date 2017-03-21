@@ -17,7 +17,9 @@ function OCQuantityInput(toastr, OrderCloud, $rootScope) {
         link: function (scope) {
             if (scope.product){
                 scope.item = scope.product;
-                scope.content = "product"
+                scope.content = "product";
+                if(!scope.item.Quantity ){scope.item.Quantity = scope.product.StandardPriceSchedule.PriceBreaks[0].Quantity;}
+
             }
             else if(scope.lineitem){
                 scope.item = scope.lineitem;
@@ -29,7 +31,7 @@ function OCQuantityInput(toastr, OrderCloud, $rootScope) {
                                 data.Product = scope.lineitem.Product;
                                 scope.item = data;
                                 scope.lineitem = data;
-                                if (typeof scope.onUpdate === "function") scope.onUpdate(scope.lineitem);
+                                if (typeof scope.onUpdate === "function") scope.onUpdate({li: scope.lineitem});
                                 toastr.success('Quantity Updated');
                                 $rootScope.$broadcast('OC:UpdateOrder', scope.order.ID, 'Calculating Order Total');
                             });

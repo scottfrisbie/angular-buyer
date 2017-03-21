@@ -12,12 +12,16 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, AddressSelectModal, ShippingRates, CheckoutConfig) {
+function CheckoutShippingController($exceptionHandler, $rootScope, toastr, OrderCloud, MyAddressesModal, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
     var vm = this;
+
+    vm.rebateCode = rebateCode;
+
     //vm.createAddress = createAddress;
     vm.changeShippingAddress = changeShippingAddress;
     vm.saveShipAddress = saveShipAddress;
     vm.shipperSelected = shipperSelected;
+    vm.toggleShipping = toggleShipping;
     vm.initShippingRates = initShippingRates;
     vm.getShippingRates = getShippingRates;
     vm.analyzeShipments = analyzeShipments;
@@ -81,5 +85,12 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, A
             .then(function() {
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);
             });
+    }
+
+    function toggleShipping(willEnable, order) {
+        OrderCloud.Orders.Patch(order.ID, {xp: {ExpeditedShipping: willEnable}})
+            .then(function(updatedOrder) {
+                $rootScope.$broadcast('OC:UpdateOrder', updatedOrder.ID);
+            })
     }
 }

@@ -19,6 +19,12 @@ function BaseConfig($stateProvider) {
             }
         },
         resolve: {
+            CatalogID: function(OrderCloud, buyerid) {
+                return OrderCloud.Buyers.Get(buyerid)
+                    .then(function(buyerObj) {
+                        return buyerObj.DefaultCatalogID;
+                    })
+            },
             CurrentUser: function($q, $state, OrderCloud, buyerid) {
                 return OrderCloud.Me.Get()
                     .then(function(data) {
@@ -32,11 +38,11 @@ function BaseConfig($stateProvider) {
                         return data.Items[0];
                     });
             },
-            CurrentOrder: function(ExistingOrder, NewOrder, CurrentUser) {
+            CurrentOrder: function(ExistingOrder, NewOrder) {
                 if (!ExistingOrder) {
                     return NewOrder.Create({});
                 } else {
-                    return ExistingOrder;
+                    return ExistingOrder
                 }
             },
             AnonymousUser: function($q, OrderCloud, CurrentUser) {
@@ -46,7 +52,7 @@ function BaseConfig($stateProvider) {
     });
 }
 
-function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder, OrderCloud) {
+function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder,  OrderCloud) {
     var vm = this;
     vm.currentUser = CurrentUser;
     vm.currentOrder = CurrentOrder;
@@ -99,6 +105,10 @@ function NewOrderService($q, OrderCloud) {
         }
 
         function createOrder() {
+            order.xp = {
+                ExpeditedShipping: false,
+                sellerOrderID: 0
+            };
             OrderCloud.Orders.Create(order)
                 .then(function(order) {
                     deferred.resolve(order);

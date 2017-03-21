@@ -5,16 +5,16 @@
 				<a href="" ui-sref="account">My Account</a>
 			</li>
 			<li ui-sref-active="active">
-				<a href="" ui-sref="myAddresses">Personal Addresses</a>
+				<a href="" ui-sref="myAddresses">Addresses</a>
 			</li>
 			<li ui-sref-active="active">
-				<a href="" ui-sref="myPayments">Payment Methods</a>
+				<a href="" ui-sref="myPayments">Store Budget</a>
 			</li>
 			<li ui-sref-active="active">
 				<a href="" ui-sref="favoriteProducts">Favorite Products</a>
 			</li>
-			<li ui-sref-active="active">
-				<a href="" ui-sref="myOrders">Order History</a>
+			<li ng-class="{active: application.$state.includes('orders') || application.$state.includes('orderDetails')}">
+				<a href="" ui-sref="orders">Orders</a>
 			</li>
 		</ul>
 	</aside>
