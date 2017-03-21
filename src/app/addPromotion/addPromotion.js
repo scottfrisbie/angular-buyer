@@ -55,6 +55,8 @@ function AddRebate(OrderCloud, $rootScope, buyerid, rebateCode) {
                     }
                 )
 
+        } else {
+            return order;
         }
     }
     return service;
