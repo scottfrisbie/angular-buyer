@@ -36,15 +36,16 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
     }
 
     function changeShippingAddress(order) {
-        AddressSelectModal.Open('shipping')
+        return AddressSelectModal.Open('shipping')
             .then(function(address) {
                 if (address == 'create') {
                     vm.createAddress(order);
                 } else {
                     order.ShippingAddressID = address.ID;
                     vm.saveShipAddress(order);
+                    return OrderCloud.Orders.Patch(order.ID, {xp: {CustomerNumber: address.CompanyName}});
                 }
-            })
+            });
     }
 
     function saveShipAddress(order) {
