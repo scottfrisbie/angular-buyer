@@ -48,7 +48,7 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
             }
         })
         .state('productBrowse.products', {
-            url: '/products?categoryid?favorites?search?page?pageSize?searchOn?sortBy?filters?depth',
+            url: '/products?categoryid?favorites?search?page?pageSize?searchOn?sortBy?depth',
             templateUrl: 'productBrowse/templates/productView.tpl.html',
             controller: 'ProductViewCtrl',
             controllerAs: 'productView',
@@ -56,13 +56,8 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
                 Parameters: function ($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                ProductList: function(OrderCloud, CurrentUser, Parameters) {
-                    if (Parameters.favorites && CurrentUser.xp.FavoriteProducts) {
-                        Parameters.filters ? angular.extend(Parameters.filters, Parameters.filters, {ID:CurrentUser.xp.FavoriteProducts.join('|')}) : Parameters.filters = {ID:CurrentUser.xp.FavoriteProducts.join('|')};
-                    } else if (Parameters.filters) {
-                        delete Parameters.filters.ID;
-                    }
-                    return OrderCloud.Me.ListProducts(Parameters.search, Parameters.page, Parameters.pageSize, Parameters.searchOn, Parameters.sortBy, Parameters.filters, Parameters.categoryid);
+                ProductList: function(CurrentUser, Parameters, ocProducts) {
+                    return ocProducts.List(Parameters, CurrentUser);
                 }
             }
         });
