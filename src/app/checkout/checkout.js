@@ -26,7 +26,10 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     if (CurrentOrder.ShippingAddressID) {
                         OrderCloud.Me.GetAddress(CurrentOrder.ShippingAddressID)
                             .then(function(address) {
-                                deferred.resolve(address);
+                                OrderCloud.Orders.Patch(CurrentOrder.ID, {xp: {CustomerNumber: address.CompanyName}})
+                                    .then(function(){
+                                        deferred.resolve(address);
+                                    });
                             })
                             .catch(function(ex) {
                                 deferred.resolve(null);
@@ -57,15 +60,19 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                         deferred.resolve(null);
                     }
                     return deferred.promise;
+                },
+                CurrentUserAddresses: function(CurrentUser, ShippingAddresses) {
+                    return ShippingAddresses.GetAddresses(CurrentUser);
                 }
 			}
 		})
     ;
 }
 
-function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
+function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
+    vm.userAddresses = CurrentUserAddresses;
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
@@ -120,7 +127,7 @@ function AddressSelectModalService($uibModal) {
         Open: _open
     };
 
-    function _open(type) {
+    function _open(type, user) {
         return $uibModal.open({
             templateUrl: 'checkout/templates/addressSelect.modal.tpl.html',
             controller: 'AddressSelectCtrl',
@@ -136,6 +143,13 @@ function AddressSelectModalService($uibModal) {
                     } else {
                         return OrderCloud.Me.ListAddresses(null, 1, 100);
                     }
+                },
+                OrderShipAddress: function(ShippingAddresses){
+                    if(type == 'shipping') {
+                        return ShippingAddresses.GetAddresses(user);
+                    } else {
+                        angular.noop();
+                    }
                 }
             }
         }).result;
@@ -144,9 +158,9 @@ function AddressSelectModalService($uibModal) {
     return service;
 }
 
-function AddressSelectController($uibModalInstance, Addresses) {
+function AddressSelectController($uibModalInstance, OrderShipAddress) {
     var vm = this;
-    vm.addresses = Addresses;
+    vm.addresses = OrderShipAddress;
 
     vm.select = function (address) {
         $uibModalInstance.close(address);

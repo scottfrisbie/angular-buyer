@@ -105,6 +105,10 @@ function NewOrderService($q, OrderCloud) {
         }
 
         function createOrder() {
+            order.xp = {
+                ExpeditedShipping: "ground",
+                sellerOrderID: 0
+            };
             OrderCloud.Orders.Create(order)
                 .then(function(order) {
                     deferred.resolve(order);

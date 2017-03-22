@@ -9,6 +9,49 @@
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce maximus magna turpis, vel facilisis libero varius id. Phasellus lacinia rutrum pharetra. Nam convallis quam quis metus mattis finibus. Praesent bibendum ex nibh, vitae sodales ligula euismod et. In et metus arcu. Quisque eu tincidunt eros, ac convallis neque. Pellentesque ac ex sit amet purus sodales commodo vitae ac nunc.</p>
     </div>
 </div>
+
+<!--Featured Products Slider-->
+<slick arrows="!application.isTouchDevice" responsive="home.responsive" infinite="true" slides-to-show="7" slides-to-scroll="1" class="slider multiple-items" ng-class="{'has-arrows': !application.isTouchDevice}">
+    <div ng-repeat="product in home.productList.Items">
+        <div class="c-related-products__card-wrap">
+
+            <div class="c-product-card c-related-products__card" ui-sref="productDetail({productid: product.ID})">
+                <div class="c-product-card__img-wrap">
+                    <img class="img-responsive c-product-card__img" ng-src="{{product.xp.image.URL}}" />
+                    <div class="c-ribbon"  ng-if="product.xp.Featured" >
+                        <div class="c-ribbon__content"><strong>Popular!</strong></div>
+                    </div>
+                </div>
+                <div class="c-product-card__body">
+                    <h4 class="c-product-card__name">{{product.Name}}</h4>
+                    <div class="clearfix">
+                        <h4 class="c-product-card__price text-primary">{{product.StandardPriceSchedule.PriceBreaks[0].Price | currency}}</h4>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</slick>
+
+<!--Featured Categories Slider-->
+<slick arrows="!application.isTouchDevice" responsive="home.responsive" infinite="true" slides-to-show="4" slides-to-scroll="1" class="slider multiple-items" ng-class="{'has-arrows': !application.isTouchDevice}">
+    <div ng-repeat="category in home.categoryList.Items">
+        <div class="c-related-products__card-wrap">
+            <div class="c-product-card c-related-products__card" ui-sref="productDetail({productid: product.ID})">
+                <div class="c-product-card__img-wrap">
+                    <img class="img-responsive c-product-card__img" ng-src="{{category.xp.image.URL}}" />
+                    <div class="c-ribbon"  ng-if="category.xp.Featured" >
+                        <div class="c-ribbon__content"><strong>Popular!</strong></div>
+                    </div>
+                </div>
+                <div class="c-product-card__body">
+                    <h4 class="c-product-card__name">{{category.Name}}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</slick>
 <div class="row top-buffer">
     <div class="col-xs-12">
         <h2>Contacts</h2>

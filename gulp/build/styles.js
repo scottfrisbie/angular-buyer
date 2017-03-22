@@ -22,6 +22,13 @@ function StylesFunction() {
             mainBowerFiles({
                 filter: '**/*.less',
                 overrides: {
+                    'slick-carousel': {
+                        main: [
+                            "slick/slick.js",
+                            "slick/slick.less",
+                            "slick/slick-theme.less"
+                        ]
+                    },
                     'jasny-bootstrap': {
                         main: [
                             "./dist/js/jasny-bootstrap.js",
