@@ -21,22 +21,8 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
 			controller: 'CheckoutCtrl',
 			controllerAs: 'checkout',
 			resolve: {
-                OrderShipAddress: function($q, OrderCloud, CurrentOrder){
-                    var deferred = $q.defer();
-                    if (CurrentOrder.ShippingAddressID) {
-                        OrderCloud.Me.GetAddress(CurrentOrder.ShippingAddressID)
-                            .then(function(address) {
-                                deferred.resolve(address);
-                            })
-                            .catch(function(ex) {
-                                deferred.resolve(null);
-                            });
-                    }
-                    else {
-                        deferred.resolve(null);
-                    }
-
-                    return deferred.promise;
+                OrderShipAddress: function(CurrentUser, ShippingAddresses){
+                    return ShippingAddresses.GetAddresses(CurrentUser);
                 },
                 CurrentPromotions: function(CurrentOrder, OrderCloud) {
                     return OrderCloud.Orders.ListPromotions(CurrentOrder.ID);
