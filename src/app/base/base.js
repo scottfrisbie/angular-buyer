@@ -106,7 +106,6 @@ function NewOrderService($q, OrderCloud) {
 
         function createOrder() {
             order.xp = {
-                CustomerNumber: "",
                 ExpeditedShipping: "ground",
                 sellerOrderID: 0
             };

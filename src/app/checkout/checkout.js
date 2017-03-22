@@ -78,16 +78,13 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     vm.checkoutConfig = CheckoutConfig;
 
     vm.submitOrder = function(order) {
-        return OrderCloud.Orders.Patch(order.ID, {xp: {CustomerNumber: vm.shippingAddress.CompanyName}})
-            .then(function(updatedOrder) {
-                OrderCloud.Orders.Submit(updatedOrder.ID)
-                    .then(function(order) {
-                        $state.go('confirmation', {orderid:updatedOrder.ID}, {reload:'base'});
-                        toastr.success('Your order has been submitted', 'Success');
-                    })
-                    .catch(function(ex) {
-                        toastr.error('Your order did not submit successfully.', 'Error');
-                    });
+        OrderCloud.Orders.Submit(order.ID)
+            .then(function(order) {
+                $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
+                toastr.success('Your order has been submitted', 'Success');
+            })
+            .catch(function(ex) {
+                toastr.error('Your order did not submit successfully.', 'Error');
             });
     };
 
