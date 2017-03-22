@@ -26,7 +26,10 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     if (CurrentOrder.ShippingAddressID) {
                         OrderCloud.Me.GetAddress(CurrentOrder.ShippingAddressID)
                             .then(function(address) {
-                                deferred.resolve(address);
+                                OrderCloud.Orders.Patch(CurrentOrder.ID, {xp: {CustomerNumber: address.CompanyName}})
+                                    .then(function(){
+                                        deferred.resolve(address);
+                                    });
                             })
                             .catch(function(ex) {
                                 deferred.resolve(null);
