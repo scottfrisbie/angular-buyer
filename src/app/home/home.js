@@ -13,11 +13,44 @@ function HomeConfig($stateProvider) {
 			controllerAs: 'home',
 			data: {
 				pageTitle: 'Home'
+			},
+			resolve: {
+				FeaturedProducts: function(OrderCloud){
+					return OrderCloud.Me.ListProducts(null, null, 100, null, null, {'xp.Featured': true});
+				},
+				FeaturedCategories: function(OrderCloud){
+					return OrderCloud.Me.ListCategories(null, 1, 100, null, null, {'xp.Featured': true});
+				}
 			}
 		})
 	;
 }
 
-function HomeController() {
+function HomeController(FeaturedProducts, FeaturedCategories) {
 	var vm = this;
+	vm.productList = FeaturedProducts;
+	vm.categoryList = FeaturedCategories;
+	console.log(FeaturedCategories)
+
+	//settings used by slider
+	vm.responsive = [
+		{
+			breakpoint: 1500,
+			settings: {
+				slidesToShow: 4
+			}
+		},
+		{
+			breakpoint: 992,
+			settings: {
+				slidesToShow: 3
+			}
+		},
+		{
+			breakpoint: 768,
+			settings: {
+				slidesToShow: 1
+			}
+		}                            
+	];
 }
