@@ -21,8 +21,22 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
 			controller: 'CheckoutCtrl',
 			controllerAs: 'checkout',
 			resolve: {
-                OrderShipAddress: function(CurrentUser, ShippingAddresses){
-                    return ShippingAddresses.GetAddresses(CurrentUser);
+                OrderShipAddress: function($q, OrderCloud, CurrentOrder){
+                    var deferred = $q.defer();
+                    if (CurrentOrder.ShippingAddressID) {
+                        OrderCloud.Me.GetAddress(CurrentOrder.ShippingAddressID)
+                            .then(function(address) {
+                                deferred.resolve(address);
+                            })
+                            .catch(function(ex) {
+                                deferred.resolve(null);
+                            });
+                    }
+                    else {
+                        deferred.resolve(null);
+                    }
+
+                    return deferred.promise;
                 },
                 CurrentPromotions: function(CurrentOrder, OrderCloud) {
                     return OrderCloud.Orders.ListPromotions(CurrentOrder.ID);
@@ -56,19 +70,21 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
     vm.userAddresses = CurrentUserAddresses;
-    console.log('addresses', vm.userAddresses);
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
 
     vm.submitOrder = function(order) {
-        OrderCloud.Orders.Submit(order.ID)
-            .then(function(order) {
-                $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
-                toastr.success('Your order has been submitted', 'Success');
-            })
-            .catch(function(ex) {
-                toastr.error('Your order did not submit successfully.', 'Error');
+        return OrderCloud.Orders.Patch(order.ID, {xp: {CustomerNumber: vm.shippingAddress.CompanyName}})
+            .then(function(updatedOrder) {
+                OrderCloud.Orders.Submit(updatedOrder.ID)
+                    .then(function(order) {
+                        $state.go('confirmation', {orderid:updatedOrder.ID}, {reload:'base'});
+                        toastr.success('Your order has been submitted', 'Success');
+                    })
+                    .catch(function(ex) {
+                        toastr.error('Your order did not submit successfully.', 'Error');
+                    });
             });
     };
 
@@ -111,7 +127,7 @@ function AddressSelectModalService($uibModal) {
         Open: _open
     };
 
-    function _open(user, type) {
+    function _open(type, user) {
         return $uibModal.open({
             templateUrl: 'checkout/templates/addressSelect.modal.tpl.html',
             controller: 'AddressSelectCtrl',

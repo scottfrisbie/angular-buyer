@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ShippingAddresses', ShippingAddresses)
 ;
 
-function ShippingAddresses($q, OrderCloud, buyerid) {
+function ShippingAddresses($q, OrderCloud) {
     var service = {
         GetAddresses: _getAddresses
     };
@@ -11,10 +11,14 @@ function ShippingAddresses($q, OrderCloud, buyerid) {
         var addressArray = [];
         var locationIDs = CurrentUser.xp.Locations;
         _.each(locationIDs, function(locationID) {
-            addressArray.push(OrderCloud.Addresses.List(null, null, null, null, null, {CompanyName: locationID}, buyerid)
+            addressArray.push(OrderCloud.Me.ListAddresses(null, null, null, null, null, {CompanyName: locationID})
                 .then(function(address){
                     return address.Items[0];
-                }))
+                })
+                .catch(function(ex) {
+                    console.log(ex);
+                })
+            )
         });
         return $q.all(addressArray);
     }

@@ -12,10 +12,18 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-function CheckoutShippingController($exceptionHandler, $rootScope, toastr, OrderCloud, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
+//<<<<<<< HEAD
+//function CheckoutShippingController($exceptionHandler, $rootScope, toastr, OrderCloud, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
+//    var vm = this;
+//
+//    vm.rebateCode = rebateCode;
+//    vm.user = CurrentUser;
+//=======
+function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, CurrentOrder, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
     var vm = this;
 
     vm.rebateCode = rebateCode;
+    vm.order = CurrentOrder;
     vm.user = CurrentUser;
 
     //vm.createAddress = createAddress;
@@ -39,20 +47,20 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
     //}
 
     function changeShippingAddress(order) {
-        AddressSelectModal.Open(vm.user, 'shipping')
+        AddressSelectModal.Open('shipping', vm.user)
             .then(function(address) {
                 if (address == 'create') {
                     vm.createAddress(order);
                 } else {
                     order.ShippingAddressID = address.ID;
-                    vm.saveShipAddress(order);
+                    vm.saveShipAddress(order, address);
                 }
             })
     }
 
-    function saveShipAddress(order) {
+    function saveShipAddress(order, address) {
         if (order && order.ShippingAddressID) {
-            OrderCloud.Orders.Patch(order.ID, {ShippingAddressID: order.ShippingAddressID})
+            OrderCloud.Orders.Patch(order.ID, {ShippingAddressID: order.ShippingAddressID, xp: {CustomerNumber: address.CompanyName}})
                 .then(function(updatedOrder) {
                     $rootScope.$broadcast('OC:OrderShipAddressUpdated', updatedOrder);
                     vm.getShippingRates(order);
@@ -88,8 +96,8 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
             });
     }
 
-    function toggleShipping(willEnable, order) {
-        OrderCloud.Orders.Patch(order.ID, {xp: {ExpeditedShipping: willEnable}})
+    function toggleShipping(opt) {
+        OrderCloud.Orders.Patch(vm.order.ID, {xp: {ExpeditedShipping: opt}})
             .then(function(updatedOrder) {
                 $rootScope.$broadcast('OC:UpdateOrder', updatedOrder.ID);
             })
