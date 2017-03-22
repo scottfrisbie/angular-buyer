@@ -12,12 +12,16 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-function CheckoutShippingController($exceptionHandler, $rootScope, toastr, OrderCloud, MyAddressesModal, AddressSelectModal, ShippingRates, CheckoutConfig) {
+function CheckoutShippingController($exceptionHandler, $rootScope, toastr, OrderCloud, MyAddressesModal, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
     var vm = this;
+
+    vm.rebateCode = rebateCode;
+
     vm.createAddress = createAddress;
     vm.changeShippingAddress = changeShippingAddress;
     vm.saveShipAddress = saveShipAddress;
     vm.shipperSelected = shipperSelected;
+    vm.toggleShipping = toggleShipping;
     vm.initShippingRates = initShippingRates;
     vm.getShippingRates = getShippingRates;
     vm.analyzeShipments = analyzeShipments;
@@ -32,15 +36,16 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
     }
 
     function changeShippingAddress(order) {
-        AddressSelectModal.Open('shipping')
+        return AddressSelectModal.Open('shipping')
             .then(function(address) {
                 if (address == 'create') {
                     vm.createAddress(order);
                 } else {
                     order.ShippingAddressID = address.ID;
                     vm.saveShipAddress(order);
+                    return OrderCloud.Orders.Patch(order.ID, {xp: {CustomerNumber: address.CompanyName}});
                 }
-            })
+            });
     }
 
     function saveShipAddress(order) {
@@ -79,5 +84,12 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
             .then(function() {
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);
             });
+    }
+
+    function toggleShipping(willEnable, order) {
+        OrderCloud.Orders.Patch(order.ID, {xp: {ExpeditedShipping: willEnable}})
+            .then(function(updatedOrder) {
+                $rootScope.$broadcast('OC:UpdateOrder', updatedOrder.ID);
+            })
     }
 }

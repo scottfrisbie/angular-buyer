@@ -76,8 +76,9 @@ function checkoutReviewConfig($stateProvider) {
 		});
 }
 
-function CheckoutReviewController(LineItemsList, OrderPaymentsDetail) {
+function CheckoutReviewController(LineItemsList, OrderPaymentsDetail, rebateCode) {
 	var vm = this;
 	vm.payments = OrderPaymentsDetail;
 	vm.lineItems = LineItemsList;
+	vm.rebateCode = rebateCode;
 }

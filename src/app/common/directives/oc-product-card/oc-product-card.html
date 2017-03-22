@@ -5,8 +5,9 @@
     </a>
 </div>
 <div class="caption c-product-card__body">
-    <h4 class="c-product-card__name" ng-if="productCard.product.Name">{{productCard.product.ID | limitTo:
-        12}}{{productCard.product.ID.length > 8 ? '...' : ''}}</h4>
+    <h6>{{productCard.product.ID | limitTo:
+        12}}{{productCard.product.ID.length > 8 ? '...' : ''}}</h6>
+    <h4 class="c-product-card__name" ng-if="productCard.product.Name">{{productCard.product.Name}}</h4>
     <div class="clearfix">
         <h4 class="c-product-card__price text-primary">
             {{productCard.product.StandardPriceSchedule.PriceBreaks[0].Price | currency}}</h4>
