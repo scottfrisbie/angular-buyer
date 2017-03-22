@@ -16,10 +16,7 @@ function ShippingAddresses($q, OrderCloud, buyerid) {
                     return address.Items[0];
                 }))
         });
-        $q.all(addressArray)
-            .then(function(data) {
-                return data;
-            })
+        return $q.all(addressArray);
     }
     return service;
 }

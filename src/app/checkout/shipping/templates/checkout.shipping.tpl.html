@@ -12,14 +12,6 @@
                         <p ng-bind-html="checkout.shippingAddress | address:'full'"></p>
                     </div>
                 </div>
-                <div class="btn-group" data-toggle="buttons" required>
-                    <label class="btn btn-primary" ng-class="{'active' : !base.currentOrder.xp.ExpeditedShipping}" ng-click="checkoutShipping.toggleShipping(false, base.currentOrder)">
-                        <input type="radio" name="groundOption" id="groundOption" autocomplete="off" checked> Ground
-                    </label>
-                    <label class="btn btn-primary" ng-class="{'active' : base.currentOrder.xp.ExpeditedShipping}" ng-click="checkoutShipping.toggleShipping(true, base.currentOrder)">
-                        <input type="radio" name="expeditedOption" id="expeditedOption" autocomplete="off"> Expedited
-                    </label>
-                </div>
                 <div class="well text-center" ng-if="!checkout.shippingAddress">
                     You currently do not have a shipping address selected. <br />
                     <a href="" ng-click="checkoutShipping.changeShippingAddress(base.currentOrder)">Select one now</a>

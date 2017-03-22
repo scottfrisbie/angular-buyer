@@ -51,7 +51,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
 
 function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
     var vm = this;
-    vm.shippingAddress = OrderShipAddress;
+    vm.shippingAddress = OrderShipAddress[0];
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
@@ -106,7 +106,7 @@ function AddressSelectModalService($uibModal) {
         Open: _open
     };
 
-    function _open(type) {
+    function _open(user, type) {
         return $uibModal.open({
             templateUrl: 'checkout/templates/addressSelect.modal.tpl.html',
             controller: 'AddressSelectCtrl',
@@ -122,6 +122,9 @@ function AddressSelectModalService($uibModal) {
                     } else {
                         return OrderCloud.Me.ListAddresses(null, 1, 100);
                     }
+                },
+                OrderShipAddress: function(ShippingAddresses){
+                    return ShippingAddresses.GetAddresses(user);
                 }
             }
         }).result;
@@ -130,9 +133,9 @@ function AddressSelectModalService($uibModal) {
     return service;
 }
 
-function AddressSelectController($uibModalInstance, Addresses) {
+function AddressSelectController($uibModalInstance, OrderShipAddress) {
     var vm = this;
-    vm.addresses = Addresses;
+    vm.addresses = OrderShipAddress;
 
     vm.select = function (address) {
         $uibModalInstance.close(address);

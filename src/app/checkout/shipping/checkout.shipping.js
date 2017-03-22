@@ -12,10 +12,11 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-function CheckoutShippingController($exceptionHandler, $rootScope, toastr, OrderCloud, MyAddressesModal, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
+function CheckoutShippingController($exceptionHandler, $rootScope, toastr, OrderCloud, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
     var vm = this;
 
     vm.rebateCode = rebateCode;
+    vm.user = CurrentUser;
 
     //vm.createAddress = createAddress;
     vm.changeShippingAddress = changeShippingAddress;
@@ -38,7 +39,7 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
     //}
 
     function changeShippingAddress(order) {
-        AddressSelectModal.Open('shipping')
+        AddressSelectModal.Open(vm.user, 'shipping')
             .then(function(address) {
                 if (address == 'create') {
                     vm.createAddress(order);
