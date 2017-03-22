@@ -145,7 +145,11 @@ function AddressSelectModalService($uibModal) {
                     }
                 },
                 OrderShipAddress: function(ShippingAddresses){
-                    return ShippingAddresses.GetAddresses(user);
+                    if(type == 'shipping') {
+                        return ShippingAddresses.GetAddresses(user);
+                    } else {
+                        angular.noop();
+                    }
                 }
             }
         }).result;

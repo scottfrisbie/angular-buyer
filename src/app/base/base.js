@@ -107,7 +107,7 @@ function NewOrderService($q, OrderCloud) {
         function createOrder() {
             order.xp = {
                 CustomerNumber: "",
-                ExpeditedShipping: "",
+                ExpeditedShipping: "ground",
                 sellerOrderID: 0
             };
             OrderCloud.Orders.Create(order)

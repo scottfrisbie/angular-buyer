@@ -12,13 +12,6 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-//<<<<<<< HEAD
-//function CheckoutShippingController($exceptionHandler, $rootScope, toastr, OrderCloud, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
-//    var vm = this;
-//
-//    vm.rebateCode = rebateCode;
-//    vm.user = CurrentUser;
-//=======
 function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, CurrentOrder, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
     var vm = this;
 
@@ -26,7 +19,6 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, C
     vm.order = CurrentOrder;
     vm.user = CurrentUser;
 
-    //vm.createAddress = createAddress;
     vm.changeShippingAddress = changeShippingAddress;
     vm.saveShipAddress = saveShipAddress;
     vm.shipperSelected = shipperSelected;
@@ -34,17 +26,6 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, C
     vm.initShippingRates = initShippingRates;
     vm.getShippingRates = getShippingRates;
     vm.analyzeShipments = analyzeShipments;
-
-    //Disabled - DCR-6 (inject toastr, MyAddressesModal to use again)
-
-    //function createAddress(order) {
-    //    MyAddressesModal.Create()
-    //        .then(function(address) {
-    //            toastr.success('Address Created', 'Success');
-    //            order.ShippingAddressID = address.ID;
-    //            vm.saveShipAddress(order);
-    //        });
-    //}
 
     function changeShippingAddress(order) {
         AddressSelectModal.Open('shipping', vm.user)
