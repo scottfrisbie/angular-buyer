@@ -43,15 +43,20 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                         deferred.resolve(null);
                     }
                     return deferred.promise;
+                },
+                CurrentUserAddresses: function(CurrentUser, ShippingAddresses) {
+                    return ShippingAddresses.GetAddresses(CurrentUser);
                 }
 			}
 		})
     ;
 }
 
-function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
+function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
     var vm = this;
-    vm.shippingAddress = OrderShipAddress[0];
+    vm.shippingAddress = OrderShipAddress;
+    vm.userAddresses = CurrentUserAddresses;
+    console.log('addresses', vm.userAddresses);
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
