@@ -11,14 +11,6 @@
                         <p ng-bind-html="checkout.shippingAddress | address:'full'"></p>
                     </div>
                 </div>
-                <div class="btn-group" data-toggle="buttons" required>
-                    <label class="btn btn-primary" ng-class="{'active' : !base.currentOrder.xp.ExpeditedShipping}" ng-click="checkoutShipping.toggleShipping(false, base.currentOrder)">
-                        <input type="radio" name="groundOption" id="groundOption" autocomplete="off" checked> Ground
-                    </label>
-                    <label class="btn btn-primary" ng-class="{'active' : base.currentOrder.xp.ExpeditedShipping}" ng-click="checkoutShipping.toggleShipping(true, base.currentOrder)">
-                        <input type="radio" name="expeditedOption" id="expeditedOption" autocomplete="off"> Expedited
-                    </label>
-                </div>
                 <div class="well text-center" ng-if="!checkout.shippingAddress">
                     You currently do not have a shipping address selected. <br />
                     <a href="" ng-click="checkoutShipping.changeShippingAddress(base.currentOrder)">Select one now</a>
@@ -39,6 +31,17 @@
                     </form>
                 </div>
             </div>
+            <form>
+                <input type="radio" id="ground" name="groundOption" value="ground"
+                       ng-model="base.currentOrder.xp.ExpeditedShipping"
+                       ng-change="checkoutShipping.toggleShipping(base.currentOrder.xp.ExpeditedShipping)" checked> Ground
+                <input type="radio" id="expeditedNextDay" name="expeditedNextDay" value="63"
+                       ng-model="base.currentOrder.xp.ExpeditedShipping"
+                       ng-change="checkoutShipping.toggleShipping(base.currentOrder.xp.ExpeditedShipping)"> Expedited - Next Day Air
+                <input type="radio" id="expeditedTwoDay" name="expeditedTwoDay" value="62"
+                       ng-model="base.currentOrder.xp.ExpeditedShipping"
+                       ng-change="checkoutShipping.toggleShipping(base.currentOrder.xp.ExpeditedShipping)"> Expedited - Two Day Air
+            </form>
         </div>
         <div class="col-md-4">
             <div class="panel panel-default" hl-sticky anchor="top" offset-top="70" media-query="min-width: 992px">
