@@ -30,7 +30,6 @@ function HomeController(FeaturedProducts, FeaturedCategories) {
 	var vm = this;
 	vm.productList = FeaturedProducts;
 	vm.categoryList = FeaturedCategories;
-	console.log(FeaturedCategories)
 
 	//settings used by slider
 	vm.responsive = [

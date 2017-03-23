@@ -258,7 +258,7 @@ function OCPayment() {
 	}
 }
 
-function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig) {
+function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, CheckoutPaymentService) {
 	if (!$scope.methods) $scope.methods = CheckoutConfig.AvailablePaymentMethods;
 	if (!$scope.payment) {
 		OrderCloud.Payments.List($scope.order.ID)
