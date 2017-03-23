@@ -23,27 +23,11 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
                 Parameters: function ($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                CategoryList: function(OrderCloud) {
-                    return OrderCloud.Me.ListCategories(null, 1, 100, null, null, null, 'all');
+                CategoryList: function(ocProductBrowse) {
+                    return ocProductBrowse.ListCategories();
                 },
-                CategoryTree: function(CategoryList) {
-                    var result = [];
-                    angular.forEach(_.where(CategoryList.Items, {ParentID: null}), function(node) {
-                        result.push(getnode(node));
-                    });
-                    function getnode(node) {
-                        var children = _.where(CategoryList.Items, {ParentID: node.ID});
-                        if (children.length > 0) {
-                            node.children = children;
-                            angular.forEach(children, function(child) {
-                                return getnode(child);
-                            });
-                        } else {
-                            node.children = [];
-                        }
-                        return node;
-                    }
-                    return result;
+                CategoryTree: function(ocProductBrowse, CategoryList) {
+                    return ocProductBrowse.GetCategoryTree(CategoryList);
                 }
             }
         })
@@ -56,8 +40,8 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
                 Parameters: function ($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                ProductList: function(CurrentUser, Parameters, ocProducts) {
-                    return ocProducts.List(Parameters, CurrentUser);
+                ProductList: function(CurrentUser, Parameters, ocProductBrowse) {
+                    return ocProductBrowse.ListProducts(Parameters, CurrentUser);
                 }
             }
         });
