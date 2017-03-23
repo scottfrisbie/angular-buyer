@@ -23,14 +23,18 @@ function BaseConfig($stateProvider) {
                 return OrderCloud.Buyers.Get(buyerid)
                     .then(function(buyerObj) {
                         return buyerObj.DefaultCatalogID;
-                    })
+                    });
+            },
+            Catalog: function(CatalogID, OrderCloud){
+                return OrderCloud.Catalogs.Get(CatalogID);
+                    
             },
             CurrentUser: function($q, $state, OrderCloud, buyerid) {
                 return OrderCloud.Me.Get()
                     .then(function(data) {
                         OrderCloud.BuyerID.Set(buyerid);
                         return data;
-                    })
+                    });
             },
             ExistingOrder: function($q, OrderCloud, CurrentUser) {
                 return OrderCloud.Me.ListOutgoingOrders(null, 1, 1, null, "!DateCreated", {Status:"Unsubmitted"})

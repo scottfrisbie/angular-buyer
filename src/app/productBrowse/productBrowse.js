@@ -23,11 +23,11 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
                 Parameters: function ($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                CategoryList: function(ocProductBrowse) {
-                    return ocProductBrowse.ListCategories();
+                CategoryList: function(ocProductBrowse, Catalog) {
+                    return ocProductBrowse.ListCategories(Catalog);
                 },
-                CategoryTree: function(ocProductBrowse, CategoryList) {
-                    return ocProductBrowse.GetCategoryTree(CategoryList);
+                CategoryTree: function(ocProductBrowse, CategoryList, Catalog) {
+                    return ocProductBrowse.GetCategoryTree(CategoryList, Catalog);
                 }
             }
         })

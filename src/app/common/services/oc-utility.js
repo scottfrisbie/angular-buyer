@@ -8,23 +8,30 @@ function ocUtilityService($q, $localForage, $exceptionHandler, appname){
         ListAll: _listAll
     };
 
-    function _getCache(cacheKey, onCacheEmpty){
+    function _getCache(cacheKey, onCacheEmpty, lastUpdatedTimeStamp){
         /*
             caches expensive functions
 
             cacheKey: the key that the data will be stored under
             onCacheEmpty: function to call if there is nothing stored in cache, 
             must return a promise
+            lastUpdatedTimeStamp: (optional) used to determine expiration of cookies
 
         */
         return $localForage.getItem(appname + cacheKey)
-            .then(function(results){
-                if(results){
-                    return results;
+            .then(function(cache){
+                if(cache && cache.data && cache.timeStamp > (lastUpdatedTimeStamp || 0)){
+                    return cache.data;
                 } else {
                     return onCacheEmpty.apply(null)
                         .then(function(results){
-                            return $localForage.setItem(appname + cacheKey, results);
+                            return $localForage.setItem(appname + cacheKey, {
+                                data: results,
+                                timeStamp: Date.now()
+                            })
+                            .then(function(){
+                                return results;
+                            });
                         });
                 }
             });
