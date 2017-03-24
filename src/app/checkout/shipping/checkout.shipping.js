@@ -18,7 +18,6 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, C
     vm.rebateCode = rebateCode;
     vm.order = CurrentOrder;
     vm.user = CurrentUser;
-
     vm.changeShippingAddress = changeShippingAddress;
     vm.saveShipAddress = saveShipAddress;
     vm.shipperSelected = shipperSelected;

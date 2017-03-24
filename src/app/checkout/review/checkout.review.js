@@ -30,6 +30,15 @@ function checkoutReviewConfig($stateProvider) {
 						});
 					return dfd.promise;
 				},
+				InitializeTaxes: function(TaxIntegration, CurrentOrder, LineItemsList, OrderCloud, $rootScope){
+					return TaxIntegration.Get(CurrentOrder.BillingAddress, LineItemsList)
+						.then(function(data){
+							return OrderCloud.Orders.Patch(CurrentOrder.ID, {TaxCost: data.Data.TotalTax})
+								.then(function(){
+									$rootScope.$broadcast('OC:UpdateOrder', CurrentOrder.ID);
+								});
+						});
+				},
 				OrderPaymentsDetail: function($q, OrderCloud, CurrentOrder, $state) {
 					return OrderCloud.Payments.List(CurrentOrder.ID)
 						.then(function(data) {
@@ -69,7 +78,7 @@ function checkoutReviewConfig($stateProvider) {
 									dfd.resolve(data);
 								});
 							return dfd.promise;
-						})
+						});
 
 				}
 			}
