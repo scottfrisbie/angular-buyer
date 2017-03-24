@@ -46,6 +46,12 @@
                 <input ng-if="application.isTouchDevice" type="date" class="form-control" ng-model="orders.toDate" ng-blur="orders.filter(true)">
                 <input id="ToDate" ng-if="!application.isTouchDevice" type="text" class="form-control" ng-model="orders.toDate" uib-datepicker-popup datepicker-options="{minDate:orders.fromDate}" is-open="toDate.open" ng-change="orders.filter(true)" ng-click="toDate.open = !toDate.open">
             </div>
+            <div class="col-sm-3 form-group">
+                <label for="orderReport"></label>
+                <button class="btn btn-default btn-block" ng-click="orders.downloadReport()">
+                    <i class="fa fa-download"></i> Order Report
+                </button>
+            </div>
         </div>
     </form>
 

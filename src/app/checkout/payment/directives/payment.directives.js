@@ -258,7 +258,7 @@ function OCPayment() {
 	}
 }
 
-function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig) {
+function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, CheckoutPaymentService) {
 	if (!$scope.methods) $scope.methods = CheckoutConfig.AvailablePaymentMethods;
 	if (!$scope.payment) {
 		OrderCloud.Payments.List($scope.order.ID)
@@ -373,9 +373,9 @@ function PaymentsController($rootScope, $scope, $exceptionHandler, toastr, Order
 			if (payment.SpendingAccountID) $scope.excludeOptions.SpendingAccounts.push(payment.SpendingAccountID);
 			if (payment.CreditCardID) $scope.excludeOptions.CreditCards.push(payment.CreditCardID);
 			var maxAmount = $scope.order.Total - _.reduce(_.pluck($scope.payments.Items, 'Amount'), function(a, b) {return a + b; });
-			payment.MaxAmount = (payment.Amount + maxAmount).toFixed(2);
+			payment.MaxAmount = (payment.Amount + maxAmount);
 		});
-		$scope.canAddPayment = paymentTotal < $scope.order.Total;
+		$scope.canAddPayment = (Math.round(paymentTotal * 100)) < (Math.round($scope.order.Total * 100));
 		if($scope.OCPayments) $scope.OCPayments.$setValidity('Insufficient_Payment', !$scope.canAddPayment);
 	}
 }
