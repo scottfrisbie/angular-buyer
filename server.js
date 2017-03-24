@@ -4,7 +4,20 @@ var config = require('./gulp.config');
 var express = require('express'),
     env = process.env.NODE_ENV = process.env.NODE_ENV || 'dev',
     app = express(),
-    port = process.env.PORT || 451;
+    port = process.env.PORT || 7203,
+    bodyParser = require('body-parser');
+
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, authorization, Administrator, dc-token, Identity, environment");
+    res.header("Access-Control-Allow-Methods", "GET, PUT, POST, PATCH, DELETE, OPTIONS");
+    //res.header("Access-Control-Allow-Headers", "*");
+    next();
+});
+
+app.use(bodyParser.json({limit: '50mb'}));
+
+app.use('/api/etundra-tax', require('./routes/etundra-tax'));
 
 switch(env) {
     case 'production':

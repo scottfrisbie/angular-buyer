@@ -16,7 +16,6 @@ function CheckoutShippingController($exceptionHandler, $rootScope, toastr, Order
     var vm = this;
 
     vm.rebateCode = rebateCode;
-
     vm.createAddress = createAddress;
     vm.changeShippingAddress = changeShippingAddress;
     vm.saveShipAddress = saveShipAddress;
