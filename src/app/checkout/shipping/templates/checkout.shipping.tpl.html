@@ -5,19 +5,11 @@
                 <h4>Delivery Address</h4>
                 <div class="panel panel-default" ng-if="checkout.shippingAddress">
                     <div class="panel-body">
-                        <div class="pull-right">
+                        <div class="pull-right" ng-if="checkout.userAddresses.length > 1">
                             <a href="" ng-click="checkoutShipping.changeShippingAddress(base.currentOrder)">Change</a>
                         </div>
                         <p ng-bind-html="checkout.shippingAddress | address:'full'"></p>
                     </div>
-                </div>
-                <div class="btn-group" data-toggle="buttons" required>
-                    <label class="btn btn-primary" ng-class="{'active' : !base.currentOrder.xp.ExpeditedShipping}" ng-click="checkoutShipping.toggleShipping(false, base.currentOrder)">
-                        <input type="radio" name="groundOption" id="groundOption" autocomplete="off" checked> Ground
-                    </label>
-                    <label class="btn btn-primary" ng-class="{'active' : base.currentOrder.xp.ExpeditedShipping}" ng-click="checkoutShipping.toggleShipping(true, base.currentOrder)">
-                        <input type="radio" name="expeditedOption" id="expeditedOption" autocomplete="off"> Expedited
-                    </label>
                 </div>
                 <div class="well text-center" ng-if="!checkout.shippingAddress">
                     You currently do not have a shipping address selected. <br />
@@ -29,16 +21,36 @@
                     <form name="OCShippingRates">
                         <fieldset class="form-group" ng-repeat="shipment in checkoutShipping.shippingRates">
                             <label for="{{'Shipper' + $index}}" ng-if="checkoutShipping.shippingRates.length > 1">Shipment {{$index + 1}} ({{shipment.LineItemIDs.length}} Line Items)</label>
-                            <select id="{{'Shipper' + $index}}" class="form-control"
-                                    ng-model="shipment.SelectedShipper"
-                                    ng-options="shipper as (shipper.Description + ' (' + (shipper.Price | currency) + ')') for shipper in shipment.Rates"
-                                    ng-change="checkoutShipping.shipperSelected(base.currentOrder)"
-                                    required>
+                            <select id="{{'Shipper' + $index}}" class="form-control" ng-model="shipment.SelectedShipper" ng-options="shipper as (shipper.Description + ' (' + (shipper.Price | currency) + ')') for shipper in shipment.Rates"
+                                ng-change="checkoutShipping.shipperSelected(base.currentOrder)" required>
                             </select>
                         </fieldset>
                     </form>
                 </div>
             </div>
+            <form>
+                <div class="radio">
+                    <label>
+                    <input type="radio" id="ground" name="groundOption" value="ground"
+                    ng-model="base.currentOrder.xp.ExpeditedShipping"
+                    ng-change="checkoutShipping.toggleShipping(base.currentOrder.xp.ExpeditedShipping)" checked required> Ground
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                    <input type="radio" id="expeditedNextDay" name="expeditedNextDay" value="63"
+                    ng-model="base.currentOrder.xp.ExpeditedShipping"
+                    ng-change="checkoutShipping.toggleShipping(base.currentOrder.xp.ExpeditedShipping)"> Expedited - Next Day Air
+                    </label>
+                </div>
+                <div class="radio">
+                    <label>
+                    <input type="radio" id="expeditedTwoDay" name="expeditedTwoDay" value="62"
+                    ng-model="base.currentOrder.xp.ExpeditedShipping"
+                    ng-change="checkoutShipping.toggleShipping(base.currentOrder.xp.ExpeditedShipping)"> Expedited - Two Day Air
+                    </label>
+                </div>
+            </form>
         </div>
         <div class="col-md-4">
             <div class="panel panel-default" hl-sticky anchor="top" offset-top="70" media-query="min-width: 992px">
@@ -75,7 +87,8 @@
                     <h4>Estimated Total: <b class="pull-right text-primary">{{base.currentOrder.Total | currency}}</b></h4>
                 </div>
                 <div class="panel-footer">
-                    <button type="button" class="btn btn-primary form-control" ng-disabled="!checkout.shippingAddress || checkoutShipping.shippersAreLoading || OC_Checkout_Shipping.$invalid" ui-sref="checkout.payment">Next</button>
+                    <button type="button" class="btn btn-primary form-control" ng-disabled="!checkout.shippingAddress || checkoutShipping.shippersAreLoading || OC_Checkout_Shipping.$invalid"
+                        ui-sref="checkout.payment">Next</button>
                 </div>
             </div>
         </div>

@@ -15,46 +15,10 @@ function checkoutPaymentConfig($stateProvider) {
     ;
 }
 
-function CheckoutPaymentController($exceptionHandler, $rootScope, toastr, OrderCloud, AddressSelectModal, MyAddressesModal, rebateCode) {
+function CheckoutPaymentController(rebateCode) {
 	var vm = this;
 
     vm.rebateCode = rebateCode;
-
-    vm.createAddress = createAddress;
-    vm.changeBillingAddress = changeBillingAddress;
-
-    function createAddress(order){
-        return MyAddressesModal.Create()
-            .then(function(address) {
-                toastr.success('Address Created', 'Success');
-                order.BillingAddressID = address.ID;
-                saveBillingAddress(order);
-            });
-    }
-
-    function changeBillingAddress(order) {
-        AddressSelectModal.Open('billing')
-            .then(function(address) {
-                if (address == 'create') {
-                    createAddress(order);
-                } else {
-                    order.BillingAddressID = address.ID;
-                    saveBillingAddress(order);
-                }
-            });
-    }
-
-    function saveBillingAddress(order) {
-        if (order && order.BillingAddressID) {
-            OrderCloud.Orders.Patch(order.ID, {BillingAddressID: order.BillingAddressID})
-                .then(function(updatedOrder) {
-                    $rootScope.$broadcast('OC:OrderBillAddressUpdated', updatedOrder);
-                })
-                .catch(function(ex) {
-                    $exceptionHandler(ex);
-                });
-        }
-    }
 }
 
 function CheckoutPaymentService($q, OrderCloud) {
