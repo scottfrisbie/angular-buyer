@@ -79,21 +79,25 @@ function getConstants() {
             result.authurl = 'http://core.four51.com:11629/oauth/token';
             result.apiurl = 'http://core.four51.com:9002';
             result.rebateCode = 'OnePercentRebate';
+            result.devapiurl = 'http://localhost:7203/api';
             break;
         case 'qa':
             result.authurl = 'https://qaauth.ordercloud.io/oauth/token';
             result.apiurl = 'https://qaapi.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
+            result.devapiurl = 'http://localhost:7203/api';
             break;
         case 'staging':
             result.authurl = 'https://stagingauth.ordercloud.io/oauth/token';
             result.apiurl = 'https://stagingapi.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
+            result.devapiurl = 'http://localhost:7203/api';
             break;
         default:
             result.authurl = 'https://auth.ordercloud.io/oauth/token';
             result.apiurl = 'https://api.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
+            result.devapiurl = 'https://cafe-rio-styling.herokuapp.com/api';
             break;
     }
     if (process.env.apiurl && process.env.authurl) {

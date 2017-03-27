@@ -8,6 +8,7 @@
 			<h5>Order ID: <span class="pull-right">{{checkoutConfirmation.order.ID}}</span></h5>
 			<h5>Date Submitted: <span class="pull-right">{{checkoutConfirmation.order.DateSubmitted | date:'short'}}</span></h5>
 			<h5>Subtotal: <span class="pull-right">{{checkoutConfirmation.order.Subtotal | currency}}</span></h5>
+			<h5>Taxes: <span class="pull-right">{{checkoutConfirmation.order.TaxCost | currency}}</span></h5>
 			<h5 ng-if="checkoutConfirmation.order.ShippingCost" class="text-muted">Shipping: <span class="pull-right"> + {{checkoutConfirmation.order.ShippingCost | currency}}</span></h5>
 			<h5 ng-repeat="promotion in checkoutConfirmation.promotions" class="text-danger">
 				{{promotion.Code}}
