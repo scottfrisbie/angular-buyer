@@ -79,7 +79,7 @@ function OrderCloudProductSearchComponent() {
     };
 }
 
-function ProductSearchDirectiveController($state, OrderCloud) {
+function ProductSearchDirectiveController($state, $scope, OrderCloud) {
     var vm = this;
 
     vm.getSearchResults = function() {
@@ -92,12 +92,17 @@ function ProductSearchDirectiveController($state, OrderCloud) {
     vm.onSelect = function(productID) {
         $state.go('productDetail', {
             productid: productID
+        }).then(function(){
+            vm.searchTerm = null;
         });
     };
 
     vm.onHardEnter = function(searchTerm) {
         $state.go('productSearchResults', {
             searchTerm: searchTerm
+        }).then(function(){
+            vm.searchTerm = null;
+            $scope.loading = false;
         });
     };
 }
