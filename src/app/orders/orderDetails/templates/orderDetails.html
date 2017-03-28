@@ -89,7 +89,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Product</th>
+                        <th>Product Name</th>
                         <th ng-if="!orderDetails.order.ShippingAddressID">Shipping Address</th>
                         <th>Quantity</th>
                         <th>Unit Price</th>
@@ -98,10 +98,9 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="lineItem in orderDetails.lineItems.Items">
-                        <td>{{lineItem.ID}}</td>
+                        <td>{{lineItem.ProductID}}</td>
                         <td>
                             <a ui-sref="productDetail({productid: lineItem.ProductID})"> {{lineItem.Product.Name}}</a>
-                            <small class="text-muted">({{lineItem.Product.ID}})</small>
                             <ul ng-if="lineItem.Specs.length > 0">
                                 <li ng-repeat="spec in lineItem.Specs">
                                     <small>{{spec.Name}}:</small>
