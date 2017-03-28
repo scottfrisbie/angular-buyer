@@ -46,7 +46,8 @@
     "angular-payments": "*",
     "bootswatch": "^3.3.7",
     "angular-slick": "^0.2.1",
-    "slick-carousel": "^1.6.0"
+    "slick-carousel": "^1.6.0",
+    "q": "^2.0.2"
   },
   "devDependencies": {
     "angular-mocks": "^1.6.0"
