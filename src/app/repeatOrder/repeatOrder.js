@@ -20,21 +20,28 @@ function RepeatOrderCtrl(toastr, RepeatOrderFactory, $uibModal) {
     };
 
     vm.openReorderModal = function(){
-        vm.loading = true;
-        $uibModal.open({
-            templateUrl: 'repeatOrder/templates/repeatOrder.modal.html',
-            controller:  RepeatOrderModalCtrl,
-            controllerAs: 'repeatModal',
-            size: 'md',
-            resolve: {
-                OrderID: function() {
-                    return vm.currentOrderId;
-                },
-                LineItems: function() {
-                    return RepeatOrderFactory.GetValidLineItems(vm.originalOrderId);
-                }
-            }
-        });
+
+        function getLineItems(){
+            return RepeatOrderFactory.GetValidLineItems(vm.originalOrderId);
+        }
+
+        vm.loading = getLineItems()
+            .then(function(lineitems){
+                $uibModal.open({
+                    templateUrl: 'repeatOrder/templates/repeatOrder.modal.html',
+                    controller:  RepeatOrderModalCtrl,
+                    controllerAs: 'repeatModal',
+                    size: 'md',
+                    resolve: {
+                        OrderID: function() {
+                            return vm.currentOrderId;
+                        },
+                        LineItems: function() {
+                            return lineitems;
+                        }
+                    }
+                });
+            })
     };
 }
 
