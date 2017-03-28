@@ -5,15 +5,14 @@
                 <h4>Delivery Address</h4>
                 <div class="panel panel-default" ng-if="checkout.shippingAddress">
                     <div class="panel-body">
-                        <div class="pull-right" ng-if="checkout.userAddresses.length > 1">
+                        <div class="pull-right" ng-if="checkout.currentUserAddresses.Items.length > 1">
                             <a href="" ng-click="checkoutShipping.changeShippingAddress(base.currentOrder)">Change</a>
                         </div>
                         <p ng-bind-html="checkout.shippingAddress | address:'full'"></p>
                     </div>
                 </div>
                 <div class="well text-center" ng-if="!checkout.shippingAddress">
-                    You currently do not have a shipping address selected. <br />
-                    <a href="" ng-click="checkoutShipping.changeShippingAddress(base.currentOrder)">Select one now</a>
+                    You currently do not have a shipping address assigned to you <br />
                 </div>
                 <div ng-if="checkoutShipping.shippingRates.Rates.length">
                     <hr>
