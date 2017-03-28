@@ -138,9 +138,9 @@ function AddressSelectModalService($uibModal) {
             resolve: {
                 Addresses: function(OrderCloud) {
                     if (type == 'shipping') {
-                        return OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {IsShipping: true});
+                        return OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {Shipping: true});
                     } else if (type == 'billing') {
-                        return OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {IsBilling: true});
+                        return OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {Billing: true});
                     } else {
                         return OrderCloud.Me.ListAddresses(null, 1, 100);
                     }
