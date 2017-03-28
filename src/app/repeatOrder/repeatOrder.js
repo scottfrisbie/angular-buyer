@@ -13,12 +13,14 @@ angular.module('orderCloud')
 
 function RepeatOrderCtrl(toastr, RepeatOrderFactory, $uibModal) {
     var vm = this;
+    vm.loading = false;
 
     vm.$onInit = function() {
         if (vm.orderid === 'undefined') toastr.error('repeat order component is not configured correctly. orderid is a required attribute', 'Error');
     };
 
     vm.openReorderModal = function(){
+        vm.loading = true;
         $uibModal.open({
             templateUrl: 'repeatOrder/templates/repeatOrder.modal.html',
             controller:  RepeatOrderModalCtrl,
@@ -42,17 +44,12 @@ function RepeatOrderModalCtrl(LineItems, OrderID, $uibModalInstance, $state, Rep
     vm.invalidLI = LineItems.invalid;
     vm.validLI = LineItems.valid;
 
-
     vm.cancel = function(){
         $uibModalInstance.dismiss();
     };
 
     vm.submit = function(){
-        vm.loading = {
-            templateUrl:'common/loading-indicators/templates/view.loading.tpl.html',
-            message:'Adding Products to Cart'
-        };
-        vm.loading.promise = RepeatOrderFactory.AddLineItemsToCart(vm.validLI, vm.orderid)
+        RepeatOrderFactory.AddLineItemsToCart(vm.validLI, vm.orderid)
             .then(function(){
                 $uibModalInstance.close();
                 $state.go('cart', {}, {reload: true});

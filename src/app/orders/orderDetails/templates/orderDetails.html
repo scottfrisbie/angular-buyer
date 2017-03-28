@@ -8,8 +8,8 @@
             <small class="pull-right">Submitted on {{orderDetails.order.DateSubmitted | date}}</small>
             <span class="text-muted">Order:</span> {{orderDetails.order.ID}} <br>
             <span class="pull-right">
-                <ordercloud-repeat-order original-order-id="orderDetails.order.ID" current-order-id="base.currentOrder.ID"></ordercloud-repeat-order>
                 <ordercloud-favorite-order current-user="base.currentUser" order="orderDetails.order"></ordercloud-favorite-order>
+                <ordercloud-repeat-order original-order-id="orderDetails.order.ID" current-order-id="base.currentOrder.ID"></ordercloud-repeat-order>
             </span>
         </h3>
     </header>
