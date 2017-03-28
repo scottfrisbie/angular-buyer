@@ -33,7 +33,7 @@ function CheckoutPaymentService($q, OrderCloud) {
             paymentTotal += payment.Amount;
         });
 
-        return paymentTotal.toFixed(2) > orderTotal;
+        return paymentTotal.toFixed(2) > orderTotal.toFixed(2);
     }
 
     function _removeAllPayments(payments, order) {
