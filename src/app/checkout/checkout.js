@@ -26,6 +26,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     if (CurrentOrder.ShippingAddressID) {
                         OrderCloud.Me.GetAddress(CurrentOrder.ShippingAddressID)
                             .then(function(address) {
+                                console.log(address);
                                 OrderCloud.Orders.Patch(CurrentOrder.ID, {xp: {CustomerNumber: address.CompanyName}})
                                     .then(function(){
                                         deferred.resolve(address);
@@ -61,8 +62,8 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     }
                     return deferred.promise;
                 },
-                CurrentUserAddresses: function(CurrentUser, ShippingAddresses) {
-                    return ShippingAddresses.GetAddresses(CurrentUser);
+                CurrentUserAddresses: function(OrderCloud) {
+                    return OrderCloud.Me.ListAddresses(null, null, null, null, null, {IsShipping: true});
                 }
 			}
 		})
@@ -76,6 +77,7 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
+    vm.currentUserAddresses = CurrentUserAddresses;
 
     vm.submitOrder = function(order) {
         OrderCloud.Orders.Submit(order.ID)
@@ -127,7 +129,7 @@ function AddressSelectModalService($uibModal) {
         Open: _open
     };
 
-    function _open(type, user) {
+    function _open(type) {
         return $uibModal.open({
             templateUrl: 'checkout/templates/addressSelect.modal.tpl.html',
             controller: 'AddressSelectCtrl',
@@ -137,18 +139,11 @@ function AddressSelectModalService($uibModal) {
             resolve: {
                 Addresses: function(OrderCloud) {
                     if (type == 'shipping') {
-                        return OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {Shipping: true});
+                        return OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {IsShipping: true});
                     } else if (type == 'billing') {
-                        return OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {Billing: true});
+                        return OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {IsBilling: true});
                     } else {
                         return OrderCloud.Me.ListAddresses(null, 1, 100);
-                    }
-                },
-                OrderShipAddress: function(ShippingAddresses){
-                    if(type == 'shipping') {
-                        return ShippingAddresses.GetAddresses(user);
-                    } else {
-                        angular.noop();
                     }
                 }
             }
@@ -158,9 +153,9 @@ function AddressSelectModalService($uibModal) {
     return service;
 }
 
-function AddressSelectController($uibModalInstance, OrderShipAddress) {
+function AddressSelectController($uibModalInstance, Addresses) {
     var vm = this;
-    vm.addresses = OrderShipAddress;
+    vm.addresses = Addresses.Items;
 
     vm.select = function (address) {
         $uibModalInstance.close(address);

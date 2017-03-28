@@ -1,1 +1,12 @@
 <div class="btn btn-primary" ng-click="$ctrl.openReorderModal()">Reorder</div>
+<div ng-if="loading">
+    <div class="indicator-container">
+        <div class="indicator">
+            <div class="animation">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </div>
+</div>
