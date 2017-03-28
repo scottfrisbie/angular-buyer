@@ -13,7 +13,6 @@ angular.module('orderCloud')
 
 function RepeatOrderCtrl(toastr, RepeatOrderFactory, $uibModal) {
     var vm = this;
-    vm.loading = false;
 
     vm.$onInit = function() {
         if (vm.orderid === 'undefined') toastr.error('repeat order component is not configured correctly. orderid is a required attribute', 'Error');
