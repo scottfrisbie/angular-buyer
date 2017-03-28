@@ -137,7 +137,7 @@ function PaymentSpendingAccountController($scope, $rootScope, toastr, OrderCloud
 		$scope.updatingSpendingAccountPayment = OrderCloud.Payments.Update($scope.order.ID, $scope.payment.ID, $scope.payment)
 			.then(function() {
 				$scope.showPaymentOptions = false;
-				toastr.success('Using ' + scope.spendingAccount.Name,'Spending Account Payment');
+				toastr.success('Using ' + scope.spendingAccount.Name,'Budget Payment');
 				$rootScope.$broadcast('OC:PaymentsUpdated');
 			})
 			.catch(function(ex) {
