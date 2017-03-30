@@ -2,9 +2,13 @@ angular.module('orderCloud')
     .controller('OrdersCtrl', OrdersController)
 ;
 
-function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, ocOrders, ocReporting, OrderList, Parameters) {
+function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buyer, CurrentUser, ocReporting, OrderList, Parameters, GroupAssignments) {
     var vm = this;
     vm.list = OrderList;
+    vm.buyer = Buyer;
+    vm.user = CurrentUser;
+    vm.groups = GroupAssignments.Items;
+    vm.groupSelected;
     vm.parameters = Parameters;
     //need this here to display in uib-datepicker (as date obj) but short date (string) in url
     vm.fromDate = Parameters.fromDate;
@@ -35,6 +39,7 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
     vm.reverseSort = reverseSort; //Used on mobile devices
     vm.pageChanged = pageChanged; //Reload the state with the incremented page parameter
     vm.loadMore = loadMore; //Load the next page of results with all of the same parameters, used on mobile
+    vm.getGroupOrders = getGroupOrders;
 
     vm.formatDate = formatDate;
     vm.selectTab = selectTab;
@@ -120,5 +125,12 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
                 vm.list.Items = vm.list.Items.concat(data.Items);
                 vm.list.Meta = data.Meta;
         });
+    }
+
+    function getGroupOrders() {
+        return ocOrders.List(vm.parameters, vm.user, vm.buyer, vm.groupSelected)
+            .then(function(orders) {
+                vm.list = orders;
+            })
     }
 }

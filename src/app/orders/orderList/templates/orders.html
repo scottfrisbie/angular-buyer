@@ -5,7 +5,8 @@
         </h3>
         <nav>
             <ul class="nav nav-tabs aveda-nav-tabs">
-                <li role="presentation" ng-class="{active: orders.parameters.tab == 'history'}"><a ng-click="orders.selectTab('history')">Order History</a></li>
+                <li role="presentation" ng-class="{active: orders.parameters.tab == 'history'}"><a ng-click="orders.selectTab('history')">My Order History</a></li>
+                <!--<li role="presentation" ng-if="orders.groups.length > 1" ng-class="{active: orders.parameters.tab == 'storeorders'}"><a ng-click="orders.selectTab('storeorders')">Store Orders</a></li>-->
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'approvals'}"><a ng-click="orders.selectTab('approvals')">Awaiting Approval</a></li>
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'favorites'}"><a ng-click="orders.selectTab('favorites')">Favorite Orders</a></li>
             </ul>
@@ -14,6 +15,17 @@
     <br>
 
     <!--====== SEARCH ======-->
+    <div ng-if="orders.groups.length > 1">
+        <form name="StoreOrdersFilter">
+            <div class="form-group">
+                <label for="StoreOrders">Select a User Group to view orders from</label>
+                <select id="StoreOrders" class="form-control" ng-model="orders.groupSelected" ng-options="group as group.Name for group in orders.groups" ng-change="orders.getGroupOrders()">
+                    <option value="">(none)</option>
+                </select>
+            </div>
+        </form>
+    </div>
+    <br>
     <form name="OrdersSearchForm" pretty-submit>
         <fieldset class="form-group">
             <div class="input-group">
@@ -22,7 +34,7 @@
                 </span>
                 <input type="search" ng-change="orders.search()" ng-model-options="{debounce:1000}" placeholder="Search orders..." ng-model="orders.parameters.search" class="form-control">
                 <span ng-if="orders.searchResults" class="input-group-btn">
-                    <button class="btn btn-default" type="button" aria-label="Clear Search" ng-click="orders.clearSearch()"><i class="fa fa-times"></i> <span class="hidden-xs">Clear Search</span></button>
+                    <button class="btn btn-default" type="button" aria-label="Clear Search" ng-click="orders.clearSearch()"><i class="fa fa-times"></i> <spann class="hidden-xs">Clear Search</spann></button>
                 </span>
             </div>
         </fieldset>
@@ -70,6 +82,9 @@
         <div class="no-matches" ng-if="!orders.list.Items.length">
             <span ng-if="!orders.parameters.tab || orders.parameters.tab == 'history'">
                 <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders'}}</b>
+            </span>
+            <span ng-if="orders.parameters.tab == 'storeorders'">
+                <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders placed by users'}}</b>
             </span>
             <span ng-if="orders.parameters.tab == 'approvals'">
                 <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders awaiting your approval'}}</b>

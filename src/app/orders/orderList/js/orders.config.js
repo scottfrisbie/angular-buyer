@@ -17,8 +17,14 @@ function OrdersConfig($stateProvider) {
                 Parameters: function($stateParams, ocParameters){
                     return ocParameters.Get($stateParams);
                 },
-                OrderList: function(Parameters, CurrentUser, ocOrders){
-                    return ocOrders.List(Parameters, CurrentUser);
+                GroupAssignments: function(OrderCloud) {
+                    return OrderCloud.Me.ListUserGroups()
+                        .then(function(userGroups) {
+                            return userGroups
+                        });
+                },
+                OrderList: function(Parameters, CurrentUser, ocOrders, Buyer) {
+                    return ocOrders.List(Parameters, CurrentUser, Buyer);
                 }
             }
         });
