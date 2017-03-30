@@ -52,6 +52,10 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
 
     function selectTab(tab){
         vm.parameters.tab = tab;
+        vm.parameters.group = null;
+        vm.parameters.status = null;
+        vm.parameters.from = null;
+        vm.parameters.to = null;
         vm.filter(true);
     }
 
