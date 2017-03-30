@@ -10,7 +10,7 @@ angular.module('orderCloud')
         }
     });
 
-function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, buyerid){
+function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud){
     var vm = this;
 
     $scope.$watch(function(){
