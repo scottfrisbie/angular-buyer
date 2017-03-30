@@ -7,7 +7,7 @@ function ocOrdersService(OrderCloud){
         List: _list
     };
     
-    function _list(Parameters, CurrentUser, Buyer, Group){
+    function _list(Parameters, CurrentUser, Buyer, GroupID){
         var parameters = angular.copy(Parameters);
 
         //exclude unsubmitted orders from list
@@ -42,11 +42,11 @@ function ocOrdersService(OrderCloud){
         }
 
         if(parameters.tab === 'grouporders') {
-            if(Group) {
-                return OrderCloud.Me.ListAddresses(null, null, null, null, null, {CompanyName: Group.ID})
+            if(GroupID) {
+                return OrderCloud.Me.ListAddresses(null, null, null, null, null, {CompanyName: GroupID})
                     .then(function(address) {
                         var shippingAddressID = address.Items[0].ID;
-                        return OrderCloud.Orders.ListIncoming(parameters.from, parameters.to, parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, {ShippingAddressID: shippingAddressID}, Buyer.ID)
+                        return OrderCloud.Orders.ListIncoming(parameters.from, parameters.to, parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, {ShippingAddressID: shippingAddressID, Status: parameters.status}, Buyer.ID)
                             .then(function(orders) {
                                 return orders;
                             })

@@ -8,8 +8,9 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
     vm.buyer = Buyer;
     vm.user = CurrentUser;
     vm.groups = GroupAssignments.Items;
-    vm.groupSelected;
     vm.parameters = Parameters;
+    if (vm.parameters.group) vm.groupSelected = vm.parameters.group;
+    vm.groupSelected;
     //need this here to display in uib-datepicker (as date obj) but short date (string) in url
     vm.fromDate = Parameters.fromDate;
     vm.toDate = Parameters.toDate;
@@ -39,7 +40,6 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
     vm.reverseSort = reverseSort; //Used on mobile devices
     vm.pageChanged = pageChanged; //Reload the state with the incremented page parameter
     vm.loadMore = loadMore; //Load the next page of results with all of the same parameters, used on mobile
-    vm.getGroupOrders = getGroupOrders;
 
     vm.formatDate = formatDate;
     vm.selectTab = selectTab;
@@ -52,7 +52,6 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
 
     function selectTab(tab){
         vm.parameters.tab = tab;
-        if (vm.parameters.tab === 'grouporders') vm.getGroupOrders();
         vm.filter(true);
     }
 
@@ -66,6 +65,9 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
 
     function filter(resetPage) {
         formatDate();
+        if (vm.groupSelected) {
+            vm.parameters.group = vm.groupSelected.ID;
+        }
         $state.go('.', ocParameters.Create(vm.parameters, resetPage));
     }
 
@@ -126,16 +128,5 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
                 vm.list.Items = vm.list.Items.concat(data.Items);
                 vm.list.Meta = data.Meta;
         });
-    }
-
-    function getGroupOrders() {
-        if(vm.groupSelected) {
-            return ocOrders.List(vm.parameters, vm.user, vm.buyer, vm.groupSelected)
-                .then(function(orders) {
-                    vm.list = orders;
-                })
-        } else {
-            vm.list = [];
-        }
     }
 }

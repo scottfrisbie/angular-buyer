@@ -12,7 +12,7 @@ function OrdersConfig($stateProvider) {
             data: {
                 pageTitle: 'Orders'
             },
-            url: '/orders?from&to&search&page&pageSize&searchOn&sortBy&tab?status',
+            url: '/orders?group&from&to&search&page&pageSize&searchOn&sortBy&tab?status',
             resolve: {
                 Parameters: function($stateParams, ocParameters){
                     return ocParameters.Get($stateParams);
@@ -24,7 +24,11 @@ function OrdersConfig($stateProvider) {
                         });
                 },
                 OrderList: function(Parameters, CurrentUser, ocOrders, Buyer) {
-                    return ocOrders.List(Parameters, CurrentUser, Buyer);
+                    if (Parameters.group) {
+                        return ocOrders.List(Parameters, CurrentUser, Buyer, Parameters.group);
+                    } else {
+                        return ocOrders.List(Parameters, CurrentUser, Buyer);
+                    }
                 }
             }
         });

@@ -19,7 +19,7 @@
         <form name="StoreOrdersFilter">
             <div class="form-group">
                 <label for="StoreOrders">Select a User Group to view orders from</label>
-                <select id="StoreOrders" class="form-control" ng-model="orders.groupSelected" ng-options="group as group.Name for group in orders.groups" ng-change="orders.getGroupOrders()">
+                <select id="StoreOrders" class="form-control" ng-model="orders.groupSelected" ng-options="group as group.Name for group in orders.groups" ng-change="orders.filter(false)">
                     <option value="">(none)</option>
                 </select>
             </div>
