@@ -22,7 +22,7 @@ function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, to
     };
 }
 
-function AddRebate(OrderCloud, $rootScope, buyerid, rebateCode) {
+function AddRebate(OrderCloud, $rootScope, rebateCode) {
     //This Service is called from the base.js on CurrentOrder
     var service = {
         ApplyPromo: _apply
@@ -33,27 +33,27 @@ function AddRebate(OrderCloud, $rootScope, buyerid, rebateCode) {
             return OrderCloud.Orders.ListPromotions(order.ID)
                 .then(function (promos) {
                         if (promos.Items.length) {
-                            return OrderCloud.Orders.RemovePromotion(order.ID, rebateCode, buyerid)
+                            return OrderCloud.Orders.RemovePromotion(order.ID, rebateCode)
                                 .then(function (updatedOrder) {
-                                    return OrderCloud.Orders.AddPromotion(updatedOrder.ID, rebateCode, buyerid)
+                                    return OrderCloud.Orders.AddPromotion(updatedOrder.ID, rebateCode)
                                         .then(function() {
                                             $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
                                             $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                                             return order;
-                                        })
-                                })
+                                        });
+                                });
                         } else {
-                            return OrderCloud.Orders.AddPromotion(order.ID, rebateCode, buyerid)
+                            return OrderCloud.Orders.AddPromotion(order.ID, rebateCode)
                                 .then(function () {
-                                    return OrderCloud.Orders.Patch(order.ID, order, buyerid)
+                                    return OrderCloud.Orders.Patch(order.ID, order)
                                         .then(function(orderData) {
                                             $rootScope.$broadcast('OC:UpdateOrder', orderData.ID);
                                             return orderData;
-                                        })
-                                })
+                                        });
+                                });
                         }
                     }
-                )
+                );
 
         } else {
             return order;

@@ -61,8 +61,8 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     }
                     return deferred.promise;
                 },
-                CurrentUserAddresses: function(CurrentUser, ShippingAddresses) {
-                    return ShippingAddresses.GetAddresses(CurrentUser);
+                CurrentUserAddresses: function(OrderCloud) {
+                    return OrderCloud.Me.ListAddresses(null, null, null, null, null, {IsShipping: true});
                 }
 			}
 		})
@@ -76,6 +76,7 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
+    vm.currentUserAddresses = CurrentUserAddresses;
 
     vm.submitOrder = function(order) {
         OrderCloud.Orders.Submit(order.ID)
@@ -127,7 +128,7 @@ function AddressSelectModalService($uibModal) {
         Open: _open
     };
 
-    function _open(type, user) {
+    function _open(type) {
         return $uibModal.open({
             templateUrl: 'checkout/templates/addressSelect.modal.tpl.html',
             controller: 'AddressSelectCtrl',
@@ -143,13 +144,6 @@ function AddressSelectModalService($uibModal) {
                     } else {
                         return OrderCloud.Me.ListAddresses(null, 1, 100);
                     }
-                },
-                OrderShipAddress: function(ShippingAddresses){
-                    if(type == 'shipping') {
-                        return ShippingAddresses.GetAddresses(user);
-                    } else {
-                        angular.noop();
-                    }
                 }
             }
         }).result;
@@ -158,9 +152,9 @@ function AddressSelectModalService($uibModal) {
     return service;
 }
 
-function AddressSelectController($uibModalInstance, OrderShipAddress) {
+function AddressSelectController($uibModalInstance, Addresses) {
     var vm = this;
-    vm.addresses = OrderShipAddress;
+    vm.addresses = Addresses.Items;
 
     vm.select = function (address) {
         $uibModalInstance.close(address);
