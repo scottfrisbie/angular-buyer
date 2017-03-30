@@ -11,7 +11,7 @@ function ocOrdersService(OrderCloud){
         var parameters = angular.copy(Parameters);
 
         //exclude unsubmitted orders from list
-        parameters.filters = {Status: '!Unsubmitted'};
+        //parameters.filters = {Status: '!Unsubmitted'};
 
         //set outgoing params to iso8601 format as expected by api
         //set returning params to date object as expected by uib-datepicker
@@ -41,15 +41,19 @@ function ocOrdersService(OrderCloud){
             }
         }
 
-        if(Group) {
-            return OrderCloud.Me.ListAddresses(null, null, null, null, null, {CompanyName: Group.ID})
-                .then(function(address) {
-                    var shippingAddressID = address.Items[0].ID;
-                    return OrderCloud.Orders.ListIncoming(parameters.from, parameters.to, parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, {ShippingAddressID: shippingAddressID}, Buyer.ID)
-                        .then(function(orders) {
-                            return orders;
-                        })
-                });
+        if(parameters.tab === 'grouporders') {
+            if(Group) {
+                return OrderCloud.Me.ListAddresses(null, null, null, null, null, {CompanyName: Group.ID})
+                    .then(function(address) {
+                        var shippingAddressID = address.Items[0].ID;
+                        return OrderCloud.Orders.ListIncoming(parameters.from, parameters.to, parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, {ShippingAddressID: shippingAddressID}, Buyer.ID)
+                            .then(function(orders) {
+                                return orders;
+                            })
+                    });
+            } else {
+                return [];
+            }
         }
 
         if(parameters.status){

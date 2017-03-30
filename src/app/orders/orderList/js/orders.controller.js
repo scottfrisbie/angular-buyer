@@ -52,6 +52,7 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
 
     function selectTab(tab){
         vm.parameters.tab = tab;
+        if (vm.parameters.tab === 'grouporders') vm.getGroupOrders();
         vm.filter(true);
     }
 
@@ -128,9 +129,13 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
     }
 
     function getGroupOrders() {
-        return ocOrders.List(vm.parameters, vm.user, vm.buyer, vm.groupSelected)
-            .then(function(orders) {
-                vm.list = orders;
-            })
+        if(vm.groupSelected) {
+            return ocOrders.List(vm.parameters, vm.user, vm.buyer, vm.groupSelected)
+                .then(function(orders) {
+                    vm.list = orders;
+                })
+        } else {
+            vm.list = [];
+        }
     }
 }

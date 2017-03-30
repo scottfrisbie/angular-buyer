@@ -6,7 +6,7 @@
         <nav>
             <ul class="nav nav-tabs aveda-nav-tabs">
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'history'}"><a ng-click="orders.selectTab('history')">My Order History</a></li>
-                <!--<li role="presentation" ng-if="orders.groups.length > 1" ng-class="{active: orders.parameters.tab == 'storeorders'}"><a ng-click="orders.selectTab('storeorders')">Store Orders</a></li>-->
+                <li role="presentation" ng-if="orders.groups.length > 1" ng-class="{active: orders.parameters.tab == 'grouporders'}"><a ng-click="orders.selectTab('grouporders')">User Group Orders</a></li>
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'approvals'}"><a ng-click="orders.selectTab('approvals')">Awaiting Approval</a></li>
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'favorites'}"><a ng-click="orders.selectTab('favorites')">Favorite Orders</a></li>
             </ul>
@@ -15,7 +15,7 @@
     <br>
 
     <!--====== SEARCH ======-->
-    <div ng-if="orders.groups.length > 1">
+    <div ng-if="orders.parameters.tab == 'grouporders'">
         <form name="StoreOrdersFilter">
             <div class="form-group">
                 <label for="StoreOrders">Select a User Group to view orders from</label>
@@ -83,8 +83,8 @@
             <span ng-if="!orders.parameters.tab || orders.parameters.tab == 'history'">
                 <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders'}}</b>
             </span>
-            <span ng-if="orders.parameters.tab == 'storeorders'">
-                <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders placed by users'}}</b>
+            <span ng-if="orders.parameters.tab == 'grouporders'">
+                <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders placed by users in this group'}}</b>
             </span>
             <span ng-if="orders.parameters.tab == 'approvals'">
                 <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders awaiting your approval'}}</b>
