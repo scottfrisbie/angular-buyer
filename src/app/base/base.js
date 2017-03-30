@@ -19,24 +19,22 @@ function BaseConfig($stateProvider) {
             }
         },
         resolve: {
-            CatalogID: function(OrderCloud, buyerid) {
-                return OrderCloud.Buyers.Get(buyerid)
-                    .then(function(buyerObj) {
-                        return buyerObj.DefaultCatalogID;
+            Buyer: function(OrderCloud){
+                return OrderCloud.Buyers.List(null, 1, 1)
+                    .then(function(buyerList){
+                        var buyer = buyerList.Items[0];
+                        OrderCloud.BuyerID.Set(buyer.ID);
+                        OrderCloud.CatalogID.Set(buyer.DefaultCatalogID);
+                        return buyer;
                     });
             },
-            Catalog: function(CatalogID, OrderCloud){
-                return OrderCloud.Catalogs.Get(CatalogID);
-                    
+            Catalog: function(OrderCloud, Buyer){
+                return OrderCloud.Catalogs.Get(Buyer.DefaultCatalogID);
             },
-            CurrentUser: function($q, $state, OrderCloud, buyerid) {
-                return OrderCloud.Me.Get()
-                    .then(function(data) {
-                        OrderCloud.BuyerID.Set(buyerid);
-                        return data;
-                    });
+            CurrentUser: function($q, $state, OrderCloud) {
+                return OrderCloud.Me.Get();
             },
-            ExistingOrder: function($q, OrderCloud, CurrentUser) {
+            ExistingOrder: function($q, OrderCloud, CurrentUser, Catalog) {
                 return OrderCloud.Me.ListOutgoingOrders(null, 1, 1, null, "!DateCreated", {Status:"Unsubmitted"})
                     .then(function(data) {
                         return data.Items[0];
@@ -46,7 +44,7 @@ function BaseConfig($stateProvider) {
                 if (!ExistingOrder) {
                     return NewOrder.Create({});
                 } else {
-                    return ExistingOrder
+                    return ExistingOrder;
                 }
             },
             AnonymousUser: function($q, OrderCloud, CurrentUser) {

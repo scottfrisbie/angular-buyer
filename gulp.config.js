@@ -114,7 +114,6 @@ function getConstants() {
     if (process.env.ocscope) result.ocscope = process.env.ocscope;
     if (process.env.html5mode) result.html5mode = process.env.html5mode;
     if (process.env.bootswatchtheme) result.bootswatchtheme = process.env.bootswatchtheme;
-    if (process.env.buyerid) result.buyerid = process.env.buyerid;
     if (process.env.catalogid) result.catalogid = process.env.catalogid;
     return result;
 }
