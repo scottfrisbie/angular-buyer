@@ -2,11 +2,9 @@ angular.module('orderCloud')
     .controller('OrdersCtrl', OrdersController)
 ;
 
-function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buyer, CurrentUser, ocReporting, OrderList, Parameters, GroupAssignments) {
+function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, ocReporting, OrderList, Parameters, GroupAssignments) {
     var vm = this;
     vm.list = OrderList;
-    vm.buyer = Buyer;
-    vm.user = CurrentUser;
     vm.groups = GroupAssignments.Items;
     vm.parameters = Parameters;
     vm.userGroups = [];
