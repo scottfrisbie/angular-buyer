@@ -18,6 +18,7 @@ app.use(function (req, res, next) {
 app.use(bodyParser.json({limit: '50mb'}));
 
 app.use('/api/etundra-tax', require('./routes/etundra-tax'));
+app.use('/api/mandrill', require('./routes/mandrill'));
 
 switch(env) {
     case 'production':

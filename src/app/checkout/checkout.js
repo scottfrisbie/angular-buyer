@@ -69,7 +69,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
     ;
 }
 
-function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
+function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig, ocMandrill) {
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
     vm.userAddresses = CurrentUserAddresses;
@@ -78,8 +78,39 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     vm.checkoutConfig = CheckoutConfig;
     vm.currentUserAddresses = CurrentUserAddresses;
 
-    vm.submitOrder = function(order) {
-        OrderCloud.Orders.Submit(order.ID)
+    vm.submitOrder = function(order){
+        return submitAndAlert(order);
+        // return OrderCloud.SpendingAccounts.Get(OrderShipAddress.CustomerNumber)
+        //     .then(function(spendingAcct){
+        //         if(spendingAcct.Balance < 0 && ((spendingAcct.Balance + order.Total) > 0) ) {
+        //             //this order caused spending acct to go negative, send email
+        //             return submitAndAlert(order);
+        //         } else {
+        //             return finalSubmit(order);
+        //         }
+        //     });
+    };
+
+    function submitAndAlert(order){
+        return OrderCloud.UserGroups.Get(order.xp.CustomerNumber)
+            .then(function(userGroup){
+                return OrderCloud.UserGroups.ListUserAssignments(userGroup.xp.LevelBlueGroup, null, null, 100)
+                    .then(function(userGroupList){
+                        var userIDs = _.pluck(userGroupList.Items, 'UserID');
+                        return OrderCloud.Users.List(null, null, null, 100, null, null, {ID: userIDs.join('|')})
+                            .then(function(userList){
+                                console.log('order', order);
+                                return ocMandrill.NegativeBalance(userList, order)
+                                    .then(function(){
+                                        return finalSubmit(order);
+                                    });
+                            });
+                    });
+            });
+    }
+
+    function finalSubmit(order) {
+        return OrderCloud.Orders.Submit(order.ID)
             .then(function(order) {
                 $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
                 toastr.success('Your order has been submitted', 'Success');
@@ -87,7 +118,7 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
             .catch(function(ex) {
                 toastr.error('Your order did not submit successfully.', 'Error');
             });
-    };
+    }
 
     $rootScope.$on('OC:OrderShipAddressUpdated', function(event, order) {
         OrderCloud.Me.GetAddress(order.ShippingAddressID)
