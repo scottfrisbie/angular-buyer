@@ -40,6 +40,7 @@
     "browser-sync": "2.11.1",
     "del": "2.2.0",
     "express": "4.13.4",
+    "express-sslify": "1.2.0",
     "fs": "0.0.2",
     "git-repo-name": "0.6.0",
     "gulp-angular-filesort": "1.1.1",
