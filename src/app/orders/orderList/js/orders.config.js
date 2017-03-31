@@ -24,6 +24,7 @@ function OrdersConfig($stateProvider) {
                         });
                 },
                 OrderList: function(Parameters, CurrentUser, ocOrders, Buyer) {
+                    if (Parameters.status === undefined) Parameters.status = '!Unsubmitted';
                     if (Parameters.group) {
                         return ocOrders.List(Parameters, CurrentUser, Buyer, Parameters.group);
                     } else {
