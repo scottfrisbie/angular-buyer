@@ -19,7 +19,7 @@
         <form name="StoreOrdersFilter">
             <div class="form-group">
                 <label for="StoreOrders">Select a User Group to view orders from</label>
-                <select id="StoreOrders" class="form-control" ng-model="orders.groupSelected" ng-options="group as group.Name for group in orders.groups" ng-change="orders.filter(false)">
+                <select id="StoreOrders" class="form-control" ng-model="orders.parameters.group" ng-options="group.Value as group.Name for group in orders.userGroups" ng-change="orders.filter(false)">
                     <option value="">(none)</option>
                 </select>
             </div>
@@ -44,7 +44,7 @@
         <div class="row">
             <div class="col-sm-3 form-group">
                 <label for="Status">Status</label>
-                <select id="Status" class="form-control" ng-model="orders.parameters.status" ng-options="status.Value as status.Name for status in orders.orderStatuses" ng-change="orders.filter(true)">
+                <select id="Status" class="form-control" ng-model="orders.parameters.status" ng-options="status.Value as status.Name for status in orders.orderStatuses" ng-change="orders.filter(false)">
                     <option value="">All</option>
                 </select>
             </div>

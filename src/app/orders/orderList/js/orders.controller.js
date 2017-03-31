@@ -9,8 +9,7 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
     vm.user = CurrentUser;
     vm.groups = GroupAssignments.Items;
     vm.parameters = Parameters;
-    if (vm.parameters.group) vm.groupSelected = vm.parameters.group;
-    vm.groupSelected;
+    vm.userGroups = [];
     //need this here to display in uib-datepicker (as date obj) but short date (string) in url
     vm.fromDate = Parameters.fromDate;
     vm.toDate = Parameters.toDate;
@@ -21,6 +20,13 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
         {Value: 'Completed', Name: 'Completed'},
         {Value: 'Declined', Name: 'Declined'}
     ];
+
+    _.each(vm.groups, function(group) {
+        vm.userGroups.push( {
+            Name: group.Name,
+            Value: group.ID
+        })
+    });
 
     vm.sortSelection = Parameters.sortBy ? (Parameters.sortBy.indexOf('!') == 0 ? Parameters.sortBy.split('!')[1] : Parameters.sortBy) : null;
     vm.filtersApplied = vm.parameters.fromDate || vm.parameters.toDate || ($ocMedia('max-width:767px') && vm.sortSelection); //Check if filters are applied, Sort by is a filter on mobile devices
@@ -69,9 +75,6 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, Buy
 
     function filter(resetPage) {
         formatDate();
-        if (vm.groupSelected) {
-            vm.parameters.group = vm.groupSelected.ID;
-        }
         $state.go('.', ocParameters.Create(vm.parameters, resetPage));
     }
 
