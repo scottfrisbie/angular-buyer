@@ -97,7 +97,7 @@ function getConstants() {
             result.authurl = 'https://auth.ordercloud.io/oauth/token';
             result.apiurl = 'https://api.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
-            result.devapiurl = 'https://cafe-rio-styling.herokuapp.com/api';
+            result.devapiurl = 'https://caferio.etundra.com/api';
             break;
     }
     if (process.env.apiurl && process.env.authurl) {
