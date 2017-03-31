@@ -12,13 +12,24 @@ function OrdersConfig($stateProvider) {
             data: {
                 pageTitle: 'Orders'
             },
-            url: '/orders?from&to&search&page&pageSize&searchOn&sortBy&tab?status',
+            url: '/orders?group&from&to&search&page&pageSize&searchOn&sortBy&tab?status',
             resolve: {
                 Parameters: function($stateParams, ocParameters){
                     return ocParameters.Get($stateParams);
                 },
-                OrderList: function(Parameters, CurrentUser, ocOrders){
-                    return ocOrders.List(Parameters, CurrentUser);
+                GroupAssignments: function(OrderCloud) {
+                    return OrderCloud.Me.ListUserGroups()
+                        .then(function(userGroups) {
+                            return userGroups
+                        });
+                },
+                OrderList: function(Parameters, CurrentUser, ocOrders, Buyer) {
+                    if (Parameters.status === undefined) Parameters.status = '!Unsubmitted';
+                    if (Parameters.group) {
+                        return ocOrders.List(Parameters, CurrentUser, Buyer, Parameters.group);
+                    } else {
+                        return ocOrders.List(Parameters, CurrentUser, Buyer);
+                    }
                 }
             }
         });

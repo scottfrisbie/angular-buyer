@@ -2,10 +2,12 @@ angular.module('orderCloud')
     .controller('OrdersCtrl', OrdersController)
 ;
 
-function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, ocOrders, ocReporting, OrderList, Parameters) {
+function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, ocReporting, OrderList, Parameters, GroupAssignments) {
     var vm = this;
     vm.list = OrderList;
+    vm.groups = GroupAssignments.Items;
     vm.parameters = Parameters;
+    vm.userGroups = [];
     //need this here to display in uib-datepicker (as date obj) but short date (string) in url
     vm.fromDate = Parameters.fromDate;
     vm.toDate = Parameters.toDate;
@@ -16,6 +18,13 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
         {Value: 'Completed', Name: 'Completed'},
         {Value: 'Declined', Name: 'Declined'}
     ];
+
+    _.each(vm.groups, function(group) {
+        vm.userGroups.push( {
+            Name: group.Name,
+            Value: group.ID
+        })
+    });
 
     vm.sortSelection = Parameters.sortBy ? (Parameters.sortBy.indexOf('!') == 0 ? Parameters.sortBy.split('!')[1] : Parameters.sortBy) : null;
     vm.filtersApplied = vm.parameters.fromDate || vm.parameters.toDate || ($ocMedia('max-width:767px') && vm.sortSelection); //Check if filters are applied, Sort by is a filter on mobile devices
@@ -47,6 +56,10 @@ function OrdersController($state, $filter, $ocMedia, OrderCloud, ocParameters, o
 
     function selectTab(tab){
         vm.parameters.tab = tab;
+        vm.parameters.group = null;
+        vm.parameters.status = null;
+        vm.parameters.from = null;
+        vm.parameters.to = null;
         vm.filter(true);
     }
 
