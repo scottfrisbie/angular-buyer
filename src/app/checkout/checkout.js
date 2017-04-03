@@ -69,7 +69,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
     ;
 }
 
-function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
+function CheckoutController($state, $exceptionHandler, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
     vm.userAddresses = CurrentUserAddresses;
@@ -79,15 +79,41 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     vm.currentUserAddresses = CurrentUserAddresses;
 
     vm.submitOrder = function(order) {
-        OrderCloud.Orders.Submit(order.ID)
-            .then(function(order) {
-                $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
-                toastr.success('Your order has been submitted', 'Success');
-            })
-            .catch(function(ex) {
-                toastr.error('Your order did not submit successfully.', 'Error');
+        generateOrderNumber(order)
+            .then(function(updatedOrderNumber){
+                return OrderCloud.Orders.Submit(updatedOrderNumber.ID)
+                    .then(function(order) {
+                        $state.go('confirmation', {orderid:updatedOrderNumber.ID}, {reload:'base'});
+                        toastr.success('Your order has been submitted', 'Success');
+                    })
+                    .catch(function(ex) {
+                        toastr.error('Your order did not submit successfully.', 'Error');
+                    });
             });
     };
+
+    function generateOrderNumber(order){
+        var attempt = 0;
+        //generates an order number in the form WXXXXXXX
+        return generateNumber();
+        function generateNumber(){
+            var orderNumber = Math.floor((Math.random() * 9000000)); //random # length 7 digits
+            return OrderCloud.Orders.Patch(order.ID, {ID: 'W' + orderNumber})
+                .then(function(newOrder){
+                    return newOrder;
+                })
+                .catch(function(error){
+                    if(attempt > 3) {
+                        //try to generate a max of 4 times before exiting loop
+                        return $exceptionHandler(error);
+                    } else {
+                        //there was a conflict, generate a new random # and try again
+                        generateNumber(); 
+                        attempt++;
+                    }
+                });
+        }
+    }
 
     $rootScope.$on('OC:OrderShipAddressUpdated', function(event, order) {
         OrderCloud.Me.GetAddress(order.ShippingAddressID)
