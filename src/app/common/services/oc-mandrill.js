@@ -12,20 +12,18 @@ function ocMandrillService($resource, devapiurl, $filter) {
             Recipients: [],
             Order: {
                 ID: order.ID,
-                // Balance: order.Balance,
-                Balance: 'MockBalance',
+                BudgetBalance: $filter('currency')(order.BudgetBalance),
                 DateSubmitted: $filter('date')(order.DateCreated),
                 FirstName: order.FromUserFirstName,
                 LastName: order.FromUserLastName,
-                Total: order.Total
+                UserID: order.FromUserID,
+                Total: $filter('currency')(order.Total)
             }
         };
 
         _.each(userList.Items, function(user){
             body.Recipients.push({email: user.Email, type: 'to'});
         });
-        console.log('body', angular.copy(body));
-
         return $resource(devapiurl + '/mandrill/negativebalance', {}, {send: {method: 'POST'}}).send(body).$promise;
     }
 

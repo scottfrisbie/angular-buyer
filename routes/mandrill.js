@@ -6,20 +6,20 @@ var config = require('../mandrill.config');
 router.route('/negativebalance')
     .post(function(req, res) {
         var data = {
-            TemplateName: 'negativebalance',
+            TemplateName: 'dfsi_test',
             Recipient: req.body.Recipients,
             MergeVars: [
                 {name: 'ORDERNUMBER', content: req.body.Order.ID},
-                {name: 'BALANCE', content: req.body.Order.Balance},
+                {name: 'BALANCE', content: req.body.Order.BudgetBalance},
                 {name: 'DATESUBMITTED', content: req.body.Order.DateSubmitted},
                 {name: 'FIRSTNAME', content: req.body.Order.FirstName},
                 {name: 'LASTNAME', content: req.body.Order.LastName},
+                {name: 'FROMUSERID', content: req.body.Order.UserID},
                 {name: 'AMOUNT', content: req.body.Order.Total}
             ]
         };
         sendMandrillEmail(data)
             .then(function(result) {
-                console.log(result);
                 res.status(200).json({Data: result});
             })
             .catch(function(ex) {

@@ -79,16 +79,16 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
     vm.currentUserAddresses = CurrentUserAddresses;
 
     vm.submitOrder = function(order){
-        return submitAndAlert(order);
-        // return OrderCloud.SpendingAccounts.Get(OrderShipAddress.CustomerNumber)
-        //     .then(function(spendingAcct){
-        //         if(spendingAcct.Balance < 0 && ((spendingAcct.Balance + order.Total) > 0) ) {
-        //             //this order caused spending acct to go negative, send email
-        //             return submitAndAlert(order);
-        //         } else {
-        //             return finalSubmit(order);
-        //         }
-        //     });
+        vm.orderLoading = OrderCloud.SpendingAccounts.Get(order.xp.CustomerNumber)
+            .then(function(spendingAcct){
+                order.BudgetBalance = spendingAcct.Balance;
+                if(spendingAcct.Balance < 0) {
+                    //send email alerting negative balance
+                    return submitAndAlert(order);
+                } else {
+                    return finalSubmit(order);
+                }
+            });
     };
 
     function submitAndAlert(order){
@@ -99,7 +99,6 @@ function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAdd
                         var userIDs = _.pluck(userGroupList.Items, 'UserID');
                         return OrderCloud.Users.List(null, null, null, 100, null, null, {ID: userIDs.join('|')})
                             .then(function(userList){
-                                console.log('order', order);
                                 return ocMandrill.NegativeBalance(userList, order)
                                     .then(function(){
                                         return finalSubmit(order);
