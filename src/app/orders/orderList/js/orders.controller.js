@@ -76,8 +76,6 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, ocR
         $state.go('.', ocParameters.Create(vm.parameters, resetPage));
     }
 
-    console.log('something')
-
     function clearFrom(){
         vm.parameters.from = null;
         vm.fromDate = null;
