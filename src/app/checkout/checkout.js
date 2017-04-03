@@ -108,8 +108,8 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
                         return $exceptionHandler(error);
                     } else {
                         //there was a conflict, generate a new random # and try again
-                        generateNumber(); 
                         attempt++;
+                        return generateNumber(); 
                     }
                 });
         }
