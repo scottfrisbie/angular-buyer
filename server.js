@@ -1,6 +1,5 @@
 'use strict';
 var config = require('./gulp.config');
-var enforce = require('express-sslify');
 
 var express = require('express'),
     env = process.env.NODE_ENV = process.env.NODE_ENV || 'dev',
@@ -23,7 +22,13 @@ app.use('/api/etundra-tax', require('./routes/etundra-tax'));
 switch(env) {
     case 'production':
         console.log('*** PROD ***');
-        app.use(enforce.HTTPS({trustedProtoHeaders: true}));
+        //redirect all non https traffic to https
+        app.use(function(req, res, next) {
+          if (req.headers['x-forwarded-proto'] === 'http') {
+            return res.redirect(301, ['https://', req.get('Host'), req.url].join(''));
+          }
+          next();
+        });
         app.use(express.static(config.root + config.compile.replace('.', '')));
         app.get('/*', function(req, res) {
             res.sendFile(config.root + config.compile.replace('.', '') + 'index.html');
