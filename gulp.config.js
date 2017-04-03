@@ -97,7 +97,7 @@ function getConstants() {
             result.authurl = 'https://auth.ordercloud.io/oauth/token';
             result.apiurl = 'https://api.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
-            result.devapiurl = 'http://localhost:7203/api';
+            result.devapiurl = 'https://caferio.etundra.com/api';
             break;
     }
     if (process.env.apiurl && process.env.authurl) {

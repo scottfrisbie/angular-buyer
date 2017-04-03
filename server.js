@@ -23,6 +23,13 @@ app.use('/api/mandrill', require('./routes/mandrill'));
 switch(env) {
     case 'production':
         console.log('*** PROD ***');
+        //redirect all non https traffic to https
+        app.use(function(req, res, next) {
+          if (req.headers['x-forwarded-proto'] === 'http') {
+            return res.redirect(301, ['https://', req.get('Host'), req.url].join(''));
+          }
+          next();
+        });
         app.use(express.static(config.root + config.compile.replace('.', '')));
         app.get('/*', function(req, res) {
             res.sendFile(config.root + config.compile.replace('.', '') + 'index.html');
