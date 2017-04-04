@@ -247,7 +247,6 @@ function OCPayment() {
 		restrict:'E',
 		scope: {
 			order: '=',
-			methods: '=?',
 			payment: '=?',
 			paymentIndex: '=?',
 			excludeOptions: '=?'
@@ -259,7 +258,11 @@ function OCPayment() {
 }
 
 function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, CheckoutPaymentService) {
-	if (!$scope.methods) $scope.methods = CheckoutConfig.AvailablePaymentMethods;
+	$scope.methods = [
+		{Value: 'SpendingAccount', Display: 'Budget'},
+		{Value: 'PurchaseOrder', Display: 'Purchase Order'}
+	];
+
 	if (!$scope.payment) {
 		OrderCloud.Payments.List($scope.order.ID)
 			.then(function(data) {
@@ -275,7 +278,7 @@ function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, Check
 				}
 				else if (data.Items.length) {
 					$scope.payment = data.Items[0];
-					if ($scope.methods.length == 1) $scope.payment.Type = $scope.methods[0];
+					if ($scope.methods.length == 1) $scope.payment.Type = $scope.methods[0].Value;
 				} else {
 					OrderCloud.Payments.Create($scope.order.ID, {Type: CheckoutConfig.AvailablePaymentMethods[0]})
 						.then(function(data) {
@@ -285,7 +288,7 @@ function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, Check
 				}
 			});
 	} else if ($scope.methods.length == 1) {
-		$scope.payment.Type = $scope.methods[0];
+		$scope.payment.Type = $scope.methods[0].Value;
 	}
 }
 
@@ -293,8 +296,7 @@ function OCPayments() {
 	return {
 		restrict:'E',
 		scope: {
-			order: '=',
-			methods: '=?'
+			order: '='
 		},
 		templateUrl: 'checkout/payment/directives/templates/payments.tpl.html',
 		controller: 'PaymentsCtrl'
@@ -302,7 +304,10 @@ function OCPayments() {
 }
 
 function PaymentsController($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, CheckoutPaymentService, CheckoutConfig) {
-	if (!$scope.methods) $scope.methods = CheckoutConfig.AvailablePaymentMethods;
+	$scope.methods = [
+		{Value: 'SpendingAccount', Display: 'Budget'},
+		{Value: 'PurchaseOrder', Display: 'Purchase Order'}
+	];
 
 	OrderCloud.Payments.List($scope.order.ID)
 		.then(function(data) {
