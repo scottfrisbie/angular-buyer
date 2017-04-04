@@ -5,7 +5,8 @@
         </h3>
         <nav>
             <ul class="nav nav-tabs aveda-nav-tabs">
-                <li role="presentation" ng-class="{active: orders.parameters.tab == 'history'}"><a ng-click="orders.selectTab('history')">Order History</a></li>
+                <li role="presentation" ng-class="{active: orders.parameters.tab == 'history'}"><a ng-click="orders.selectTab('history')">My Order History</a></li>
+                <li role="presentation" ng-if="orders.groups.length > 1" ng-class="{active: orders.parameters.tab == 'grouporders'}"><a ng-click="orders.selectTab('grouporders')">User Group Orders</a></li>
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'approvals'}"><a ng-click="orders.selectTab('approvals')">Awaiting Approval</a></li>
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'favorites'}"><a ng-click="orders.selectTab('favorites')">Favorite Orders</a></li>
             </ul>
@@ -14,6 +15,17 @@
     <br>
 
     <!--====== SEARCH ======-->
+    <div ng-if="orders.parameters.tab == 'grouporders'">
+        <form name="StoreOrdersFilter">
+            <div class="form-group">
+                <label for="StoreOrders">Select a User Group to view orders from</label>
+                <select id="StoreOrders" class="form-control" ng-model="orders.parameters.group" ng-options="group.Value as group.Name for group in orders.userGroups" ng-change="orders.filter(false)">
+                    <option value="">(none)</option>
+                </select>
+            </div>
+        </form>
+    </div>
+    <br>
     <form name="OrdersSearchForm" pretty-submit>
         <fieldset class="form-group">
             <div class="input-group">
@@ -32,19 +44,29 @@
         <div class="row">
             <div class="col-sm-3 form-group">
                 <label for="Status">Status</label>
-                <select id="Status" class="form-control" ng-model="orders.parameters.status" ng-options="status.Value as status.Name for status in orders.orderStatuses" ng-change="orders.filter(true)">
+                <select id="Status" class="form-control" ng-model="orders.parameters.status" ng-options="status.Value as status.Name for status in orders.orderStatuses" ng-change="orders.filter(false)">
                     <option value="">All</option>
                 </select>
             </div>
             <div class="col-sm-3 form-group">
                 <label for="FromDate">From Date</label>
                 <input ng-if="application.isTouchDevice" type="date" class="form-control" ng-model="orders.fromDate" ng-blur="orders.filter(true)">
-                <input id="FromDate" ng-if="!application.isTouchDevice" type="text" class="form-control" ng-model="orders.fromDate" uib-datepicker-popup datepicker-options="{maxDate:orders.toDate}" is-open="fromDate.open" ng-change="orders.filter(true)" ng-click="fromDate.open = !fromDate.open">
+                <div class="input-group" ng-if="!application.isTouchDevice">
+                    <input id="FromDate" ng-if="!application.isTouchDevice" type="text" class="form-control" ng-model="orders.fromDate" uib-datepicker-popup datepicker-options="{maxDate:orders.toDate}" is-open="fromDate.open" ng-change="orders.filter(true)" ng-click="fromDate.open = !fromDate.open">
+                    <span class="input-group-btn" ng-if="orders.fromDate">
+                        <button class="btn btn-default" ng-click="orders.clearFrom()" type="button"><i class="fa fa-times text-danger"></i></button>
+                    </span>
+                </div>
             </div>
             <div class="col-sm-3 form-group">
                 <label for="ToDate">To Date</label>
                 <input ng-if="application.isTouchDevice" type="date" class="form-control" ng-model="orders.toDate" ng-blur="orders.filter(true)">
-                <input id="ToDate" ng-if="!application.isTouchDevice" type="text" class="form-control" ng-model="orders.toDate" uib-datepicker-popup datepicker-options="{minDate:orders.fromDate}" is-open="toDate.open" ng-change="orders.filter(true)" ng-click="toDate.open = !toDate.open">
+                <div class="input-group" ng-if="!application.isTouchDevice">
+                    <input id="ToDate" type="text" class="form-control" ng-model="orders.toDate" uib-datepicker-popup datepicker-options="{minDate:orders.fromDate, maxDate: orders.today}" is-open="toDate.open" ng-change="orders.filter(true)" ng-click="toDate.open = !toDate.open">
+                    <span class="input-group-btn" ng-if="orders.toDate">
+                        <button class="btn btn-default" ng-click="orders.clearTo()" type="button"><i class="fa fa-times text-danger"></i></button>
+                    </span>
+                </div>
             </div>
             <div class="col-sm-3 form-group">
                 <label for="orderReport"></label>
@@ -60,6 +82,9 @@
         <div class="no-matches" ng-if="!orders.list.Items.length">
             <span ng-if="!orders.parameters.tab || orders.parameters.tab == 'history'">
                 <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders'}}</b>
+            </span>
+            <span ng-if="orders.parameters.tab == 'grouporders'">
+                <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders placed by users in this group'}}</b>
             </span>
             <span ng-if="orders.parameters.tab == 'approvals'">
                 <b>{{orders.filtersApplied || orders.searchResults ? 'No matches found' : 'No orders awaiting your approval'}}</b>

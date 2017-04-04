@@ -97,7 +97,7 @@ function getConstants() {
             result.authurl = 'https://auth.ordercloud.io/oauth/token';
             result.apiurl = 'https://api.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
-            result.devapiurl = 'https://cafe-rio-styling.herokuapp.com/api';
+            result.devapiurl = 'https://caferio.etundra.com/api';
             break;
     }
     if (process.env.apiurl && process.env.authurl) {
@@ -114,7 +114,6 @@ function getConstants() {
     if (process.env.ocscope) result.ocscope = process.env.ocscope;
     if (process.env.html5mode) result.html5mode = process.env.html5mode;
     if (process.env.bootswatchtheme) result.bootswatchtheme = process.env.bootswatchtheme;
-    if (process.env.buyerid) result.buyerid = process.env.buyerid;
     if (process.env.catalogid) result.catalogid = process.env.catalogid;
     return result;
 }

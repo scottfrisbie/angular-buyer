@@ -7,7 +7,10 @@
         <h3 class="l-page-header__title">
             <small class="pull-right">Submitted on {{orderDetails.order.DateSubmitted | date}}</small>
             <span class="text-muted">Order:</span> {{orderDetails.order.ID}} <br>
-            <span class="pull-right"><ordercloud-favorite-order current-user="base.currentUser" order="orderDetails.order"></ordercloud-favorite-order></span>
+            <span class="pull-right">
+                <ordercloud-favorite-order current-user="base.currentUser" order="orderDetails.order"></ordercloud-favorite-order>
+                <ordercloud-repeat-order original-order-id="orderDetails.order.ID" current-order-id="base.currentOrder.ID"></ordercloud-repeat-order>
+            </span>
         </h3>
     </header>
     <ul class="nav nav-tabs">
@@ -89,7 +92,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Product</th>
+                        <th>Product Name</th>
                         <th ng-if="!orderDetails.order.ShippingAddressID">Shipping Address</th>
                         <th>Quantity</th>
                         <th>Unit Price</th>
@@ -98,10 +101,9 @@
                 </thead>
                 <tbody>
                     <tr ng-repeat="lineItem in orderDetails.lineItems.Items">
-                        <td>{{lineItem.ID}}</td>
+                        <td>{{lineItem.ProductID}}</td>
                         <td>
                             <a ui-sref="productDetail({productid: lineItem.ProductID})"> {{lineItem.Product.Name}}</a>
-                            <small class="text-muted">({{lineItem.Product.ID}})</small>
                             <ul ng-if="lineItem.Specs.length > 0">
                                 <li ng-repeat="spec in lineItem.Specs">
                                     <small>{{spec.Name}}:</small>

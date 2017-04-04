@@ -61,32 +61,90 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     }
                     return deferred.promise;
                 },
-                CurrentUserAddresses: function(CurrentUser, ShippingAddresses) {
-                    return ShippingAddresses.GetAddresses(CurrentUser);
+                CurrentUserAddresses: function(OrderCloud) {
+                    return OrderCloud.Me.ListAddresses(null, null, null, null, null, {IsShipping: true});
                 }
 			}
 		})
     ;
 }
 
-function CheckoutController($state, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
+function CheckoutController($state, $exceptionHandler, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig, ocMandrill) {
+
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
     vm.userAddresses = CurrentUserAddresses;
     vm.billingAddress = OrderBillingAddress;
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
+    vm.currentUserAddresses = CurrentUserAddresses;
 
-    vm.submitOrder = function(order) {
-        OrderCloud.Orders.Submit(order.ID)
-            .then(function(order) {
-                $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
-                toastr.success('Your order has been submitted', 'Success');
-            })
-            .catch(function(ex) {
-                toastr.error('Your order did not submit successfully.', 'Error');
+    vm.submitOrder = function(order){
+        vm.orderLoading = OrderCloud.SpendingAccounts.Get(order.xp.CustomerNumber)
+            .then(function(spendingAcct){
+                order.BudgetBalance = spendingAcct.Balance;
+                if(spendingAcct.Balance < 0) {
+                    //send email alerting negative balance
+                    return submitAndAlert(order);
+                } else {
+                    return finalSubmit(order);
+                }
             });
     };
+
+    function submitAndAlert(order){
+        return OrderCloud.UserGroups.Get(order.xp.CustomerNumber)
+            .then(function(userGroup){
+                return OrderCloud.UserGroups.ListUserAssignments(userGroup.xp.LevelBlueGroup, null, null, 100)
+                    .then(function(userGroupList){
+                        var userIDs = _.pluck(userGroupList.Items, 'UserID');
+                        return OrderCloud.Users.List(null, null, null, 100, null, null, {ID: userIDs.join('|')})
+                            .then(function(userList){
+                                return ocMandrill.NegativeBalance(userList, order)
+                                    .then(function(){
+                                        return finalSubmit(order);
+                                    });
+                            });
+                    });
+            });
+    }
+
+    function finalSubmit(order) {
+        generateOrderNumber(order)
+            .then(function(updatedOrderNumber){
+                return OrderCloud.Orders.Submit(updatedOrderNumber.ID)
+                    .then(function(order) {
+                        $state.go('confirmation', {orderid:updatedOrderNumber.ID}, {reload:'base'});
+                        toastr.success('Your order has been submitted', 'Success');
+                    })
+                    .catch(function(ex) {
+                        toastr.error('Your order did not submit successfully.', 'Error');
+                    });
+            });
+    }
+
+    function generateOrderNumber(order){
+        var attempt = 0;
+        //generates an order number in the form WXXXXXXX
+        return generateNumber();
+        function generateNumber(){
+            var orderNumber = Math.floor((Math.random() * 9000000)); //random # length 7 digits
+            return OrderCloud.Orders.Patch(order.ID, {ID: 'W' + orderNumber})
+                .then(function(newOrder){
+                    return newOrder;
+                })
+                .catch(function(error){
+                    if(attempt > 3) {
+                        //try to generate a max of 4 times before exiting loop
+                        return $exceptionHandler(error);
+                    } else {
+                        //there was a conflict, generate a new random # and try again
+                        attempt++;
+                        return generateNumber(); 
+                    }
+                });
+        }
+    }
 
     $rootScope.$on('OC:OrderShipAddressUpdated', function(event, order) {
         OrderCloud.Me.GetAddress(order.ShippingAddressID)
@@ -127,7 +185,7 @@ function AddressSelectModalService($uibModal) {
         Open: _open
     };
 
-    function _open(type, user) {
+    function _open(type) {
         return $uibModal.open({
             templateUrl: 'checkout/templates/addressSelect.modal.tpl.html',
             controller: 'AddressSelectCtrl',
@@ -143,13 +201,6 @@ function AddressSelectModalService($uibModal) {
                     } else {
                         return OrderCloud.Me.ListAddresses(null, 1, 100);
                     }
-                },
-                OrderShipAddress: function(ShippingAddresses){
-                    if(type == 'shipping') {
-                        return ShippingAddresses.GetAddresses(user);
-                    } else {
-                        angular.noop();
-                    }
                 }
             }
         }).result;
@@ -158,9 +209,9 @@ function AddressSelectModalService($uibModal) {
     return service;
 }
 
-function AddressSelectController($uibModalInstance, OrderShipAddress) {
+function AddressSelectController($uibModalInstance, Addresses) {
     var vm = this;
-    vm.addresses = OrderShipAddress;
+    vm.addresses = Addresses.Items;
 
     vm.select = function (address) {
         $uibModalInstance.close(address);

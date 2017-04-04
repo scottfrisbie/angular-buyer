@@ -16,7 +16,7 @@ function MyAddressesConfig($stateProvider) {
             },
             resolve: {
                 AddressList: function(OrderCloud) {
-                    return OrderCloud.Me.ListAddresses(null, null, null, null, null, {Editable:true});
+                    return OrderCloud.Me.ListAddresses();
                 }
             }
         });
@@ -25,6 +25,10 @@ function MyAddressesConfig($stateProvider) {
 function MyAddressesController(toastr, OrderCloud, ocConfirm, MyAddressesModal, AddressList) {
     var vm = this;
     vm.list = AddressList;
+
+    vm.shippingAddresses = _.where(vm.list.Items, {Shipping: true});
+    vm.billingAddresses = _.where(vm.list.Items, {Billing: true});
+
     vm.create = function() {
         MyAddressesModal.Create()
             .then(function(data) {

@@ -19,10 +19,10 @@
                 </div>
                 <div class="panel-body">
                     <div class="well text-center">
-                        <div ng-if="base.currentOrder.Total >= 250">
-                            Your order over $250 will be shipped freight free
+                        <div ng-if="base.currentOrder.Subtotal >= 250">
+                            Your order over $250 will be shipped freight free.
                         </div>
-                        <div ng-if="base.currentOrder.Total < 250">
+                        <div ng-if="base.currentOrder.Subtotal < 250">
                             Freight will be calculated at time of shipment. Order $250 to qualify for free freight.
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                     </p>
                     <h4>Subtotal: <span class="pull-right">{{base.currentOrder.Subtotal | currency}}</span></h4>
                     <hr>
-                    <oc-add-promotion order="base.currentOrder"></oc-add-promotion>
+                    <!--<oc-add-promotion order="base.currentOrder"></oc-add-promotion>-->
                     <h5 ng-repeat="promotion in cart.promotions" class="text-danger">
                         {{promotion.Name}}
                         <div ng-if="promotion.Code !== cart.rebateCode">

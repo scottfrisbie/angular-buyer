@@ -1,16 +1,52 @@
 <article id="myAddresses">
-    <button class="btn btn-primary pull-right" ng-click="myAddresses.create()"><i class="fa fa-plus-circle"></i> Create New</button>
+    <!--<button class="btn btn-primary pull-right" ng-click="myAddresses.create()"><i class="fa fa-plus-circle"></i> Create New</button>-->
     <h3><i class="fa fa-map-marker"></i> Personal Addresses</h3>
     <hr>
     <div class="row">
-        <div class="col-sm-6" ng-repeat="address in myAddresses.list.Items">
-            <div class="panel panel-default" cg-busy="myAddresses.loading[$index]">
-                <div class="panel-body">
-                    <div class="pull-right">
-                        <a href="" ng-click="myAddresses.delete(this)">Delete</a> |
-                        <a href="" ng-click="myAddresses.edit(this)">Edit</a>
+        <div class="well text-center" ng-if="!myAddresses.shippingAddresses.length">
+            You do not have any shipping addresses assigned to you.
+        </div>
+        <div ng-if="myAddresses.shippingAddresses.length">
+            <h4>
+                <ng-pluralize count="myAddresses.shippingAddresses.length" when="{
+                '1': 'Shipping Address',
+                'other': 'Shipping Addresses'
+            }"></ng-pluralize>
+            </h4>
+            <div class="col-sm-6" ng-repeat="shipAddress in myAddresses.shippingAddresses">
+                <div class="panel panel-default" cg-busy="myAddresses.loading[$index]">
+                    <div class="panel-body">
+                        <!--<div class="pull-right">-->
+                        <!--<a href="" ng-click="myAddresses.delete(this)">Delete</a> |-->
+                        <!--<a href="" ng-click="myAddresses.edit(this)">Edit</a>-->
+                        <!--</div>-->
+                        <p ng-bind-html="shipAddress | address:'full'"></p>
                     </div>
-                    <p ng-bind-html="address | address:'full'"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <h4>
+            <ng-pluralize count="myAddresses.billingAddresses.length" when="{
+                '1': 'Billing Address',
+                'other': 'Billing Addresses'
+            }"></ng-pluralize>
+        </h4>
+        <div class="well text-center" ng-if="!myAddresses.billingAddresses.length">
+            You do not have any billing addresses assigned to you.
+        </div>
+        <div ng-if="myAddresses.billingAddresses.length">
+            <div class="col-sm-6" ng-repeat="billAddress in myAddresses.billingAddresses">
+                <div class="panel panel-default" cg-busy="myAddresses.loading[$index]">
+                    <div class="panel-body">
+                        <!--<div class="pull-right">-->
+                        <!--<a href="" ng-click="myAddresses.delete(this)">Delete</a> |-->
+                        <!--<a href="" ng-click="myAddresses.edit(this)">Edit</a>-->
+                        <!--</div>-->
+                        <p ng-bind-html="billAddress | address:'full'"></p>
+                    </div>
                 </div>
             </div>
         </div>
