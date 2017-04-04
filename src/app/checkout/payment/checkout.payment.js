@@ -10,21 +10,22 @@ function checkoutPaymentConfig($stateProvider) {
 			url: '/payment',
 			templateUrl: 'checkout/payment/templates/checkout.payment.tpl.html',
 			controller: 'CheckoutPaymentCtrl',
-			controllerAs: 'checkoutPayment',
-            resolve: {
-                InitializeTaxes: function(TaxIntegration, CurrentOrder, OrderCloud, $rootScope){
-                    return OrderCloud.LineItems.List(CurrentOrder.ID, null, null, 100)
-                        .then(function(LineItemList){
-                            return TaxIntegration.Get(CurrentOrder.BillingAddress, LineItemList)
-                                .then(function(data){
-                                    return OrderCloud.Orders.Patch(CurrentOrder.ID, {TaxCost: data.Data.TotalTax})
-                                        .then(function(){
-                                            $rootScope.$broadcast('OC:UpdateOrder', CurrentOrder.ID);
-                                        });
-                                });
-                        });
-				}
-            }
+			controllerAs: 'checkoutPayment'
+            //taxes not being returned from integration comment out for now
+            // resolve: {
+            //     InitializeTaxes: function(TaxIntegration, CurrentOrder, OrderCloud, $rootScope){
+            //         return OrderCloud.LineItems.List(CurrentOrder.ID, null, null, 100)
+            //             .then(function(LineItemList){
+            //                 return TaxIntegration.Get(CurrentOrder.BillingAddress, LineItemList)
+            //                     .then(function(data){
+            //                         return OrderCloud.Orders.Patch(CurrentOrder.ID, {TaxCost: data.Data.TotalTax})
+            //                             .then(function(){
+            //                                 $rootScope.$broadcast('OC:UpdateOrder', CurrentOrder.ID);
+            //                             });
+            //                     });
+            //             });
+			// 	}
+            // }
 		})
     ;
 }
