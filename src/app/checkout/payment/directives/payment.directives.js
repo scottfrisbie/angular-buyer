@@ -269,7 +269,7 @@ function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, Check
 				if (CheckoutPaymentService.PaymentsExceedTotal(data, $scope.order.Total)) {
 					CheckoutPaymentService.RemoveAllPayments(data, $scope.order)
 						.then(function(data) {
-							OrderCloud.Payments.Create($scope.order.ID, {Type: CheckoutConfig.AvailablePaymentMethods[0]})
+							OrderCloud.Payments.Create($scope.order.ID, {Type: $scope.methods[0].Value})
 								.then(function(data) {
 									$scope.payment = data;
 									$rootScope.$broadcast('OC:PaymentsUpdated');
@@ -280,7 +280,7 @@ function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, Check
 					$scope.payment = data.Items[0];
 					if ($scope.methods.length == 1) $scope.payment.Type = $scope.methods[0].Value;
 				} else {
-					OrderCloud.Payments.Create($scope.order.ID, {Type: CheckoutConfig.AvailablePaymentMethods[0]})
+					OrderCloud.Payments.Create($scope.order.ID, {Type:  $scope.methods[0].Value})
 						.then(function(data) {
 							$scope.payment = data;
 							$rootScope.$broadcast('OC:PaymentsUpdated');
@@ -329,7 +329,7 @@ function PaymentsController($rootScope, $scope, $exceptionHandler, toastr, Order
 		});
 
 	$scope.addNewPayment = function() {
-		OrderCloud.Payments.Create($scope.order.ID, {Type: CheckoutConfig.AvailablePaymentMethods[0]})
+		OrderCloud.Payments.Create($scope.order.ID, {Type: $scope.methods[0].Value})
 			.then(function(data) {
 				$scope.payments.Items.push(data);
 				calculateMaxTotal();
