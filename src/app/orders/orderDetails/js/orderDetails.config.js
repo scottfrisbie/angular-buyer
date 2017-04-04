@@ -19,6 +19,9 @@ function OrderDetailConfig($stateProvider){
                 },
                 OrderLineItems: function($stateParams, OrderCloud){
                     return OrderCloud.LineItems.List($stateParams.orderid, null, 1, null, null, null, null, $stateParams.buyerid);
+                },
+                Shipments: function($stateParams, OrderCloud){
+                    return OrderCloud.Shipments.List($stateParams.orderid);
                 }
             }
         });

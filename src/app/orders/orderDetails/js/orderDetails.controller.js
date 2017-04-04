@@ -2,10 +2,11 @@ angular.module('orderCloud')
     .controller('OrderDetailsCtrl', OrderDetailsController)
 ;
 
-function OrderDetailsController($stateParams, OrderCloud, SelectedOrder, OrderLineItems) {
+function OrderDetailsController($stateParams, Shipments, OrderCloud, SelectedOrder, OrderLineItems) {
     var vm = this;
     vm.order = SelectedOrder;
     vm.lineItems = OrderLineItems;
+    vm.shipments = Shipments;
 
     vm.pageChanged = function() {
         return OrderCloud.LineItems.List($stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
