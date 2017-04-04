@@ -69,7 +69,8 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
     ;
 }
 
-function CheckoutController($state, $exceptionHandler, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig) {
+function CheckoutController($state, $exceptionHandler, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig, ocMandrill) {
+
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
     vm.userAddresses = CurrentUserAddresses;
@@ -78,7 +79,37 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     vm.checkoutConfig = CheckoutConfig;
     vm.currentUserAddresses = CurrentUserAddresses;
 
-    vm.submitOrder = function(order) {
+    vm.submitOrder = function(order){
+        vm.orderLoading = OrderCloud.SpendingAccounts.Get(order.xp.CustomerNumber)
+            .then(function(spendingAcct){
+                order.BudgetBalance = spendingAcct.Balance;
+                if(spendingAcct.Balance < 0) {
+                    //send email alerting negative balance
+                    return submitAndAlert(order);
+                } else {
+                    return finalSubmit(order);
+                }
+            });
+    };
+
+    function submitAndAlert(order){
+        return OrderCloud.UserGroups.Get(order.xp.CustomerNumber)
+            .then(function(userGroup){
+                return OrderCloud.UserGroups.ListUserAssignments(userGroup.xp.LevelBlueGroup, null, null, 100)
+                    .then(function(userGroupList){
+                        var userIDs = _.pluck(userGroupList.Items, 'UserID');
+                        return OrderCloud.Users.List(null, null, null, 100, null, null, {ID: userIDs.join('|')})
+                            .then(function(userList){
+                                return ocMandrill.NegativeBalance(userList, order)
+                                    .then(function(){
+                                        return finalSubmit(order);
+                                    });
+                            });
+                    });
+            });
+    }
+
+    function finalSubmit(order) {
         generateOrderNumber(order)
             .then(function(updatedOrderNumber){
                 return OrderCloud.Orders.Submit(updatedOrderNumber.ID)
@@ -90,7 +121,7 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
                         toastr.error('Your order did not submit successfully.', 'Error');
                     });
             });
-    };
+    }
 
     function generateOrderNumber(order){
         var attempt = 0;

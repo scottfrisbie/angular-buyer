@@ -41,6 +41,7 @@
                         <b>Status: </b> {{orderDetails.order.Status | humanize}} <br>
                         <b>Buyer Company: </b> {{orderDetails.order.FromCompany.Name}} <br>
                         <b>Created By: </b> {{orderDetails.order.FromUserFirstName + ' ' + orderDetails.order.FromUserLastName}} <br>
+                        <b>Tracking Number: </b> {{orderDetails.shipments.Items[0].TrackingNumber || 'N/A'}} <br>
                         <div ng-if="orderDetails.order.Comments">
                             <b>Comments: </b> {{orderDetails.order.Comments}}
                         </div>

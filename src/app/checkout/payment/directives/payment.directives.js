@@ -137,7 +137,7 @@ function PaymentSpendingAccountController($scope, $rootScope, toastr, OrderCloud
 		$scope.updatingSpendingAccountPayment = OrderCloud.Payments.Update($scope.order.ID, $scope.payment.ID, $scope.payment)
 			.then(function() {
 				$scope.showPaymentOptions = false;
-				toastr.success('Using ' + scope.spendingAccount.Name,'Spending Account Payment');
+				toastr.success('Using ' + scope.spendingAccount.Name,'Budget Payment');
 				$rootScope.$broadcast('OC:PaymentsUpdated');
 			})
 			.catch(function(ex) {
@@ -247,7 +247,6 @@ function OCPayment() {
 		restrict:'E',
 		scope: {
 			order: '=',
-			methods: '=?',
 			payment: '=?',
 			paymentIndex: '=?',
 			excludeOptions: '=?'
@@ -259,14 +258,18 @@ function OCPayment() {
 }
 
 function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, CheckoutPaymentService) {
-	if (!$scope.methods) $scope.methods = CheckoutConfig.AvailablePaymentMethods;
+	$scope.methods = [
+		{Value: 'SpendingAccount', Display: 'Budget'},
+		{Value: 'PurchaseOrder', Display: 'Purchase Order'}
+	];
+
 	if (!$scope.payment) {
 		OrderCloud.Payments.List($scope.order.ID)
 			.then(function(data) {
 				if (CheckoutPaymentService.PaymentsExceedTotal(data, $scope.order.Total)) {
 					CheckoutPaymentService.RemoveAllPayments(data, $scope.order)
 						.then(function(data) {
-							OrderCloud.Payments.Create($scope.order.ID, {Type: CheckoutConfig.AvailablePaymentMethods[0]})
+							OrderCloud.Payments.Create($scope.order.ID, {Type: $scope.methods[0].Value})
 								.then(function(data) {
 									$scope.payment = data;
 									$rootScope.$broadcast('OC:PaymentsUpdated');
@@ -275,9 +278,9 @@ function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, Check
 				}
 				else if (data.Items.length) {
 					$scope.payment = data.Items[0];
-					if ($scope.methods.length == 1) $scope.payment.Type = $scope.methods[0];
+					if ($scope.methods.length == 1) $scope.payment.Type = $scope.methods[0].Value;
 				} else {
-					OrderCloud.Payments.Create($scope.order.ID, {Type: CheckoutConfig.AvailablePaymentMethods[0]})
+					OrderCloud.Payments.Create($scope.order.ID, {Type:  $scope.methods[0].Value})
 						.then(function(data) {
 							$scope.payment = data;
 							$rootScope.$broadcast('OC:PaymentsUpdated');
@@ -285,7 +288,7 @@ function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, Check
 				}
 			});
 	} else if ($scope.methods.length == 1) {
-		$scope.payment.Type = $scope.methods[0];
+		$scope.payment.Type = $scope.methods[0].Value;
 	}
 }
 
@@ -293,8 +296,7 @@ function OCPayments() {
 	return {
 		restrict:'E',
 		scope: {
-			order: '=',
-			methods: '=?'
+			order: '='
 		},
 		templateUrl: 'checkout/payment/directives/templates/payments.tpl.html',
 		controller: 'PaymentsCtrl'
@@ -302,7 +304,10 @@ function OCPayments() {
 }
 
 function PaymentsController($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, CheckoutPaymentService, CheckoutConfig) {
-	if (!$scope.methods) $scope.methods = CheckoutConfig.AvailablePaymentMethods;
+	$scope.methods = [
+		{Value: 'SpendingAccount', Display: 'Budget'},
+		{Value: 'PurchaseOrder', Display: 'Purchase Order'}
+	];
 
 	OrderCloud.Payments.List($scope.order.ID)
 		.then(function(data) {
@@ -324,7 +329,7 @@ function PaymentsController($rootScope, $scope, $exceptionHandler, toastr, Order
 		});
 
 	$scope.addNewPayment = function() {
-		OrderCloud.Payments.Create($scope.order.ID, {Type: CheckoutConfig.AvailablePaymentMethods[0]})
+		OrderCloud.Payments.Create($scope.order.ID, {Type: $scope.methods[0].Value})
 			.then(function(data) {
 				$scope.payments.Items.push(data);
 				calculateMaxTotal();
