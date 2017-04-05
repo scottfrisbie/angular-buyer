@@ -8,8 +8,6 @@
     "npm": "3.6.0"
   },
   "cacheDirectories": [
-    "node_modules",
-    "bower_components"
   ],
   "scripts": {
     "heroku-prebuild": "npm install bower gulp --save",
