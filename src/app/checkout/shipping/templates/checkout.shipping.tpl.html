@@ -91,7 +91,7 @@
                 </div>
                 <div class="panel-footer">
                     <button type="button" class="btn btn-primary form-control" ng-disabled="!checkout.shippingAddress || checkoutShipping.shippersAreLoading || OC_Checkout_Shipping.$invalid"
-                        ui-sref="checkout.payment">Next</button>
+                        ui-sref="checkout.payment" ui-sref-opts="{reload:true}">Next</button>
                 </div>
             </div>
         </div>
