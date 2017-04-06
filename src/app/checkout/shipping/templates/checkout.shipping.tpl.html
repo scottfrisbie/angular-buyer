@@ -61,10 +61,14 @@
                 <div class="panel-body">
                     <div class="well text-center">
                         <div ng-if="base.currentOrder.Total >= 250">
-                            Your order over $250 will be shipped freight free
+                            Your order over $250 will be shipped freight free.
+                            <br>
+                            Tax will be calculated at time of shipment.
                         </div>
                         <div ng-if="base.currentOrder.Total < 250">
                             Freight will be calculated at time of shipment. Order $250 to qualify for free freight.
+                            <br>
+                            Tax will be calculated at time of shipment.
                         </div>
                     </div>
                     <p>
