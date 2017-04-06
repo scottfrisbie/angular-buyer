@@ -22,7 +22,7 @@ function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, to
     };
 }
 
-function AddRebate(OrderCloud, $rootScope, rebateCode) {
+function AddRebate(OrderCloud, $rootScope, rebateCode, $q) {
     //This Service is called from the base.js on CurrentOrder
     var service = {
         ApplyPromo: _apply
@@ -56,7 +56,7 @@ function AddRebate(OrderCloud, $rootScope, rebateCode) {
                 );
 
         } else {
-            return order;
+            return $q.when(order);
         }
     }
     return service;
