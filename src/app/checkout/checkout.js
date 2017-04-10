@@ -81,13 +81,20 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
 
     vm.submitOrder = function(order){
         vm.orderLoading = OrderCloud.Payments.List(order.ID, null, null, null, null, null, {Type: 'SpendingAccount'})
-            .then(function(budgetList){
-                var budget = budgetList.Items[0];
-                if( budget && budget.Balance < 0){
-                    //send email alerting negative balance
-                    order.BugetBalance = budget.Balance;
-                    order.BugetBalanceName = budget.Name;
-                    return submitAndAlert(order);
+            .then(function(paymentList){
+                var payment = paymentList.Items[0];
+                if(payment && payment.SpendingAccountID){
+                    return OrderCloud.SpendingAccounts.Get(payment.SpendingAccountID)
+                        .then(function(budget){
+                            if( budget && budget.Balance < 0){
+                                //send email alerting negative balance
+                                order.BudgetBalance = budget.Balance;
+                                order.BugetBalanceName = budget.Name;
+                                return submitAndAlert(order);
+                            } else {
+                                return finalSubmit(order);
+                            }
+                        });
                 } else {
                     return finalSubmit(order);
                 }
@@ -112,42 +119,16 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     }
 
     function finalSubmit(order) {
-        generateOrderNumber(order)
-            .then(function(updatedOrderNumber){
-                return OrderCloud.Orders.Submit(updatedOrderNumber.ID)
-                    .then(function(order) {
-                        $state.go('confirmation', {orderid:updatedOrderNumber.ID}, {reload:'base'});
-                        toastr.success('Your order has been submitted', 'Success');
-                    })
-                    .catch(function(ex) {
-                        toastr.error('Your order did not submit successfully.', 'Error');
-                    });
+        return OrderCloud.Orders.Submit(order.ID)
+            .then(function(order) {
+                $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
+                return toastr.success('Your order has been submitted', 'Success');
+            })
+            .catch(function(ex) {
+                return toastr.error('Your order did not submit successfully.', 'Error');
             });
     }
-
-    function generateOrderNumber(order){
-        var attempt = 0;
-        //generates an order number in the form WXXXXXXX
-        return generateNumber();
-        function generateNumber(){
-            var orderNumber = Math.floor((Math.random() * 9000000)); //random # length 7 digits
-            return OrderCloud.Orders.Patch(order.ID, {ID: 'W' + orderNumber})
-                .then(function(newOrder){
-                    return newOrder;
-                })
-                .catch(function(error){
-                    if(attempt > 3) {
-                        //try to generate a max of 4 times before exiting loop
-                        return $exceptionHandler(error);
-                    } else {
-                        //there was a conflict, generate a new random # and try again
-                        attempt++;
-                        return generateNumber(); 
-                    }
-                });
-        }
-    }
-
+    
     $rootScope.$on('OC:OrderShipAddressUpdated', function(event, order) {
         OrderCloud.Me.GetAddress(order.ShippingAddressID)
             .then(function(address){

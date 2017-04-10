@@ -113,9 +113,29 @@ function NewOrderService($q, OrderCloud) {
             };
             OrderCloud.Orders.Create(order)
                 .then(function(order) {
-                    deferred.resolve(order);
+                    var attempt = 0;
+                    generateOrderNumber(order); //generates an order number in the form WXXXXXXX
+                    
+                    function generateOrderNumber(order){
+                        var orderNumber = Math.floor((1000000 + Math.random() * 9000000)); //random # length 7 digits
+                        OrderCloud.Orders.Patch(order.ID, {ID: 'W' + orderNumber})
+                            .then(function(newOrder){
+                                deferred.resolve(newOrder);
+                            })
+                            .catch(function(error){
+                                if(attempt > 3) {
+                                    deferred.resolve();
+                                } else {
+                                    //there was a conflict, generate a new random # and try again
+                                    attempt++;
+                                    generateOrderNumber(); 
+                                }
+                            });
+                        }
                 });
         }
+
+        
 
         return deferred.promise;
     }
