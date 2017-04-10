@@ -10,6 +10,7 @@ router.route('/negativebalance')
             Recipient: req.body.Recipients,
             MergeVars: [
                 {name: 'ORDERNUMBER', content: req.body.Order.ID},
+                {name: 'BALANCENAME', content: req.body.Order.BudgetBalanceName},
                 {name: 'BALANCE', content: req.body.Order.BudgetBalance},
                 {name: 'DATESUBMITTED', content: req.body.Order.DateSubmitted},
                 {name: 'FIRSTNAME', content: req.body.Order.FirstName},

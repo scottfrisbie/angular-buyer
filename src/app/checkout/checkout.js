@@ -80,11 +80,13 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     vm.currentUserAddresses = CurrentUserAddresses;
 
     vm.submitOrder = function(order){
-        vm.orderLoading = OrderCloud.SpendingAccounts.Get(order.xp.CustomerNumber)
-            .then(function(spendingAcct){
-                order.BudgetBalance = spendingAcct.Balance;
-                if(spendingAcct.Balance < 0) {
+        vm.orderLoading = OrderCloud.Payments.List(order.ID, null, null, null, null, null, {Type: 'SpendingAccount'})
+            .then(function(budgetList){
+                var budget = budgetList.Items[0];
+                if( budget && budget.Balance < 0){
                     //send email alerting negative balance
+                    order.BugetBalance = budget.Balance;
+                    order.BugetBalanceName = budget.Name;
                     return submitAndAlert(order);
                 } else {
                     return finalSubmit(order);
