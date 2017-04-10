@@ -12,6 +12,7 @@ function ocMandrillService($resource, devapiurl, $filter) {
             Recipients: [],
             Order: {
                 ID: order.ID,
+                BudgetBalanceName: order.BugetBalanceName,
                 BudgetBalance: $filter('currency')(order.BudgetBalance),
                 DateSubmitted: $filter('date')(order.DateCreated),
                 FirstName: order.FromUserFirstName,
