@@ -62,7 +62,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     return deferred.promise;
                 },
                 CurrentUserAddresses: function(OrderCloud) {
-                    return OrderCloud.Me.ListAddresses(null, null, null, null, null, {IsShipping: true});
+                    return OrderCloud.Me.ListAddresses(null, null, null, null, null, {Shipping: true});
                 }
 			}
 		})
