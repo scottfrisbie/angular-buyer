@@ -74,7 +74,7 @@ function checkoutConfirmationConfig($stateProvider) {
 		});
 }
 
-function CheckoutConfirmationController(SubmittedOrder, OrderShipAddress, OrderPromotions, OrderBillingAddress, OrderPayments, LineItemsList) {
+function CheckoutConfirmationController(SubmittedOrder, OrderShipAddress, OrderPromotions, OrderBillingAddress, OrderPayments, LineItemsList, rebateCode) {
 	var vm = this;
 	vm.order = SubmittedOrder;
 	vm.shippingAddress = OrderShipAddress;
@@ -82,4 +82,5 @@ function CheckoutConfirmationController(SubmittedOrder, OrderShipAddress, OrderP
 	vm.billingAddress = OrderBillingAddress;
 	vm.payments = OrderPayments.Items;
 	vm.lineItems = LineItemsList;
+	vm.rebateCode = rebateCode;
 }
