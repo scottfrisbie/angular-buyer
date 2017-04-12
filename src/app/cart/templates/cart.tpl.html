@@ -40,7 +40,7 @@
                     <hr>
                     <!--<oc-add-promotion order="base.currentOrder"></oc-add-promotion>-->
                     <h5 ng-repeat="promotion in cart.promotions" class="text-danger">
-                        {{promotion.Name}}
+                        {{cart.rebateCode ? promotion.Name : promotion.Code}}
                         <div ng-if="promotion.Code !== cart.rebateCode">
                             <a href="" ng-click="checkout.removePromotion(base.currentOrder, promotion)">remove</a>
                         </div>
