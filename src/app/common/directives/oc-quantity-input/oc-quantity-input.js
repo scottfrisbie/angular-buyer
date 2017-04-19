@@ -3,7 +3,7 @@ angular.module('orderCloud')
 
 ;
 
-function OCQuantityInput(toastr, OrderCloud, $rootScope) {
+function OCQuantityInput(toastr, OrderCloudSDK, $rootScope) {
     return {
         scope: {
             product: '=',

@@ -15,11 +15,11 @@ function CategoryBrowseConfig($stateProvider, catalogid){
                 Parameters: function($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                CategoryList: function(OrderCloud, Parameters) {
+                CategoryList: function(OrderCloudSDK, Parameters) {
                     if(Parameters.categoryID) { Parameters.filters ? Parameters.filters.ParentID = Parameters.categoryID : Parameters.filters = {ParentID:Parameters.categoryID}; } 
                     return OrderCloudSDK.Me.ListCategories(null, Parameters.categoryPage, Parameters.pageSize || 12, null, Parameters.sortBy, Parameters.filters, 1);
                 },
-                ProductList: function(OrderCloud, Parameters) {
+                ProductList: function(OrderCloudSDK, Parameters) {
                     if(Parameters && Parameters.filters && Parameters.filters.ParentID) {
                         delete Parameters.filters.ParentID;
                         return OrderCloudSDK.Me.ListProducts(null, Parameters.productPage, Parameters.pageSize || 12, null, Parameters.sortBy, Parameters.filters, Parameters.categoryID);
@@ -27,7 +27,7 @@ function CategoryBrowseConfig($stateProvider, catalogid){
                         return null;
                     }
                 },
-                SelectedCategory: function(OrderCloud, Parameters){
+                SelectedCategory: function(OrderCloudSDK, Parameters){
                     if(Parameters.categoryID){
                         return OrderCloudSDK.Me.ListCategories(null, 1, 1, null, null, {ID:Parameters.categoryID}, 'all')
                             .then(function(data){

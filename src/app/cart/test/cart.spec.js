@@ -14,10 +14,10 @@ describe('Component: Cart', function() {
     beforeEach(module(function($provide) {
         $provide.value('CurrentOrder', {ID: "MockOrderID3456"});
     }));
-    beforeEach(inject(function($rootScope, $q, OrderCloud, ocLineItems, CurrentOrder) {
+    beforeEach(inject(function($rootScope, $q, OrderCloudSDK, ocLineItems, CurrentOrder) {
         scope = $rootScope.$new();
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         _ocLineItems = ocLineItems;
         currentOrder = CurrentOrder;
         rootScope = $rootScope;
@@ -113,7 +113,7 @@ describe('Component: Cart', function() {
                 spyOn(confirm,'Confirm').and.returnValue(df.promise);
                 spyOn(oc.Orders, 'Delete').and.returnValue(df.promise);
             });
-            it('should call OrderCloud Confirm modal prompt', function() {
+            it('should call OrderCloudSDK Confirm modal prompt', function() {
                 cartController.cancelOrder();
                 expect(confirm.Confirm).toHaveBeenCalled();
             });

@@ -6,11 +6,11 @@ describe('Component: addPromotion', function(){
         ;
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($rootScope, $q, OrderCloud){
+    beforeEach(inject(function($rootScope, $q, OrderCloudSDK){
         scope = $rootScope.$new();
         rootScope = $rootScope;
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
     }));
     describe('Component Directive: ocAddPromotion', function(){
         var addPromotionCtrl,
@@ -21,7 +21,7 @@ describe('Component: addPromotion', function(){
             addPromotionCtrl = $componentController('ocAddPromotion', {
                 $scope: scope,
                 $rootScope: rootScope,
-                OrderCloud: oc,
+                OrderCloudSDK: oc,
                 toastr: toaster
             });
         }));

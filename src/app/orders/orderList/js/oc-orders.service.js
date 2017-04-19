@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocOrders', ocOrdersService)
 ;
 
-function ocOrdersService(OrderCloud, toastr){
+function ocOrdersService(OrderCloudSDK, toastr){
     var service = {
         List: _list
     };

@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocAuthNet', AuthorizeNet)
 ;
 
-function AuthorizeNet( $q, $resource, OrderCloud, apiurl, ocCreditCardUtility) {
+function AuthorizeNet( $q, $resource, OrderCloudSDK, apiurl, ocCreditCardUtility) {
     return {
         'CreateCreditCard': _createCreateCard,
         'UpdateCreditCard': _updateCreditCard,

@@ -8,7 +8,7 @@ angular.module('orderCloud')
         controller: AddPromotionComponentCtrl
     });
 
-function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, toastr) {
+function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloudSDK, toastr) {
     this.submit = function(orderID, promoCode) {
         OrderCloudSDK.Orders.AddPromotion(orderID, promoCode)
             .then(function(promo) {
@@ -22,7 +22,7 @@ function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, to
     };
 }
 
-function AddRebate(OrderCloud, $rootScope, rebateCode, $q) {
+function AddRebate(OrderCloudSDK, $rootScope, rebateCode, $q) {
     //This Service is called from the base.js on CurrentOrder
     var service = {
         ApplyPromo: _apply

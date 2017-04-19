@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocLineItems', LineItemFactory)
 ;
 
-function LineItemFactory($rootScope, $q, $uibModal, OrderCloud) {
+function LineItemFactory($rootScope, $q, $uibModal, OrderCloudSDK) {
     return {
         SpecConvert: _specConvert,
         AddItem: _addItem,

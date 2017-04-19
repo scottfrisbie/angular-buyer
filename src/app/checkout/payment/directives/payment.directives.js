@@ -34,7 +34,7 @@ function OCPaymentPurchaseOrder() {
 	}
 }
 
-function PaymentPurchaseOrderController($scope, $rootScope, toastr, OrderCloud, $exceptionHandler) {
+function PaymentPurchaseOrderController($scope, $rootScope, toastr, OrderCloudSDK, $exceptionHandler) {
 	if (!$scope.payment) {
 		OrderCloudSDK.Payments.List($scope.order.ID)
 			.then(function(data) {
@@ -91,7 +91,7 @@ function OCPaymentSpendingAccount() {
 	}
 }
 
-function PaymentSpendingAccountController($scope, $rootScope, toastr, OrderCloud, $exceptionHandler) {
+function PaymentSpendingAccountController($scope, $rootScope, toastr, OrderCloudSDK, $exceptionHandler) {
 	OrderCloudSDK.Me.ListSpendingAccounts(null, 1, 100, null, null, {RedemptionCode: '!*', AllowAsPaymentMethod: true})
 		.then(function(data) {
 			$scope.spendingAccounts = data.Items;
@@ -169,7 +169,7 @@ function OCPaymentCreditCard() {
 	}
 }
 
-function PaymentCreditCardController($scope, $rootScope, toastr, $filter, OrderCloud, MyPaymentCreditCardModal, $exceptionHandler) {
+function PaymentCreditCardController($scope, $rootScope, toastr, $filter, OrderCloudSDK, MyPaymentCreditCardModal, $exceptionHandler) {
 	OrderCloudSDK.Me.ListCreditCards(null, 1, 100, null, null, {})
 		.then(function(data) {
 			$scope.creditCards = data.Items;
@@ -257,7 +257,7 @@ function OCPayment() {
 	}
 }
 
-function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, CheckoutPaymentService) {
+function PaymentController($scope, $rootScope, OrderCloudSDK, CheckoutConfig, CheckoutPaymentService) {
 	$scope.methods = [
 		{Value: 'SpendingAccount', Display: 'Budget'},
 		{Value: 'PurchaseOrder', Display: 'Purchase Order'}
@@ -303,7 +303,7 @@ function OCPayments() {
 	}
 }
 
-function PaymentsController($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, CheckoutPaymentService, CheckoutConfig) {
+function PaymentsController($rootScope, $scope, $exceptionHandler, toastr, OrderCloudSDK, CheckoutPaymentService, CheckoutConfig) {
 	$scope.methods = [
 		{Value: 'SpendingAccount', Display: 'Budget'},
 		{Value: 'PurchaseOrder', Display: 'Purchase Order'}

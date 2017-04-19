@@ -19,7 +19,7 @@ function ProductSearchConfig($stateProvider) {
                 Parameters: function(ocParameters, $stateParams) {
                     return ocParameters.Get($stateParams);
                 },
-                ProductList: function(OrderCloud, Parameters) {
+                ProductList: function(OrderCloudSDK, Parameters) {
                     return OrderCloudSDK.Me.ListProducts(Parameters.searchTerm, Parameters.page, Parameters.pageSize || 12, 'Name,ID', Parameters.sortBy);
                 }
             }
@@ -79,7 +79,7 @@ function OrderCloudProductSearchComponent() {
     };
 }
 
-function ProductSearchDirectiveController($state, $scope, OrderCloud) {
+function ProductSearchDirectiveController($state, $scope, OrderCloudSDK) {
     var vm = this;
 
     vm.getSearchResults = function() {
@@ -125,7 +125,7 @@ function ProductSearchService($uibModal) {
     return service;
 }
 
-function ProductSearchModalController($uibModalInstance, $timeout, $scope, OrderCloud) {
+function ProductSearchModalController($uibModalInstance, $timeout, $scope, OrderCloudSDK) {
     var vm = this;
 
     $timeout(function() {

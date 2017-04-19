@@ -33,14 +33,14 @@ constant. You can see how we are referencing the `AppCtrl` via the controllerAs 
 //dynamic application title
 
 <title ng-bind="application.$state.current.data.pageTitle + (application.$state.current.data.pageTitle ? ' | ' : '') + application.name">
-    OrderCloud
+    OrderCloudSDK
 </title>
 ```
 After the `<title>`, there are some very important comments that are
 used to dynamically set the `base[href]` attribute and inject reference bower and application
 CSS styles during the gulp `build` and `compile`.
 
-At the end of the `<head>` you will find the link for the OrderCloud favicon.
+At the end of the `<head>` you will find the link for the OrderCloudSDK favicon.
 
 ### `<body>`
 The body element contains the `ui-view` in which all other application templates will be loaded.

@@ -13,7 +13,7 @@ function checkoutPaymentConfig($stateProvider) {
 			controllerAs: 'checkoutPayment'
             //taxes not being returned from integration comment out for now
             // resolve: {
-            //     InitializeTaxes: function(TaxIntegration, CurrentOrder, OrderCloud, $rootScope){
+            //     InitializeTaxes: function(TaxIntegration, CurrentOrder, OrderCloudSDK, $rootScope){
             //         return OrderCloudSDK.LineItems.List(CurrentOrder.ID, null, null, 100)
             //             .then(function(LineItemList){
             //                 return TaxIntegration.Get(CurrentOrder.BillingAddress, LineItemList)
@@ -36,7 +36,7 @@ function CheckoutPaymentController(rebateCode) {
     vm.rebateCode = rebateCode;
 }
 
-function CheckoutPaymentService($q, OrderCloud) {
+function CheckoutPaymentService($q, OrderCloudSDK) {
     var service = {
         PaymentsExceedTotal: _paymentsExceedTotal,
         RemoveAllPayments: _removeAllPayments

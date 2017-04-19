@@ -17,10 +17,10 @@ describe('Component: orderApprovals', function() {
     }));
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($q, $rootScope, OrderCloud, ocParameters, ocApprovals) {
+    beforeEach(inject(function($q, $rootScope, OrderCloudSDK, ocParameters, ocApprovals) {
         q = $q;
         scope = $rootScope.$new();
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         _ocApprovals = ocApprovals;
     }));
 
@@ -65,7 +65,7 @@ describe('Component: orderApprovals', function() {
 
             orderApprovalsCtrl = $controller('OrderApprovalsCtrl', {
                 $stateParams: $stateParams,
-                OrderCloud: oc,
+                OrderCloudSDK: oc,
                 ocApprovals: _ocApprovals,
                 OrderApprovals: {Meta: {Page: 1, PageSize: 12}, Items: [{ApprovalRuleID: 'Approval1', Status: 'Approved'}] },
                 CanApprove: true

@@ -15,14 +15,14 @@ function MyAddressesConfig($stateProvider) {
                 pageTitle: "Personal Addresses"
             },
             resolve: {
-                AddressList: function(OrderCloud) {
+                AddressList: function(OrderCloudSDK) {
                     return OrderCloudSDK.Me.ListAddresses();
                 }
             }
         });
 }
 
-function MyAddressesController(toastr, OrderCloud, ocConfirm, MyAddressesModal, AddressList) {
+function MyAddressesController(toastr, OrderCloudSDK, ocConfirm, MyAddressesModal, AddressList) {
     var vm = this;
     vm.list = AddressList;
 

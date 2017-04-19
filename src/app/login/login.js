@@ -15,7 +15,7 @@ function LoginConfig($stateProvider) {
     ;
 }
 
-function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, ocRolesService, clientid) {
+function LoginService($q, $window, $state, $cookies, toastr, OrderCloudSDK, ocRolesService, clientid) {
     return {
         SendVerificationCode: _sendVerificationCode,
         ResetPassword: _resetPassword,

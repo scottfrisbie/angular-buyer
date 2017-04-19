@@ -10,7 +10,7 @@ function checkoutReviewConfig($stateProvider) {
 			controller: 'CheckoutReviewCtrl',
 			controllerAs: 'checkoutReview',
 			resolve: {
-				LineItemsList: function($q, $state, toastr, OrderCloud, ocLineItems, CurrentOrder) {
+				LineItemsList: function($q, $state, toastr, OrderCloudSDK, ocLineItems, CurrentOrder) {
 					var dfd = $q.defer();
 					OrderCloudSDK.LineItems.List(CurrentOrder.ID)
 						.then(function(data) {
@@ -30,7 +30,7 @@ function checkoutReviewConfig($stateProvider) {
 						});
 					return dfd.promise;
 				},
-				OrderPaymentsDetail: function($q, OrderCloud, CurrentOrder, $state) {
+				OrderPaymentsDetail: function($q, OrderCloudSDK, CurrentOrder, $state) {
 					return OrderCloudSDK.Payments.List(CurrentOrder.ID)
 						.then(function(data) {
 							//TODO: create a queue that can be resolved

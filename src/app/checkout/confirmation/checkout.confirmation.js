@@ -11,19 +11,19 @@ function checkoutConfirmationConfig($stateProvider) {
 			controller: 'CheckoutConfirmationCtrl',
 			controllerAs: 'checkoutConfirmation',
 			resolve: {
-				SubmittedOrder: function($stateParams, OrderCloud) {
+				SubmittedOrder: function($stateParams, OrderCloudSDK) {
 					return OrderCloudSDK.Me.GetOrder($stateParams.orderid);
 				},
-				OrderShipAddress: function(SubmittedOrder, OrderCloud){
+				OrderShipAddress: function(SubmittedOrder, OrderCloudSDK){
 					return OrderCloudSDK.Me.GetAddress(SubmittedOrder.ShippingAddressID);
 				},
-				OrderPromotions: function(SubmittedOrder, OrderCloud) {
+				OrderPromotions: function(SubmittedOrder, OrderCloudSDK) {
 					return OrderCloudSDK.Orders.ListPromotions(SubmittedOrder.ID);
 				},
-				OrderBillingAddress: function(SubmittedOrder, OrderCloud){
+				OrderBillingAddress: function(SubmittedOrder, OrderCloudSDK){
 					return OrderCloudSDK.Me.GetAddress(SubmittedOrder.BillingAddressID);
 				},
-				OrderPayments: function($q, SubmittedOrder, OrderCloud) {
+				OrderPayments: function($q, SubmittedOrder, OrderCloudSDK) {
 					var deferred = $q.defer();
 					OrderCloudSDK.Payments.List(SubmittedOrder.ID)
 						.then(function(data) {
@@ -59,7 +59,7 @@ function checkoutConfirmationConfig($stateProvider) {
 
 					return deferred.promise;
 				},
-				LineItemsList: function($q, $state, toastr, ocLineItems, SubmittedOrder, OrderCloud) {
+				LineItemsList: function($q, $state, toastr, ocLineItems, SubmittedOrder, OrderCloudSDK) {
 					var dfd = $q.defer();
 					OrderCloudSDK.LineItems.List(SubmittedOrder.ID)
 						.then(function(data) {

@@ -20,7 +20,7 @@ function FavoriteProductsConfig($stateProvider){
                 Parameters: function ($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                FavoriteProducts: function(OrderCloud, Parameters, CurrentUser){
+                FavoriteProducts: function(OrderCloudSDK, Parameters, CurrentUser){
                     if (CurrentUser.xp && CurrentUser.xp.FavoriteProducts.length) {
                         return OrderCloudSDK.Me.ListProducts(Parameters.search, Parameters.page, Parameters.pageSize || 6, Parameters.searchOn, Parameters.sortBy, {ID: CurrentUser.xp.FavoriteProducts.join('|')});
                     } else {
@@ -31,7 +31,7 @@ function FavoriteProductsConfig($stateProvider){
         });
 }
 
-function FavoriteProductsController(ocParameters, OrderCloud, $state, $ocMedia, Parameters, CurrentUser, FavoriteProducts){
+function FavoriteProductsController(ocParameters, OrderCloudSDK, $state, $ocMedia, Parameters, CurrentUser, FavoriteProducts){
     var vm = this;
     vm.currentUser = CurrentUser;
     vm.list = FavoriteProducts;
@@ -107,7 +107,7 @@ function FavoriteProductDirective(){
     };
 }
 
-function FavoriteProductController($scope, OrderCloud, toastr){
+function FavoriteProductController($scope, OrderCloudSDK, toastr){
     var vm = this;
     vm.checkHasFavorites = checkHasFavorites;
     vm.toggleFavoriteProduct = toggleFavoriteProduct;

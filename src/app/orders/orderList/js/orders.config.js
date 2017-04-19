@@ -22,7 +22,7 @@ function OrdersConfig($stateProvider) {
                     return ocOrders.List(Parameters, CurrentUser, Buyer);
 
                 },
-                GroupAssignments: function($q, OrderCloud) {
+                GroupAssignments: function($q, OrderCloudSDK) {
                     return OrderCloudSDK.Me.ListAddresses()
                         .then(function(addresses) {
                             return OrderCloudSDK.Me.ListUserGroups()

@@ -5,8 +5,8 @@ describe('Payment Directives', function() {
 		rootScope;
 	beforeEach(module('orderCloud'));
 	beforeEach(module('orderCloud.sdk'));
-	beforeEach(inject(function($q, $rootScope, OrderCloud) {
-		oc = OrderCloud;
+	beforeEach(inject(function($q, $rootScope, OrderCloudSDK) {
+		oc = OrderCloudSDK;
 		q = $q;
 		scope = $rootScope.$new();
 		rootScope = $rootScope;

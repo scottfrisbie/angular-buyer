@@ -22,7 +22,7 @@ function AccountConfig($stateProvider) {
 	;
 }
 
-function AccountService($q, $uibModal, OrderCloud, toastr) {
+function AccountService($q, $uibModal, OrderCloudSDK, toastr) {
 	var service = {
 		Update: _update,
 		ChangePassword: _changePassword

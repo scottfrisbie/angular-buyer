@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocOrderDetails', ocOrderDetailsService)
 ;
 
-function ocOrderDetailsService($q, $exceptionHandler, OrderCloud){
+function ocOrderDetailsService($q, $exceptionHandler, OrderCloudSDK){
     var service = {
         Get: _get
     };

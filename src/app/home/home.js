@@ -15,10 +15,10 @@ function HomeConfig($stateProvider) {
 				pageTitle: 'Home'
 			},
 			resolve: {
-				FeaturedProducts: function(OrderCloud){
+				FeaturedProducts: function(OrderCloudSDK){
 					return OrderCloudSDK.Me.ListProducts(null, null, 100, null, null, {'xp.Featured': true});
 				},
-				FeaturedCategories: function(OrderCloud){
+				FeaturedCategories: function(OrderCloudSDK){
 					return OrderCloudSDK.Me.ListCategories(null, 1, 100, null, null, {'xp.Featured': true}, 'all');
 				}
 			}

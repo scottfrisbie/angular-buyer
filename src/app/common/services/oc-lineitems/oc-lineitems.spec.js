@@ -13,10 +13,10 @@ describe('Factory: ocLineItem', function() {
         };
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($rootScope, $q, OrderCloud, ocLineItems) {
+    beforeEach(inject(function($rootScope, $q, OrderCloudSDK, ocLineItems) {
         scope = $rootScope.$new();
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         _ocLineItems = ocLineItems;
     }));
     describe('AddItem', function() {

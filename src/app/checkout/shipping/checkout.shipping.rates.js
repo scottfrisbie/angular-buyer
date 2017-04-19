@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ShippingRates', ShippingRatesService)
 ;
 
-function ShippingRatesService($q, $resource, OrderCloud, apiurl) {
+function ShippingRatesService($q, $resource, OrderCloudSDK, apiurl) {
     var service = {
         GetRates: _getRates,
         GetLineItemRates: _getLineItemRates,

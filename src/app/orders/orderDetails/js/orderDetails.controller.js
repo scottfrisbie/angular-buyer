@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .controller('OrderDetailsCtrl', OrderDetailsController)
 ;
 
-function OrderDetailsController($stateParams, Shipments, OrderCloud, SelectedOrder, OrderLineItems) {
+function OrderDetailsController($stateParams, Shipments, OrderCloudSDK, SelectedOrder, OrderLineItems) {
     var vm = this;
     vm.order = SelectedOrder;
     vm.lineItems = OrderLineItems;

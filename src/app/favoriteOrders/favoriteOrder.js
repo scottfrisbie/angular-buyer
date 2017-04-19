@@ -8,7 +8,7 @@ angular.module('orderCloud')
         controller: FavoriteOrderCtrl
     });
 
-function FavoriteOrderCtrl(OrderCloud, toastr){
+function FavoriteOrderCtrl(OrderCloudSDK, toastr){
     var vm = this;
     vm.$onInit = function(){
         vm.hasFavorites = !!vm.currentUser && !!vm.currentUser.xp && !!vm.currentUser.xp.FavoriteOrders;

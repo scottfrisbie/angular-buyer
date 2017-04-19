@@ -15,7 +15,7 @@ function CartConfig($stateProvider) {
                 pageTitle: "Shopping Cart"
             },
             resolve: {
-                LineItemsList: function($q, $state, toastr, OrderCloud, ocLineItems, CurrentOrder) {
+                LineItemsList: function($q, $state, toastr, OrderCloudSDK, ocLineItems, CurrentOrder) {
                     var dfd = $q.defer();
                     OrderCloudSDK.LineItems.List(CurrentOrder.ID)
                         .then(function(data) {
@@ -35,7 +35,7 @@ function CartConfig($stateProvider) {
                         });
                     return dfd.promise;
                 },
-                CurrentPromotions: function(CurrentOrder, OrderCloud, AddRebate) {
+                CurrentPromotions: function(CurrentOrder, OrderCloudSDK, AddRebate) {
                     return AddRebate.ApplyPromo(CurrentOrder)
                         .then(function(){
                             return OrderCloudSDK.Orders.ListPromotions(CurrentOrder.ID);
@@ -45,7 +45,7 @@ function CartConfig($stateProvider) {
         });
 }
 
-function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, CurrentOrder, ocConfirm, AddRebate, rebateCode) {
+function CartController($rootScope, $state, toastr, OrderCloudSDK, LineItemsList, CurrentPromotions, CurrentOrder, ocConfirm, AddRebate, rebateCode) {
     var vm = this;
     vm.lineItems = LineItemsList;
     vm.promotions = CurrentPromotions.Meta ? CurrentPromotions.Items : CurrentPromotions;

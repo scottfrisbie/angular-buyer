@@ -1,6 +1,6 @@
 angular.module('orderCloud')
     .config(function($httpProvider) {
-        //HTTP Interceptor for OrderCloud Authentication
+        //HTTP Interceptor for OrderCloudSDK Authentication
         $httpProvider.interceptors.push(function($q, $injector) {
             return {
                 'responseError': function(rejection) {

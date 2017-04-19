@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocProductBrowse', ocProductBrowseService)
 ;
 
-function ocProductBrowseService($q, OrderCloud, ocUtility){
+function ocProductBrowseService($q, OrderCloudSDK, ocUtility){
     var service = {
         ListProducts: _listProducts,
         ListCategories: _listCategories,

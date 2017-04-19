@@ -7,9 +7,9 @@ describe('Component: Checkout Payment', function() {
         paymentListItems;
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function ($q, $rootScope, OrderCloud) {
+    beforeEach(inject(function ($q, $rootScope, OrderCloudSDK) {
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         scope = $rootScope.$new();
         order = {
             ID: 'TestOrder123456789',

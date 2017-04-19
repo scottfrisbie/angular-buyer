@@ -12,10 +12,10 @@ describe('Factory: oc-authnet', function(){
         mockReturnedCC
     ;
     beforeEach(module('orderCloud'));
-    beforeEach(inject(function ($rootScope, $q, $resource, OrderCloud, apiurl, ocAuthNet, ocCreditCardUtility) {
+    beforeEach(inject(function ($rootScope, $q, $resource, OrderCloudSDK, apiurl, ocAuthNet, ocCreditCardUtility) {
         scope = $rootScope.$new();
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         api = apiurl;
         resource = $resource;
         ocAuthNetService = ocAuthNet;

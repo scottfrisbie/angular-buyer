@@ -6,10 +6,10 @@ describe('Component: myPayments', function() {
         ;
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($rootScope, $q, OrderCloud) {
+    beforeEach(inject(function($rootScope, $q, OrderCloudSDK) {
         scope = $rootScope.$new();
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
 
     }));
     describe('Factory: MyPaymentCreditCardModal', function() {

@@ -25,8 +25,8 @@ describe('Component: Account', function() {
 
     describe('Factory: AccountService', function() {
         var oc;
-        beforeEach(inject(function(OrderCloud) {
-            oc = OrderCloud;
+        beforeEach(inject(function(OrderCloudSDK) {
+            oc = OrderCloudSDK;
             var defer = q.defer();
             defer.resolve();
             spyOn(oc.Auth, 'GetToken').and.returnValue(defer.promise);

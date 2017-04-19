@@ -63,7 +63,7 @@ function RepeatOrderModalCtrl(LineItems, OrderID, $uibModalInstance, $state, Rep
     };
 }
 
-function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderCloud, ocLineItems) {
+function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderCloudSDK, ocLineItems) {
     return {
         GetValidLineItems: getValidLineItems,
         AddLineItemsToCart: addLineItemsToCart

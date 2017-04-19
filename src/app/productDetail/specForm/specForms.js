@@ -3,7 +3,7 @@ angular.module('orderCloud')
     .directive('specSelectField', SpecSelectionDirective)
 ;
 
-function OCSpecForm(OrderCloud) {
+function OCSpecForm(OrderCloudSDK) {
     return {
         scope: {
             product: '='

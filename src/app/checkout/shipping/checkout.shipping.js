@@ -12,7 +12,7 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, CurrentOrder, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
+function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK, CurrentOrder, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
     var vm = this;
 
     vm.rebateCode = rebateCode;

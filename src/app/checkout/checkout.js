@@ -21,7 +21,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
 			controller: 'CheckoutCtrl',
 			controllerAs: 'checkout',
 			resolve: {
-                OrderShipAddress: function($q, OrderCloud, CurrentOrder){
+                OrderShipAddress: function($q, OrderCloudSDK, CurrentOrder){
                     var deferred = $q.defer();
                     if (CurrentOrder.ShippingAddressID) {
                         OrderCloudSDK.Me.GetAddress(CurrentOrder.ShippingAddressID)
@@ -41,10 +41,10 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
 
                     return deferred.promise;
                 },
-                CurrentPromotions: function(CurrentOrder, OrderCloud) {
+                CurrentPromotions: function(CurrentOrder, OrderCloudSDK) {
                     return OrderCloudSDK.Orders.ListPromotions(CurrentOrder.ID);
                 },
-                OrderBillingAddress: function($q, OrderCloud, CurrentOrder){
+                OrderBillingAddress: function($q, OrderCloudSDK, CurrentOrder){
                     var deferred = $q.defer();
 
                     if (CurrentOrder.BillingAddressID) {
@@ -61,7 +61,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     }
                     return deferred.promise;
                 },
-                CurrentUserAddresses: function(OrderCloud) {
+                CurrentUserAddresses: function(OrderCloudSDK) {
                     return OrderCloudSDK.Me.ListAddresses(null, null, null, null, null, {Shipping: true});
                 }
 			}
@@ -69,7 +69,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
     ;
 }
 
-function CheckoutController($state, $exceptionHandler, $rootScope, toastr, OrderCloud, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig, ocMandrill) {
+function CheckoutController($state, $exceptionHandler, $rootScope, toastr, OrderCloudSDK, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig, ocMandrill) {
 
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
@@ -176,7 +176,7 @@ function AddressSelectModalService($uibModal) {
             backdrop: 'static',
             size: 'md',
             resolve: {
-                Addresses: function(OrderCloud) {
+                Addresses: function(OrderCloudSDK) {
                     if (type == 'shipping') {
                         return OrderCloudSDK.Me.ListAddresses(null, 1, 100, null, null, {Shipping: true});
                     } else if (type == 'billing') {

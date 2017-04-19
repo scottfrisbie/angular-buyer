@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocApprovals', ocApprovals)
 ;
 
-function ocApprovals(OrderCloud, $q, $uibModal, $state){
+function ocApprovals(OrderCloudSDK, $q, $uibModal, $state){
     var service = {
         List: _list,
         UpdateApprovalStatus: _updateApprovalStatus

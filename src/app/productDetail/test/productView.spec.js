@@ -14,9 +14,9 @@ describe('Component: ProductDetail', function(){
     beforeEach(module(function($provide) {
         $provide.value('CurrentOrder', {ID: "MockOrderID3456"})
     }));
-    beforeEach(inject(function($rootScope, OrderCloud, ocLineItems, CurrentOrder){
+    beforeEach(inject(function($rootScope, OrderCloudSDK, ocLineItems, CurrentOrder){
         scope = $rootScope.$new();
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         mockProduct = {
             "ID": "MockProductID123",
             "Name": "MockProductName",

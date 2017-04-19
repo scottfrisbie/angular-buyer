@@ -35,7 +35,7 @@ function MyAddressesModalFactory($uibModal) {
     }
 }
 
-function CreateAddressModalController($q, $exceptionHandler, $uibModalInstance, OrderCloud, ocGeography) {
+function CreateAddressModalController($q, $exceptionHandler, $uibModalInstance, OrderCloudSDK, ocGeography) {
     var vm = this;
     vm.countries = ocGeography.Countries;
     vm.states = ocGeography.States;
@@ -65,7 +65,7 @@ function CreateAddressModalController($q, $exceptionHandler, $uibModalInstance, 
     };
 }
 
-function EditAddressModalController($exceptionHandler, $uibModalInstance, OrderCloud, ocGeography, SelectedAddress) {
+function EditAddressModalController($exceptionHandler, $uibModalInstance, OrderCloudSDK, ocGeography, SelectedAddress) {
     var vm = this;
     vm.countries = ocGeography.Countries;
     vm.states = ocGeography.States;

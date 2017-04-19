@@ -122,7 +122,7 @@ function ProductBrowseController($state, $uibModal, CategoryList, CategoryTree, 
     };
 }
 
-function ProductViewController($state, $ocMedia, ocParameters, OrderCloud, CurrentOrder, ProductList, CategoryList, Parameters){
+function ProductViewController($state, $ocMedia, ocParameters, OrderCloudSDK, CurrentOrder, ProductList, CategoryList, Parameters){
     var vm = this;
     vm.parameters = Parameters;
     vm.categories = CategoryList;
