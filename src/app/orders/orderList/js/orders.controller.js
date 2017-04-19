@@ -5,7 +5,7 @@ angular.module('orderCloud')
 function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, ocReporting, OrderList, Parameters, GroupAssignments) {
     var vm = this;
     vm.list = OrderList;
-    vm.groups = GroupAssignments.Items;
+    vm.groups = GroupAssignments;
     vm.parameters = Parameters;
     vm.userGroups = [];
     //need this here to display in uib-datepicker (as date obj) but short date (string) in url
