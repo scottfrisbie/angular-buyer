@@ -14,6 +14,7 @@ angular.module('orderCloud', [
         'treeControl',
         'hl.sticky',
         'angularPayments',
-        'slick'
+        'slick',
+        'ordercloud-angular-sdk'
     ]
 );
