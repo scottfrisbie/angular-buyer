@@ -25,20 +25,15 @@ function OrdersConfig($stateProvider) {
                 GroupAssignments: function($q, OrderCloud) {
                     return OrderCloud.Me.ListAddresses()
                         .then(function(addresses) {
-                            var queue = [];
-                            _.each(addresses.Items, function(address) {
-                                queue.push(function() {
-                                    return OrderCloud.Me.ListUserGroups(null, null, null, null, null, {ID: address.CompanyName})
-                                        .then(function(userGroup) {
-                                            return userGroup.Items[0];
-                                        });
-                                }());
-                            });
-                            return $q.all(queue)
+                            return OrderCloud.Me.ListUserGroups()
                                 .then(function(userGroups) {
-                                    return _.compact(userGroups)
-                                })
-                        })
+                                    var userGroupsArr = [];
+                                    _.each(addresses.Items, function(address) {
+                                        userGroupsArr.push(_.findWhere(userGroups.Items, {ID: address.CompanyName}));
+                                    });
+                                    return _.compact(userGroupsArr);
+                                });
+                        });
                 }
             }
         });
