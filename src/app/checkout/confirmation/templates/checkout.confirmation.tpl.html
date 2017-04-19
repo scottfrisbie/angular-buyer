@@ -11,7 +11,7 @@
 			<h5>Taxes: <span class="pull-right">{{checkoutConfirmation.order.TaxCost | currency}}</span></h5>
 			<h5 ng-if="checkoutConfirmation.order.ShippingCost" class="text-muted">Shipping: <span class="pull-right"> + {{checkoutConfirmation.order.ShippingCost | currency}}</span></h5>
 			<h5 ng-repeat="promotion in checkoutConfirmation.promotions" class="text-danger">
-				{{promotion.Code}}
+				{{checkoutConfirmation.rebateCode ? promotion.Name : promotion.Code}}
 				<span class="pull-right">- {{promotion.Amount | currency}}</span></h5>
 			<hr>
 			<h4>Total: <b class="pull-right text-primary">{{checkoutConfirmation.order.Total | currency}}</b></h4>
