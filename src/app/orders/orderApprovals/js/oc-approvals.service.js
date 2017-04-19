@@ -11,7 +11,7 @@ function ocApprovals(OrderCloudSDK, $q, $uibModal, $state){
     function _list(orderID, buyerID, page, pageSize) {
         var deferred = $q.defer();
 
-        OrderCloudSDK.Orders.ListApprovals(orderID, null, page, pageSize, null, 'Status', null, buyerID)
+        OrderCloudSDK.Orders.ListApprovals('Outgoing', orderID, null, page, pageSize, null, 'Status', null, buyerID)
             .then(function(data) {
                 getApprovingUserGroups(data)
             });

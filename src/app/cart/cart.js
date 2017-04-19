@@ -17,7 +17,7 @@ function CartConfig($stateProvider) {
             resolve: {
                 LineItemsList: function($q, $state, toastr, OrderCloudSDK, ocLineItems, CurrentOrder) {
                     var dfd = $q.defer();
-                    OrderCloudSDK.LineItems.List(CurrentOrder.ID)
+                    OrderCloudSDK.LineItems.List('Outgoing', CurrentOrder.ID)
                         .then(function(data) {
                             if (!data.Items.length) {
                                 dfd.resolve(data);
@@ -29,7 +29,7 @@ function CartConfig($stateProvider) {
                                     });
                             }
                         })
-                        .catch(function() {
+                        .catch(function(err) {
                             toastr.error('Your order does not contain any line items.', 'Error');
                             dfd.reject();
                         });
@@ -38,7 +38,7 @@ function CartConfig($stateProvider) {
                 CurrentPromotions: function(CurrentOrder, OrderCloudSDK, AddRebate) {
                     return AddRebate.ApplyPromo(CurrentOrder)
                         .then(function(){
-                            return OrderCloudSDK.Orders.ListPromotions(CurrentOrder.ID);
+                            return OrderCloudSDK.Orders.ListPromotions('Outgoing', CurrentOrder.ID);
                         });
                 }
             }
@@ -76,7 +76,7 @@ function CartController($rootScope, $state, toastr, OrderCloudSDK, LineItemsList
 
     //TODO: missing unit tests
     function removePromotion(order, scope) {
-        OrderCloudSDK.Orders.RemovePromotion(order.ID, scope.promotion.Code)
+        OrderCloudSDK.Orders.RemovePromotion('Outgoing', order.ID, scope.promotion.Code)
             .then(function() {
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                 vm.promotions.splice(scope.$index, 1);
@@ -89,10 +89,10 @@ function CartController($rootScope, $state, toastr, OrderCloudSDK, LineItemsList
                 confirmText: 'Yes, cancel order',
                 type: 'delete'})
             .then(function() {
-                return OrderCloudSDK.Orders.RemovePromotion(order.ID, vm.rebateCode)
+                return OrderCloudSDK.Orders.RemovePromotion('Outgoing', order.ID, vm.rebateCode)
                     .then(function() {
                         $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
-                        return OrderCloudSDK.Orders.Delete(order.ID)
+                        return OrderCloudSDK.Orders.Delete('Outgoing', order.ID)
                             .then(function(){
                                 $state.go("home",{}, {reload:'base'})
                             });
@@ -102,7 +102,7 @@ function CartController($rootScope, $state, toastr, OrderCloudSDK, LineItemsList
 
     //TODO: missing unit tests
     $rootScope.$on('OC:UpdatePromotions', function(event, orderid) {
-        return OrderCloudSDK.Orders.ListPromotions(orderid)
+        return OrderCloudSDK.Orders.ListPromotions('Outgoing', orderid)
             .then(function(data) {
                 if (data.Meta) {
                     vm.promotions = data.Items;

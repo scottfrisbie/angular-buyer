@@ -16,10 +16,25 @@ function HomeConfig($stateProvider) {
 			},
 			resolve: {
 				FeaturedProducts: function(OrderCloudSDK){
-					return OrderCloudSDK.Me.ListProducts(null, null, 100, null, null, {'xp.Featured': true});
+					var params = {
+						pageSize: 100,
+						filters: {
+							'xp.Featured': true
+						}
+					};
+					return OrderCloudSDK.Me.ListProducts(params);
 				},
 				FeaturedCategories: function(OrderCloudSDK){
-					return OrderCloudSDK.Me.ListCategories(null, 1, 100, null, null, {'xp.Featured': true}, 'all');
+					var params = {
+						pageSize: 100,
+						depth: 'all',
+						filters: {
+							'xp.Featured': true
+						}
+					};
+					return null;
+					//TODO: uncomment below line once api bug EX- is resolved
+					// return OrderCloudSDK.Me.ListCategories(params);
 				}
 			}
 		})

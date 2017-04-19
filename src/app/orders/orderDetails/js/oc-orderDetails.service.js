@@ -8,7 +8,7 @@ function ocOrderDetailsService($q, $exceptionHandler, OrderCloudSDK){
     };
 
     function _get(orderID){
-        return OrderCloudSDK.Orders.Get(orderID)
+        return OrderCloudSDK.Orders.Get('Outgoing', orderID)
             .then(function(order){
                 return getBuyerOrg(order);
             });

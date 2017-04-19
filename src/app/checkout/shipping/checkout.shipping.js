@@ -40,7 +40,7 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK
 
     function saveShipAddress(order, address) {
         if (order && order.ShippingAddressID) {
-            OrderCloudSDK.Orders.Patch(order.ID, {ShippingAddressID: order.ShippingAddressID, xp: {CustomerNumber: address.CompanyName}})
+            OrderCloudSDK.Orders.Patch('Outgoing', order.ID, {ShippingAddressID: order.ShippingAddressID, xp: {CustomerNumber: address.CompanyName}})
                 .then(function(updatedOrder) {
                     $rootScope.$broadcast('OC:OrderShipAddressUpdated', updatedOrder);
                     vm.getShippingRates(order);
@@ -77,7 +77,7 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK
     }
 
     function toggleShipping(opt) {
-        OrderCloudSDK.Orders.Patch(vm.order.ID, {xp: {ExpeditedShipping: opt}})
+        OrderCloudSDK.Orders.Patch('Outgoing', vm.order.ID, {xp: {ExpeditedShipping: opt}})
             .then(function(updatedOrder) {
                 $rootScope.$broadcast('OC:UpdateOrder', updatedOrder.ID);
             })

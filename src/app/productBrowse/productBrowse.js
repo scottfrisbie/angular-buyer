@@ -177,7 +177,8 @@ function ProductViewController($state, $ocMedia, ocParameters, OrderCloudSDK, Cu
 
     //load the next page of results with all the same parameters
     vm.loadMore = function() {
-        return OrderCloudSDK.Me.ListProducts(Parameters.search, vm.list.Meta.Page + 1, Parameters.pageSize || vm.list.Meta.PageSize, Parameters.searchOn, Parameters.sortBy, Parameters.filters)
+        Parameters.page = vm.list.Meta.Page + 1;
+        return OrderCloudSDK.Me.ListProducts(Parameters)
             .then(function(data) {
                 vm.list.Items = vm.list.Items.concat(data.Items);
                 vm.list.Meta = data.Meta;

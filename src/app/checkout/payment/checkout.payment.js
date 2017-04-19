@@ -14,11 +14,11 @@ function checkoutPaymentConfig($stateProvider) {
             //taxes not being returned from integration comment out for now
             // resolve: {
             //     InitializeTaxes: function(TaxIntegration, CurrentOrder, OrderCloudSDK, $rootScope){
-            //         return OrderCloudSDK.LineItems.List(CurrentOrder.ID, null, null, 100)
+            //         return OrderCloudSDK.LineItems.List('Outgoing', CurrentOrder.ID, null, null, 100)
             //             .then(function(LineItemList){
             //                 return TaxIntegration.Get(CurrentOrder.BillingAddress, LineItemList)
             //                     .then(function(data){
-            //                         return OrderCloudSDK.Orders.Patch(CurrentOrder.ID, {TaxCost: data.Data.TotalTax})
+            //                         return OrderCloudSDK.Orders.Patch('Outgoing', CurrentOrder.ID, {TaxCost: data.Data.TotalTax})
             //                             .then(function(){
             //                                 $rootScope.$broadcast('OC:UpdateOrder', CurrentOrder.ID);
             //                             });

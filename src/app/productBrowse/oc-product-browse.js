@@ -24,7 +24,8 @@ function ocProductBrowseService($q, OrderCloudSDK, ocUtility){
         }
 
         function _ocProductListCall(Parameters){
-            return OrderCloudSDK.Me.ListProducts(Parameters.search, Parameters.page, Parameters.pageSize, Parameters.searchOn, Parameters.sortBy, Parameters.filters, Parameters.categoryid);
+            Parameters.depth = 'all';
+            return OrderCloudSDK.Me.ListProducts(Parameters);
         }
     }
 
@@ -32,7 +33,7 @@ function ocProductBrowseService($q, OrderCloudSDK, ocUtility){
         var timeLastUpdated = 0;
         if(Catalog.xp && Catalog.xp.CatalogUpdated) timeLastUpdated = Catalog.xp.CatalogUpdated;
         function onCacheEmpty(){
-            return ocUtility.ListAll(OrderCloudSDK.Me.ListCategories, null, 'page', 100, null, null, null, 'all');
+            return ocUtility.ListAll(OrderCloudSDK.Me.ListCategories, {depth:'all'});
         }
         return ocUtility.GetCache('CategoryList', onCacheEmpty, timeLastUpdated);
     }

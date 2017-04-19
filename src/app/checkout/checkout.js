@@ -26,7 +26,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     if (CurrentOrder.ShippingAddressID) {
                         OrderCloudSDK.Me.GetAddress(CurrentOrder.ShippingAddressID)
                             .then(function(address) {
-                                OrderCloudSDK.Orders.Patch(CurrentOrder.ID, {xp: {CustomerNumber: address.CompanyName}})
+                                OrderCloudSDK.Orders.Patch('Outgoing', CurrentOrder.ID, {xp: {CustomerNumber: address.CompanyName}})
                                     .then(function(){
                                         deferred.resolve(address);
                                     });
@@ -42,7 +42,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     return deferred.promise;
                 },
                 CurrentPromotions: function(CurrentOrder, OrderCloudSDK) {
-                    return OrderCloudSDK.Orders.ListPromotions(CurrentOrder.ID);
+                    return OrderCloudSDK.Orders.ListPromotions('Outgoing', CurrentOrder.ID);
                 },
                 OrderBillingAddress: function($q, OrderCloudSDK, CurrentOrder){
                     var deferred = $q.defer();
@@ -119,7 +119,7 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     }
 
     function finalSubmit(order) {
-        return OrderCloudSDK.Orders.Submit(order.ID)
+        return OrderCloudSDK.Orders.Submit('Outgoing', order.ID)
             .then(function(order) {
                 $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
                 return toastr.success('Your order has been submitted', 'Success');
@@ -144,14 +144,14 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     });
 
     vm.removePromotion = function(order, promotion) {
-        OrderCloudSDK.Orders.RemovePromotion(order.ID, promotion.Code)
+        OrderCloudSDK.Orders.RemovePromotion('Outgoing', order.ID, promotion.Code)
             .then(function() {
                 $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
             })
     };
 
     $rootScope.$on('OC:UpdatePromotions', function(event, orderid) {
-        OrderCloudSDK.Orders.ListPromotions(orderid)
+        OrderCloudSDK.Orders.ListPromotions('Outgoing', orderid)
             .then(function(data) {
                 if (data.Meta) {
                     vm.promotions = data.Items;

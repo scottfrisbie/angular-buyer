@@ -5,6 +5,6 @@
   "catalogid": "caferio",
   "environment": "staging",
   "defaultstate": "home",
-  "html5mode": false,
+  "html5mode": true,
   "bootswatchtheme": "yeti"
 }

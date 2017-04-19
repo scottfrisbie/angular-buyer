@@ -10,7 +10,7 @@ angular.module('orderCloud')
 
 function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloudSDK, toastr) {
     this.submit = function(orderID, promoCode) {
-        OrderCloudSDK.Orders.AddPromotion(orderID, promoCode)
+        OrderCloudSDK.Orders.AddPromotion('Outgoing', orderID, promoCode)
             .then(function(promo) {
                 $rootScope.$broadcast('OC:UpdatePromotions', orderID);
                 $rootScope.$broadcast('OC:UpdateOrder', orderID);
@@ -30,12 +30,12 @@ function AddRebate(OrderCloudSDK, $rootScope, rebateCode, $q) {
 
     function _apply(order) {
         if (order.Total > 0) {
-            return OrderCloudSDK.Orders.ListPromotions(order.ID)
+            return OrderCloudSDK.Orders.ListPromotions('Outgoing', order.ID)
                 .then(function (promos) {
                         if (promos.Items.length) {
-                            return OrderCloudSDK.Orders.RemovePromotion(order.ID, rebateCode)
+                            return OrderCloudSDK.Orders.RemovePromotion('Outgoing', order.ID, rebateCode)
                                 .then(function (updatedOrder) {
-                                    return OrderCloudSDK.Orders.AddPromotion(updatedOrder.ID, rebateCode)
+                                    return OrderCloudSDK.Orders.AddPromotion('Outgoing', updatedOrder.ID, rebateCode)
                                         .then(function() {
                                             $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
                                             $rootScope.$broadcast('OC:UpdateOrder', order.ID);
@@ -43,9 +43,9 @@ function AddRebate(OrderCloudSDK, $rootScope, rebateCode, $q) {
                                         });
                                 });
                         } else {
-                            return OrderCloudSDK.Orders.AddPromotion(order.ID, rebateCode)
+                            return OrderCloudSDK.Orders.AddPromotion('Outgoing', order.ID, rebateCode)
                                 .then(function () {
-                                    return OrderCloudSDK.Orders.Patch(order.ID, order)
+                                    return OrderCloudSDK.Orders.Patch('Outgoing', order.ID, order)
                                         .then(function(orderData) {
                                             $rootScope.$broadcast('OC:UpdateOrder', orderData.ID);
                                             return orderData;

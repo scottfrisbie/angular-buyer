@@ -25,7 +25,7 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
             Quantity: vm.product.Quantity
         };
 
-        return OrderCloudSDK.LineItems.Create(vm.currentOrder.ID, li)
+        return OrderCloudSDK.LineItems.Create('Outgoing', vm.currentOrder.ID, li)
             .then(function(lineItem) {
                 $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID, 'Updating Order');
                 vm.product.Quantity = 1;
@@ -40,7 +40,7 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
     vm.findPrice = function(qty){
         if(qty){
             var finalPriceBreak;
-            angular.forEach(vm.product.StandardPriceSchedule.PriceBreaks, function(priceBreak) {
+            angular.forEach(vm.product.PriceSchedule.PriceBreaks, function(priceBreak) {
                 if (priceBreak.Quantity <= qty)
                     finalPriceBreak = angular.copy(priceBreak);
             });

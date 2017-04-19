@@ -124,7 +124,7 @@ function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderClou
                 Quantity: li.Quantity,
                 Specs: li.Specs
             };
-            queue.push(OrderCloudSDK.LineItems.Create(orderID, lineItemToAdd));
+            queue.push(OrderCloudSDK.LineItems.Create('Outgoing', orderID, lineItemToAdd));
         });
         $q.all(queue)
             .then(function(){

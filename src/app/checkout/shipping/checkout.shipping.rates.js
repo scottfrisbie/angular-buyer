@@ -91,7 +91,7 @@ function ShippingRatesService($q, $resource, OrderCloudSDK, apiurl) {
             }
         });
 
-        OrderCloudSDK.Orders.Patch(order.ID, {xp: xpPatch})
+        OrderCloudSDK.Orders.Patch('Outgoing', order.ID, {xp: xpPatch})
             .then(function() {
                 updateShippingCost();
             })

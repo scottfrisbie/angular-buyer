@@ -18,7 +18,7 @@ function checkoutConfirmationConfig($stateProvider) {
 					return OrderCloudSDK.Me.GetAddress(SubmittedOrder.ShippingAddressID);
 				},
 				OrderPromotions: function(SubmittedOrder, OrderCloudSDK) {
-					return OrderCloudSDK.Orders.ListPromotions(SubmittedOrder.ID);
+					return OrderCloudSDK.Orders.ListPromotions('Outgoing', SubmittedOrder.ID);
 				},
 				OrderBillingAddress: function(SubmittedOrder, OrderCloudSDK){
 					return OrderCloudSDK.Me.GetAddress(SubmittedOrder.BillingAddressID);
@@ -61,7 +61,7 @@ function checkoutConfirmationConfig($stateProvider) {
 				},
 				LineItemsList: function($q, $state, toastr, ocLineItems, SubmittedOrder, OrderCloudSDK) {
 					var dfd = $q.defer();
-					OrderCloudSDK.LineItems.List(SubmittedOrder.ID)
+					OrderCloudSDK.LineItems.List('Outgoing', SubmittedOrder.ID)
 						.then(function(data) {
 							ocLineItems.GetProductInfo(data.Items)
 								.then(function() {

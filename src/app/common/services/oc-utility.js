@@ -43,35 +43,34 @@ function ocUtilityService($q, $localForage, $exceptionHandler, appname){
          *
          *   first parameter must be the list function
          *   parameters thereafter are arguments to the list function
-         *   one of those arguments must be the string 'page'
-         *   which defines the position of the page parameter to the list function
          *
-         *   Example: ocService.ListAll(OrderCloudSDK.Categories.List, null, 'page', 100, null, null, null, 'all', 'mockCatalogID')
-         *   Equivalent to:  OrderCloudSDK.Categories.List(null, 'page', 100, null, null, null, 'all', 'mockCatalogID')
+         *   Example: ocUtility.ListAll(OrderCloudSDK.Me.ListCategories, categoryParams);
+         *   This will list ALL categories so be careful
          *
          **/
 
         //validation
         var invalid  = false;
         var args = [].slice.call(arguments);
-        var ListFn = args.splice(0, 1)[0];
-        if(typeof ListFn !== 'function') {$exceptionHandler('The first parameter must be a list function'); invalid = true;}
-        var index = args.indexOf('page');
-        if(index < 0) {$exceptionHandler('at least one parameter must be the string "page" that defines the position of the page parameter for your list function'); invalid = true;}
+        var ListFn = args.shift();
+        if(typeof ListFn !== 'function') {$exceptionHandler({message:'ocUtility - The first parameter must be a list function'}); invalid = true;}
+        var filterObj = args.pop();
+        if(typeof filterObj !== 'object') {$exceptionHandler({message:'ocUtility - Please include a filter object'}); invalid = true;}
         if(invalid) return;
 
         var queue = [];
         var listItems;
-        args.splice(index, 1, 1); //set page to 1
+        filterObj.page = 1;
+        filterObj.pageSize = 100;
+        args.push(filterObj);
 
         return ListFn.apply(null, args)
             .then(function (data) {
                 listItems = data;
                 if (data.Meta.TotalPages > data.Meta.Page) {
-                    var page = data.Meta.Page;
-                    while (page < data.Meta.TotalPages) {
-                        page += 1;
-                        args.splice(index, 1, page); //set page to variable page;
+                    filterObj.page = data.Meta.Page;
+                    while (filterObj.page < data.Meta.TotalPages) {
+                        filterObj.page += 1;
                         queue.push(ListFn.apply(null, args));
                     }
                 }

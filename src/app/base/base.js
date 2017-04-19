@@ -64,7 +64,7 @@ function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentO
         vm.orderLoading = {
             message: message
         };
-        vm.orderLoading.promise = OrderCloudSDK.Orders.Get(OrderID)
+        vm.orderLoading.promise = OrderCloudSDK.Orders.Get('Outgoing', OrderID)
             .then(function(data) {
                 vm.currentOrder = data;
             });

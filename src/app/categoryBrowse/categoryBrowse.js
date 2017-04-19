@@ -17,19 +17,25 @@ function CategoryBrowseConfig($stateProvider, catalogid){
                 },
                 CategoryList: function(OrderCloudSDK, Parameters) {
                     if(Parameters.categoryID) { Parameters.filters ? Parameters.filters.ParentID = Parameters.categoryID : Parameters.filters = {ParentID:Parameters.categoryID}; } 
-                    return OrderCloudSDK.Me.ListCategories(null, Parameters.categoryPage, Parameters.pageSize || 12, null, Parameters.sortBy, Parameters.filters, 1);
+                    return OrderCloudSDK.Me.ListCategories(Parameters);
                 },
                 ProductList: function(OrderCloudSDK, Parameters) {
                     if(Parameters && Parameters.filters && Parameters.filters.ParentID) {
                         delete Parameters.filters.ParentID;
-                        return OrderCloudSDK.Me.ListProducts(null, Parameters.productPage, Parameters.pageSize || 12, null, Parameters.sortBy, Parameters.filters, Parameters.categoryID);
+                        return OrderCloudSDK.Me.ListProducts(Parameters);
                     } else {
                         return null;
                     }
                 },
                 SelectedCategory: function(OrderCloudSDK, Parameters){
                     if(Parameters.categoryID){
-                        return OrderCloudSDK.Me.ListCategories(null, 1, 1, null, null, {ID:Parameters.categoryID}, 'all')
+                        var parameters = {
+                            depth: 'all',
+                            filters: {
+                                ID: Parameters.categoryID
+                            }
+                        };
+                        return OrderCloudSDK.Me.ListCategories(parameters)
                             .then(function(data){
                                 return data.Items[0];
                             });

@@ -12,7 +12,7 @@ function checkoutReviewConfig($stateProvider) {
 			resolve: {
 				LineItemsList: function($q, $state, toastr, OrderCloudSDK, ocLineItems, CurrentOrder) {
 					var dfd = $q.defer();
-					OrderCloudSDK.LineItems.List(CurrentOrder.ID)
+					OrderCloudSDK.LineItems.List('Outgoing', CurrentOrder.ID)
 						.then(function(data) {
 							if (!data.Items.length) {
 								dfd.resolve(data);

@@ -18,7 +18,7 @@ function OCQuantityInput(toastr, OrderCloudSDK, $rootScope) {
             if (scope.product){
                 scope.item = scope.product;
                 scope.content = "product";
-                if(!scope.item.Quantity ){scope.item.Quantity = scope.product.StandardPriceSchedule.PriceBreaks[0].Quantity;}
+                if(!scope.item.Quantity ){scope.item.Quantity = scope.product.PriceSchedule.PriceBreaks[0].Quantity;}
 
             }
             else if(scope.lineitem){
@@ -26,7 +26,7 @@ function OCQuantityInput(toastr, OrderCloudSDK, $rootScope) {
                 scope.content = "lineitem";
                 scope.updateQuantity = function() {
                     if (scope.item.Quantity > 0) {
-                        OrderCloudSDK.LineItems.Patch(scope.order.ID, scope.item.ID, {Quantity: scope.item.Quantity})
+                        OrderCloudSDK.LineItems.Patch('Outgoing', scope.order.ID, scope.item.ID, {Quantity: scope.item.Quantity})
                             .then(function (data) {
                                 data.Product = scope.lineitem.Product;
                                 scope.item = data;
