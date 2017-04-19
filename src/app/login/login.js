@@ -142,4 +142,18 @@ function LoginController($state, $stateParams, $exceptionHandler, OrderCloud, Lo
                 vm.credentials.ConfirmPassword = null;
             });
     };
+
+    vm.resetPasswordByToken = function() {
+        vm.loading = OrderCloudSDK.Me.ResetPasswordByToken({NewPassword:vm.credentials.NewPassword})
+            .then(function(data) {
+                vm.setForm('resetSuccess');
+                vm.credentials = {
+                    Username:null,
+                    Password:null
+                };
+            })
+            .catch(function(ex) {
+                $exceptionHandler(ex);
+            });
+    };
 }
