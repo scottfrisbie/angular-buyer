@@ -16,13 +16,13 @@ function MyPaymentsConfig($stateProvider) {
             },
             resolve: {
                 UserCreditCards: function(OrderCloud) {
-                    return OrderCloud.Me.ListCreditCards(null, null, null, null, null, {'Editable':true});
+                    return OrderCloudSDK.Me.ListCreditCards(null, null, null, null, null, {'Editable':true});
                 },
                 UserSpendingAccounts: function(OrderCloud) {
-                   return OrderCloud.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '!*'});
+                   return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '!*'});
                 },
                 GiftCards: function(OrderCloud) {
-                    return OrderCloud.Me.ListSpendingAccounts(null, null, null,null, null, {'RedemptionCode': '*'});
+                    return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null,null, null, {'RedemptionCode': '*'});
                 }
             }
         });

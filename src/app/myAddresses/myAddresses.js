@@ -16,7 +16,7 @@ function MyAddressesConfig($stateProvider) {
             },
             resolve: {
                 AddressList: function(OrderCloud) {
-                    return OrderCloud.Me.ListAddresses();
+                    return OrderCloudSDK.Me.ListAddresses();
                 }
             }
         });
@@ -52,7 +52,7 @@ function MyAddressesController(toastr, OrderCloud, ocConfirm, MyAddressesModal, 
                 confirmText: 'Delete address',
                 type: 'delete'})
             .then(function() {
-                vm.loading[scope.$index] = OrderCloud.Me.DeleteAddress(scope.address.ID)
+                vm.loading[scope.$index] = OrderCloudSDK.Me.DeleteAddress(scope.address.ID)
                     .then(function() {
                         toastr.success('Address Deleted', 'Success');
                         vm.list.Items.splice(scope.$index, 1);

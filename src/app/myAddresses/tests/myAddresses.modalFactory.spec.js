@@ -78,7 +78,7 @@ describe('Component: myAddresses', function() {
             });
         });
         describe('submit', function(){
-           it('should call OrderCloud.Me Create Address', function(){
+           it('should call OrderCloudSDK.Me Create Address', function(){
                createAddressModalCtrl.submit();
                expect(oc.Me.CreateAddress).toHaveBeenCalledWith({Country:'US', Shipping: true, Billing: true});
                scope.$digest();
@@ -109,7 +109,7 @@ describe('Component: myAddresses', function() {
             });
         });
         describe('submit', function(){
-           it('should call OrderCloud.Me Update Address', function(){
+           it('should call OrderCloudSDK.Me Update Address', function(){
                editAddressModalCtrl.submit();
                expect(oc.Me.UpdateAddress).toHaveBeenCalledWith('1', {name:'mockAddress', ID:'1', Shipping: true, Billing: true});
                scope.$digest();

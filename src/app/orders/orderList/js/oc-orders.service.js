@@ -43,10 +43,10 @@ function ocOrdersService(OrderCloud, toastr){
 
         if(parameters.tab === 'grouporders') {
             if(parameters.group) {
-                return OrderCloud.Me.ListAddresses(null, null, null, null, null, {CompanyName: parameters.group})
+                return OrderCloudSDK.Me.ListAddresses(null, null, null, null, null, {CompanyName: parameters.group})
                     .then(function(address) {
                         var shippingAddressID = address.Items[0].ID;
-                        return OrderCloud.Me.ListOutgoingOrders(parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, {ShippingAddressID: shippingAddressID, Status: parameters.status}, parameters.from, parameters.to)
+                        return OrderCloudSDK.Me.ListOutgoingOrders(parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, {ShippingAddressID: shippingAddressID, Status: parameters.status}, parameters.from, parameters.to)
                     });
             } else {
                 return [];
@@ -59,7 +59,7 @@ function ocOrdersService(OrderCloud, toastr){
 
         // list orders with generated parameters
         var listType = parameters.tab === 'approvals' ? 'ListIncomingOrders' : 'ListOutgoingOrders';
-        return OrderCloud.Me[listType](parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, parameters.filters);
+        return OrderCloudSDK.Me[listType](parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, parameters.filters);
     }
 
     return service;

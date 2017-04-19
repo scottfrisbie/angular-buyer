@@ -17,19 +17,19 @@ function CategoryBrowseConfig($stateProvider, catalogid){
                 },
                 CategoryList: function(OrderCloud, Parameters) {
                     if(Parameters.categoryID) { Parameters.filters ? Parameters.filters.ParentID = Parameters.categoryID : Parameters.filters = {ParentID:Parameters.categoryID}; } 
-                    return OrderCloud.Me.ListCategories(null, Parameters.categoryPage, Parameters.pageSize || 12, null, Parameters.sortBy, Parameters.filters, 1);
+                    return OrderCloudSDK.Me.ListCategories(null, Parameters.categoryPage, Parameters.pageSize || 12, null, Parameters.sortBy, Parameters.filters, 1);
                 },
                 ProductList: function(OrderCloud, Parameters) {
                     if(Parameters && Parameters.filters && Parameters.filters.ParentID) {
                         delete Parameters.filters.ParentID;
-                        return OrderCloud.Me.ListProducts(null, Parameters.productPage, Parameters.pageSize || 12, null, Parameters.sortBy, Parameters.filters, Parameters.categoryID);
+                        return OrderCloudSDK.Me.ListProducts(null, Parameters.productPage, Parameters.pageSize || 12, null, Parameters.sortBy, Parameters.filters, Parameters.categoryID);
                     } else {
                         return null;
                     }
                 },
                 SelectedCategory: function(OrderCloud, Parameters){
                     if(Parameters.categoryID){
-                        return OrderCloud.Me.ListCategories(null, 1, 1, null, null, {ID:Parameters.categoryID}, 'all')
+                        return OrderCloudSDK.Me.ListCategories(null, 1, 1, null, null, {ID:Parameters.categoryID}, 'all')
                             .then(function(data){
                                 return data.Items[0];
                             });

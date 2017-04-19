@@ -16,10 +16,10 @@ function HomeConfig($stateProvider) {
 			},
 			resolve: {
 				FeaturedProducts: function(OrderCloud){
-					return OrderCloud.Me.ListProducts(null, null, 100, null, null, {'xp.Featured': true});
+					return OrderCloudSDK.Me.ListProducts(null, null, 100, null, null, {'xp.Featured': true});
 				},
 				FeaturedCategories: function(OrderCloud){
-					return OrderCloud.Me.ListCategories(null, 1, 100, null, null, {'xp.Featured': true}, 'all');
+					return OrderCloudSDK.Me.ListCategories(null, 1, 100, null, null, {'xp.Featured': true}, 'all');
 				}
 			}
 		})

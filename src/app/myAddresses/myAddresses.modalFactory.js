@@ -55,7 +55,7 @@ function CreateAddressModalController($q, $exceptionHandler, $uibModalInstance, 
         vm.loading = {
             message:'Creating Address'
         };
-        vm.loading.promise = OrderCloud.Me.CreateAddress(vm.address)
+        vm.loading.promise = OrderCloudSDK.Me.CreateAddress(vm.address)
             .then(function(address) {
                 $uibModalInstance.close(address);
             })
@@ -84,7 +84,7 @@ function EditAddressModalController($exceptionHandler, $uibModalInstance, OrderC
         vm.loading = {
             message:'Saving Address'
         };
-        vm.loading.promise = OrderCloud.Me.UpdateAddress(vm.addressID, vm.address)
+        vm.loading.promise = OrderCloudSDK.Me.UpdateAddress(vm.addressID, vm.address)
             .then(function(address) {
                 $uibModalInstance.close(address);
             })

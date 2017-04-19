@@ -46,8 +46,8 @@ function ocUtilityService($q, $localForage, $exceptionHandler, appname){
          *   one of those arguments must be the string 'page'
          *   which defines the position of the page parameter to the list function
          *
-         *   Example: ocService.ListAll(OrderCloud.Categories.List, null, 'page', 100, null, null, null, 'all', 'mockCatalogID')
-         *   Equivalent to:  OrderCloud.Categories.List(null, 'page', 100, null, null, null, 'all', 'mockCatalogID')
+         *   Example: ocService.ListAll(OrderCloudSDK.Categories.List, null, 'page', 100, null, null, null, 'all', 'mockCatalogID')
+         *   Equivalent to:  OrderCloudSDK.Categories.List(null, 'page', 100, null, null, null, 'all', 'mockCatalogID')
          *
          **/
 

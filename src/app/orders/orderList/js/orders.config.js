@@ -23,9 +23,9 @@ function OrdersConfig($stateProvider) {
 
                 },
                 GroupAssignments: function($q, OrderCloud) {
-                    return OrderCloud.Me.ListAddresses()
+                    return OrderCloudSDK.Me.ListAddresses()
                         .then(function(addresses) {
-                            return OrderCloud.Me.ListUserGroups()
+                            return OrderCloudSDK.Me.ListUserGroups()
                                 .then(function(userGroups) {
                                     var userGroupsArr = [];
                                     _.each(addresses.Items, function(address) {

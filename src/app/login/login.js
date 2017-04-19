@@ -32,7 +32,7 @@ function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, ocRoles
             URL: encodeURIComponent($window.location.href) + '{0}'
         };
 
-        OrderCloud.PasswordResets.SendVerificationCode(passwordResetRequest)
+        OrderCloudSDK.PasswordResets.SendVerificationCode(passwordResetRequest)
             .then(function() {
                 deferred.resolve();
             })
@@ -52,7 +52,7 @@ function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, ocRoles
             Password: resetPasswordCredentials.NewPassword
         };
 
-        OrderCloud.PasswordResets.ResetPassword(verificationCode, passwordReset).
+        OrderCloudSDK.PasswordResets.ResetPassword(verificationCode, passwordReset).
             then(function() {
                 deferred.resolve();
             })
@@ -72,12 +72,12 @@ function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, ocRoles
     }
 
     function _rememberMe() {
-        var availableRefreshToken = OrderCloud.Refresh.ReadToken() || null;
+        var availableRefreshToken = OrderCloudSDK.Refresh.ReadToken() || null;
 
         if (availableRefreshToken) {
-            OrderCloud.Refresh.GetToken(availableRefreshToken)
+            OrderCloudSDK.Refresh.GetToken(availableRefreshToken)
                 .then(function(data) {
-                    OrderCloud.Auth.SetToken(data.access_token);
+                    OrderCloudSDK.Auth.SetToken(data.access_token);
                     $state.go('home');
                 })
                 .catch(function () {

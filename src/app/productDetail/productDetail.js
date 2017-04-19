@@ -13,7 +13,7 @@ function ProductConfig($stateProvider) {
             controllerAs: 'productDetail',
             resolve: {
                 Product: function ($stateParams, OrderCloud) {
-                    return OrderCloud.Me.GetProduct($stateParams.productid);
+                    return OrderCloudSDK.Me.GetProduct($stateParams.productid);
                 }
             }
         });

@@ -8,13 +8,13 @@ function ocOrderDetailsService($q, $exceptionHandler, OrderCloud){
     };
 
     function _get(orderID){
-        return OrderCloud.Orders.Get(orderID)
+        return OrderCloudSDK.Orders.Get(orderID)
             .then(function(order){
                 return getBuyerOrg(order);
             });
 
         function getBuyerOrg(order){
-            return OrderCloud.Buyers.Get(order.FromCompanyID)
+            return OrderCloudSDK.Buyers.Get(order.FromCompanyID)
                 .then(function(buyer){
                     order.FromCompany = buyer;
                     return order;

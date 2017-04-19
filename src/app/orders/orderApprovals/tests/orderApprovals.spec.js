@@ -148,12 +148,12 @@ describe('Component: orderApprovals', function() {
         });
 
         describe('submit', function(){
-            it('should call OrderCloud.Orders.Submit if intent is set to "Submit"', function(){
+            it('should call OrderCloudSDK.Orders.Submit if intent is set to "Submit"', function(){
                 approvalModalCtrl.intent = 'Approve';
                 approvalModalCtrl.submit(); 
                 expect(oc.Orders.Approve).toHaveBeenCalledWith(mockOrderID, null);
             });
-            it('should call OrderCloud.Orders.Decline if intent is set to "Decline"', function(){
+            it('should call OrderCloudSDK.Orders.Decline if intent is set to "Decline"', function(){
                 approvalModalCtrl.intent = 'Decline';
                 approvalModalCtrl.submit();
                 expect(oc.Orders.Decline).toHaveBeenCalledWith(mockOrderID, null);

@@ -14,11 +14,11 @@ function checkoutPaymentConfig($stateProvider) {
             //taxes not being returned from integration comment out for now
             // resolve: {
             //     InitializeTaxes: function(TaxIntegration, CurrentOrder, OrderCloud, $rootScope){
-            //         return OrderCloud.LineItems.List(CurrentOrder.ID, null, null, 100)
+            //         return OrderCloudSDK.LineItems.List(CurrentOrder.ID, null, null, 100)
             //             .then(function(LineItemList){
             //                 return TaxIntegration.Get(CurrentOrder.BillingAddress, LineItemList)
             //                     .then(function(data){
-            //                         return OrderCloud.Orders.Patch(CurrentOrder.ID, {TaxCost: data.Data.TotalTax})
+            //                         return OrderCloudSDK.Orders.Patch(CurrentOrder.ID, {TaxCost: data.Data.TotalTax})
             //                             .then(function(){
             //                                 $rootScope.$broadcast('OC:UpdateOrder', CurrentOrder.ID);
             //                             });
@@ -56,7 +56,7 @@ function CheckoutPaymentService($q, OrderCloud) {
 
         var queue = [];
         angular.forEach(payments.Items, function(payment) {
-            queue.push(OrderCloud.Payments.Delete(order.ID, payment.ID));
+            queue.push(OrderCloudSDK.Payments.Delete(order.ID, payment.ID));
         });
 
         $q.all(queue).then(function() {

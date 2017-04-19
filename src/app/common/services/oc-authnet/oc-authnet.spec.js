@@ -66,7 +66,7 @@ describe('Factory: oc-authnet', function(){
             ocAuthNetService.CreateCreditCard(mockCreditCard, mockBuyerID );
             expect(ccUtility.ExpirationDateFormat).toHaveBeenCalledWith('01', 2018);
         });
-        it('should call OrderCloud.BuyerID Get method, when no buyerID is passed ', function(){
+        it('should call OrderCloudSDK.BuyerID Get method, when no buyerID is passed ', function(){
             ocAuthNetService.CreateCreditCard(mockCreditCard, null );
             expect(oc.BuyerID.Get).toHaveBeenCalled();
         });
@@ -81,7 +81,7 @@ describe('Factory: oc-authnet', function(){
             ocAuthNetService.UpdateCreditCard(mockCreditCard, mockBuyerID );
             expect(ccUtility.ExpirationDateFormat).toHaveBeenCalledWith('01', 2018);
         });
-        it('should call OrderCloud.BuyerID Get method, when no buyerID is passed ', function(){
+        it('should call OrderCloudSDK.BuyerID Get method, when no buyerID is passed ', function(){
             ocAuthNetService.UpdateCreditCard(mockCreditCard, null );
             expect(oc.BuyerID.Get).toHaveBeenCalled();
         });
@@ -91,7 +91,7 @@ describe('Factory: oc-authnet', function(){
         beforeEach(function(){
             spyOn(oc.BuyerID, 'Get');
         });
-        it('should call OrderCloud.BuyerID Get method, when no buyerID is passed ', function(){
+        it('should call OrderCloudSDK.BuyerID Get method, when no buyerID is passed ', function(){
             ocAuthNetService.DeleteCreditCard(mockCreditCard, null );
             expect(oc.BuyerID.Get).toHaveBeenCalled();
         });
@@ -104,7 +104,7 @@ describe('Factory: oc-authnet', function(){
             spyOn(oc.Auth, 'ReadToken').and.returnValue(defer.promise);
             ocAuthNetService.MakeAuthnetCall('POST', AuthnetMockCC );
         });
-        it('should call OrderCloud.Auth ReadToken method ', function(){
+        it('should call OrderCloudSDK.Auth ReadToken method ', function(){
             expect(oc.Auth.ReadToken).toHaveBeenCalled();
         });
     });

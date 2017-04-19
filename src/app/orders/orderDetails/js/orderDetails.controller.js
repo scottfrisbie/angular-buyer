@@ -9,7 +9,7 @@ function OrderDetailsController($stateParams, Shipments, OrderCloud, SelectedOrd
     vm.shipments = Shipments;
 
     vm.pageChanged = function() {
-        return OrderCloud.LineItems.List($stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
+        return OrderCloudSDK.LineItems.List($stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
             .then(function(data) {
                 vm.lineItems = data;
             });
@@ -17,7 +17,7 @@ function OrderDetailsController($stateParams, Shipments, OrderCloud, SelectedOrd
 
     vm.loadMore = function() {
         vm.lineItems.Meta.Page++;
-        return OrderCloud.LineItems.List($stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
+        return OrderCloudSDK.LineItems.List($stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
             .then(function(data) {
                 vm.lineItems.Items = vm.lineItems.Items.concat(data.Items);
                 vm.lineItem.Meta = data.Meta;

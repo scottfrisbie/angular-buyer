@@ -11,14 +11,14 @@ function ocApprovals(OrderCloud, $q, $uibModal, $state){
     function _list(orderID, buyerID, page, pageSize) {
         var deferred = $q.defer();
 
-        OrderCloud.Orders.ListApprovals(orderID, null, page, pageSize, null, 'Status', null, buyerID)
+        OrderCloudSDK.Orders.ListApprovals(orderID, null, page, pageSize, null, 'Status', null, buyerID)
             .then(function(data) {
                 getApprovingUserGroups(data)
             });
 
         function getApprovingUserGroups(data) {
             var userGroupIDs = _.uniq(_.pluck(data.Items, 'ApprovingGroupID'));
-            OrderCloud.UserGroups.List(null, 1, 100, null, null, {ID: userGroupIDs.join('|')}, buyerID)
+            OrderCloudSDK.UserGroups.List(null, 1, 100, null, null, {ID: userGroupIDs.join('|')}, buyerID)
                 .then(function(userGroupList) {
                     _.each(data.Items, function(approval) {
                         approval.ApprovingUserGroup = _.findWhere(userGroupList.Items, {ID: approval.ApprovingGroupID});
@@ -32,7 +32,7 @@ function ocApprovals(OrderCloud, $q, $uibModal, $state){
 
         function getApprovingUsers(data){
             var userIDs = _.compact(_.uniq(_.pluck(data.Items, 'ApproverID')));
-            OrderCloud.Users.List(null, null, 1, 100, null, null, {ID: userIDs.join('|')}, buyerID)
+            OrderCloudSDK.Users.List(null, null, 1, 100, null, null, {ID: userIDs.join('|')}, buyerID)
                 .then(function(userList){
                     _.each(data.Items, function(approval){
                         if(approval.Status !== 'Pending') approval.ApprovingUser = _.findWhere(userList.Items, {ID: approval.ApproverID});
@@ -46,7 +46,7 @@ function ocApprovals(OrderCloud, $q, $uibModal, $state){
 
         function getApprovalRules(data) {
             var approvalRuleIDs = _.pluck(data.Items, 'ApprovalRuleID');
-            OrderCloud.ApprovalRules.List(null, 1, 100, null, null, {ID: approvalRuleIDs.join('|')}, buyerID)
+            OrderCloudSDK.ApprovalRules.List(null, 1, 100, null, null, {ID: approvalRuleIDs.join('|')}, buyerID)
                 .then(function(approvalRuleData) {
                     angular.forEach(data.Items, function(approval) {
                         approval.ApprovalRule = _.findWhere(approvalRuleData.Items, {ID: approval.ApprovalRuleID});

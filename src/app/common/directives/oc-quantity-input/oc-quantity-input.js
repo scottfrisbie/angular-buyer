@@ -26,7 +26,7 @@ function OCQuantityInput(toastr, OrderCloud, $rootScope) {
                 scope.content = "lineitem";
                 scope.updateQuantity = function() {
                     if (scope.item.Quantity > 0) {
-                        OrderCloud.LineItems.Patch(scope.order.ID, scope.item.ID, {Quantity: scope.item.Quantity})
+                        OrderCloudSDK.LineItems.Patch(scope.order.ID, scope.item.ID, {Quantity: scope.item.Quantity})
                             .then(function (data) {
                                 data.Product = scope.lineitem.Product;
                                 scope.item = data;

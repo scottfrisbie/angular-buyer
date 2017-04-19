@@ -44,7 +44,7 @@ function ApprovalModalController(OrderID, Intent, $exceptionHandler, $uibModalIn
     }
 
     function submit(){
-        return OrderCloud.Orders[vm.intent](vm.orderid, vm.comments)
+        return OrderCloudSDK.Orders[vm.intent](vm.orderid, vm.comments)
             .then(function(){
                 toastr.success('Order ' + vm.intent + 'd');
                 $uibModalInstance.close();

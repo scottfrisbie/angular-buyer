@@ -12,27 +12,27 @@ function checkoutConfirmationConfig($stateProvider) {
 			controllerAs: 'checkoutConfirmation',
 			resolve: {
 				SubmittedOrder: function($stateParams, OrderCloud) {
-					return OrderCloud.Me.GetOrder($stateParams.orderid);
+					return OrderCloudSDK.Me.GetOrder($stateParams.orderid);
 				},
 				OrderShipAddress: function(SubmittedOrder, OrderCloud){
-					return OrderCloud.Me.GetAddress(SubmittedOrder.ShippingAddressID);
+					return OrderCloudSDK.Me.GetAddress(SubmittedOrder.ShippingAddressID);
 				},
 				OrderPromotions: function(SubmittedOrder, OrderCloud) {
-					return OrderCloud.Orders.ListPromotions(SubmittedOrder.ID);
+					return OrderCloudSDK.Orders.ListPromotions(SubmittedOrder.ID);
 				},
 				OrderBillingAddress: function(SubmittedOrder, OrderCloud){
-					return OrderCloud.Me.GetAddress(SubmittedOrder.BillingAddressID);
+					return OrderCloudSDK.Me.GetAddress(SubmittedOrder.BillingAddressID);
 				},
 				OrderPayments: function($q, SubmittedOrder, OrderCloud) {
 					var deferred = $q.defer();
-					OrderCloud.Payments.List(SubmittedOrder.ID)
+					OrderCloudSDK.Payments.List(SubmittedOrder.ID)
 						.then(function(data) {
 							var queue = [];
 							angular.forEach(data.Items, function(payment, index) {
 								if (payment.Type === 'CreditCard' && payment.CreditCardID) {
 									queue.push((function() {
 										var d = $q.defer();
-										OrderCloud.Me.GetCreditCard(payment.CreditCardID)
+										OrderCloudSDK.Me.GetCreditCard(payment.CreditCardID)
 											.then(function(cc) {
 												data.Items[index].Details = cc;
 												d.resolve();
@@ -42,7 +42,7 @@ function checkoutConfirmationConfig($stateProvider) {
 								} else if (payment.Type === 'SpendingAccount' && payment.SpendingAccountID) {
 									queue.push((function() {
 										var d = $q.defer();
-										OrderCloud.Me.GetSpendingAccount(payment.SpendingAccountID)
+										OrderCloudSDK.Me.GetSpendingAccount(payment.SpendingAccountID)
 											.then(function(cc) {
 												data.Items[index].Details = cc;
 												d.resolve();
@@ -61,7 +61,7 @@ function checkoutConfirmationConfig($stateProvider) {
 				},
 				LineItemsList: function($q, $state, toastr, ocLineItems, SubmittedOrder, OrderCloud) {
 					var dfd = $q.defer();
-					OrderCloud.LineItems.List(SubmittedOrder.ID)
+					OrderCloudSDK.LineItems.List(SubmittedOrder.ID)
 						.then(function(data) {
 							ocLineItems.GetProductInfo(data.Items)
 								.then(function() {

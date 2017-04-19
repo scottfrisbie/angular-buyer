@@ -12,7 +12,7 @@ function OCSpecForm(OrderCloud) {
         replace: true,
         link: function(scope){
             if (scope.product.SpecCount > 0) {
-                OrderCloud.Me.ListSpecs(scope.product.ID, null, 1, 100)
+                OrderCloudSDK.Me.ListSpecs(scope.product.ID, null, 1, 100)
                     .then(function(data){
                         //go through specs array if there is a default value, set the specValue = default value
                         angular.forEach(data.Items, function(obj, key){

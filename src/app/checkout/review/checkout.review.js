@@ -12,7 +12,7 @@ function checkoutReviewConfig($stateProvider) {
 			resolve: {
 				LineItemsList: function($q, $state, toastr, OrderCloud, ocLineItems, CurrentOrder) {
 					var dfd = $q.defer();
-					OrderCloud.LineItems.List(CurrentOrder.ID)
+					OrderCloudSDK.LineItems.List(CurrentOrder.ID)
 						.then(function(data) {
 							if (!data.Items.length) {
 								dfd.resolve(data);
@@ -31,7 +31,7 @@ function checkoutReviewConfig($stateProvider) {
 					return dfd.promise;
 				},
 				OrderPaymentsDetail: function($q, OrderCloud, CurrentOrder, $state) {
-					return OrderCloud.Payments.List(CurrentOrder.ID)
+					return OrderCloudSDK.Payments.List(CurrentOrder.ID)
 						.then(function(data) {
 							//TODO: create a queue that can be resolved
 							var dfd = $q.defer();
@@ -44,7 +44,7 @@ function checkoutReviewConfig($stateProvider) {
 								if (payment.Type === 'CreditCard' && payment.CreditCardID) {
 									queue.push((function() {
 										var d = $q.defer();
-										OrderCloud.Me.GetCreditCard(payment.CreditCardID)
+										OrderCloudSDK.Me.GetCreditCard(payment.CreditCardID)
 											.then(function(cc) {
 												data.Items[index].Details = cc;
 												d.resolve();
@@ -55,7 +55,7 @@ function checkoutReviewConfig($stateProvider) {
 								if (payment.Type === 'SpendingAccount' && payment.SpendingAccountID) {
 									queue.push((function() {
 										var d = $q.defer();
-										OrderCloud.Me.GetSpendingAccount(payment.SpendingAccountID)
+										OrderCloudSDK.Me.GetSpendingAccount(payment.SpendingAccountID)
 											.then(function(sa) {
 												data.Items[index].Details = sa;
 												d.resolve();
