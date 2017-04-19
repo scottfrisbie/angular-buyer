@@ -56,7 +56,7 @@ function CheckoutPaymentService($q, OrderCloudSDK) {
 
         var queue = [];
         angular.forEach(payments.Items, function(payment) {
-            queue.push(OrderCloudSDK.Payments.Delete(order.ID, payment.ID));
+            queue.push(OrderCloudSDK.Payments.Delete('Outgoing', order.ID, payment.ID));
         });
 
         $q.all(queue).then(function() {

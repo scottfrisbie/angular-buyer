@@ -12,7 +12,7 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK, CurrentOrder, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
+function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK, CurrentOrder, CurrentUser, AddressSelectModal, CheckoutConfig, rebateCode) {
     var vm = this;
 
     vm.rebateCode = rebateCode;
@@ -20,11 +20,7 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK
     vm.user = CurrentUser;
     vm.changeShippingAddress = changeShippingAddress;
     vm.saveShipAddress = saveShipAddress;
-    vm.shipperSelected = shipperSelected;
     vm.toggleShipping = toggleShipping;
-    vm.initShippingRates = initShippingRates;
-    vm.getShippingRates = getShippingRates;
-    vm.analyzeShipments = analyzeShipments;
 
     function changeShippingAddress(order) {
         AddressSelectModal.Open('shipping', vm.user)
@@ -49,31 +45,6 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK
                     $exceptionHandler(ex);
                 });
         }
-    }
-
-    function initShippingRates(order) {
-        if (CheckoutConfig.ShippingRates && order.ShippingAddressID) vm.getShippingRates(order);
-    }
-
-    function getShippingRates(order) {
-        vm.shippersAreLoading = true;
-        vm.shippersLoading = ShippingRates.GetRates(order)
-            .then(function(shipments) {
-                vm.shippersAreLoading = false;
-                vm.shippingRates = shipments;
-                vm.analyzeShipments(order);
-            });
-    }
-
-    function analyzeShipments(order) {
-        vm.shippingRates = ShippingRates.AnalyzeShipments(order, vm.shippingRates);
-    }
-
-    function shipperSelected(order) {
-        ShippingRates.ManageShipments(order, vm.shippingRates)
-            .then(function() {
-                $rootScope.$broadcast('OC:UpdateOrder', order.ID);
-            });
     }
 
     function toggleShipping(opt) {

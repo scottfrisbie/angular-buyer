@@ -15,25 +15,8 @@ function CartConfig($stateProvider) {
                 pageTitle: "Shopping Cart"
             },
             resolve: {
-                LineItemsList: function($q, $state, toastr, OrderCloudSDK, ocLineItems, CurrentOrder) {
-                    var dfd = $q.defer();
-                    OrderCloudSDK.LineItems.List('Outgoing', CurrentOrder.ID)
-                        .then(function(data) {
-                            if (!data.Items.length) {
-                                dfd.resolve(data);
-                            }
-                            else {
-                                ocLineItems.GetProductInfo(data.Items)
-                                    .then(function() {
-                                        dfd.resolve(data);
-                                    });
-                            }
-                        })
-                        .catch(function(err) {
-                            toastr.error('Your order does not contain any line items.', 'Error');
-                            dfd.reject();
-                        });
-                    return dfd.promise;
+                LineItemsList: function(OrderCloudSDK, CurrentOrder) {
+                    return OrderCloudSDK.LineItems.List('Outgoing', CurrentOrder.ID);
                 },
                 CurrentPromotions: function(CurrentOrder, OrderCloudSDK, AddRebate) {
                     return AddRebate.ApplyPromo(CurrentOrder)
@@ -62,7 +45,7 @@ function CartController($rootScope, $state, toastr, OrderCloudSDK, LineItemsList
 
     function removeItem(order, scope) {
         vm.lineLoading = [];
-        vm.lineLoading[scope.$index] = OrderCloudSDK.LineItems.Delete(order.ID, scope.lineItem.ID)
+        vm.lineLoading[scope.$index] = OrderCloudSDK.LineItems.Delete('Outgoing', order.ID, scope.lineItem.ID)
             .then(function () {
                 vm.lineItems.Items.splice(scope.$index, 1);
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);

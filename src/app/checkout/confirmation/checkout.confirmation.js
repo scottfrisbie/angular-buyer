@@ -25,7 +25,7 @@ function checkoutConfirmationConfig($stateProvider) {
 				},
 				OrderPayments: function($q, SubmittedOrder, OrderCloudSDK) {
 					var deferred = $q.defer();
-					OrderCloudSDK.Payments.List(SubmittedOrder.ID)
+					OrderCloudSDK.Payments.List('Outgoing', SubmittedOrder.ID)
 						.then(function(data) {
 							var queue = [];
 							angular.forEach(data.Items, function(payment, index) {

@@ -4,7 +4,6 @@ angular.module('orderCloud')
     .factory('AddressSelectModal', AddressSelectModalService)
     .controller('AddressSelectCtrl', AddressSelectController)
     .constant('CheckoutConfig', {
-        ShippingRates: true,
         TaxRates: false,
         AvailablePaymentMethods: ['PurchaseOrder', 'CreditCard', 'SpendingAccount']
     })
@@ -80,7 +79,7 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     vm.currentUserAddresses = CurrentUserAddresses;
 
     vm.submitOrder = function(order){
-        vm.orderLoading = OrderCloudSDK.Payments.List(order.ID, null, null, null, null, null, {Type: 'SpendingAccount'})
+        vm.orderLoading = OrderCloudSDK.Payments.List('Outgoing', order.ID, {filters: {Type: 'SpendingAccount'}})
             .then(function(paymentList){
                 var payment = paymentList.Items[0];
                 if(payment && payment.SpendingAccountID){
