@@ -18,10 +18,7 @@ function OrdersConfig($stateProvider) {
                     return ocParameters.Get($stateParams);
                 },
                 GroupAssignments: function(OrderCloud) {
-                    return OrderCloud.Me.ListUserGroups()
-                        .then(function(userGroups) {
-                            return userGroups
-                        });
+                    return OrderCloud.Me.ListUserGroups();
                 },
                 OrderList: function(Parameters, CurrentUser, ocOrders, Buyer) {
                     if (Parameters.status === undefined) Parameters.status = '!Unsubmitted';
