@@ -6,7 +6,7 @@ var config = require('../mandrill.config');
 router.route('/negativebalance')
     .post(function(req, res) {
         var data = {
-            TemplateName: 'dfsi_test',
+            TemplateName: 'negative-balance',
             Recipient: req.body.Recipients,
             MergeVars: [
                 {name: 'ORDERNUMBER', content: req.body.Order.ID},
