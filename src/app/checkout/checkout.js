@@ -25,7 +25,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     if (CurrentOrder.ShippingAddressID) {
                         OrderCloudSDK.Me.GetAddress(CurrentOrder.ShippingAddressID)
                             .then(function(address) {
-                                OrderCloudSDK.Orders.Patch('Outgoing', CurrentOrder.ID, {xp: {CustomerNumber: address.CompanyName}})
+                                OrderCloudSDK.Orders.Patch('outgoing', CurrentOrder.ID, {xp: {CustomerNumber: address.CompanyName}})
                                     .then(function(){
                                         deferred.resolve(address);
                                     });
@@ -41,7 +41,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     return deferred.promise;
                 },
                 CurrentPromotions: function(CurrentOrder, OrderCloudSDK) {
-                    return OrderCloudSDK.Orders.ListPromotions('Outgoing', CurrentOrder.ID);
+                    return OrderCloudSDK.Orders.ListPromotions('outgoing', CurrentOrder.ID);
                 },
                 OrderBillingAddress: function($q, OrderCloudSDK, CurrentOrder){
                     var deferred = $q.defer();
@@ -61,14 +61,20 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
                     return deferred.promise;
                 },
                 CurrentUserAddresses: function(OrderCloudSDK) {
-                    return OrderCloudSDK.Me.ListAddresses(null, null, null, null, null, {Shipping: true});
+                    return OrderCloudSDK.Me.ListAddresses({filters: {Shipping: true}});
+                },
+                SpendingAccount: function(OrderCloudSDK){
+                    return OrderCloudSDK.Me.ListSpendingAccounts()
+                        .then(function(spendingAccounts){
+                            return spendingAccounts.Items[0];
+                        });
                 }
 			}
 		})
     ;
 }
 
-function CheckoutController($state, $exceptionHandler, $rootScope, toastr, OrderCloudSDK, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, CheckoutConfig, ocMandrill) {
+function CheckoutController($state, $rootScope, toastr, OrderCloudSDK, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, SpendingAccount, CheckoutConfig, ocMandrill, Buyer) {
 
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
@@ -77,13 +83,15 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     vm.promotions = CurrentPromotions.Items;
     vm.checkoutConfig = CheckoutConfig;
     vm.currentUserAddresses = CurrentUserAddresses;
+    vm.spendingAccount = SpendingAccount;
+    vm.buyer = Buyer;
 
     vm.submitOrder = function(order){
-        vm.orderLoading = OrderCloudSDK.Payments.List('Outgoing', order.ID, {filters: {Type: 'SpendingAccount'}})
+        vm.orderLoading = OrderCloudSDK.Payments.List('outgoing', order.ID, {filters: {Type: 'SpendingAccount'}})
             .then(function(paymentList){
                 var payment = paymentList.Items[0];
                 if(payment && payment.SpendingAccountID){
-                    return OrderCloudSDK.SpendingAccounts.Get(payment.SpendingAccountID)
+                    return OrderCloudSDK.Me.GetSpendingAccount(payment.SpendingAccountID)
                         .then(function(budget){
                             if( budget && budget.Balance < 0){
                                 //send email alerting negative balance
@@ -103,10 +111,10 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     function submitAndAlert(order){
         return OrderCloudSDK.UserGroups.Get(order.xp.CustomerNumber)
             .then(function(userGroup){
-                return OrderCloudSDK.UserGroups.ListUserAssignments(userGroup.xp.LevelBlueGroup, null, null, 100)
+                return OrderCloudSDK.UserGroups.ListUserAssignments(vm.buyer.ID, {pageSize: 100, userGroupID: userGroup.xp.LevelBlueGroup})
                     .then(function(userGroupList){
                         var userIDs = _.pluck(userGroupList.Items, 'UserID');
-                        return OrderCloudSDK.Users.List(null, null, null, 100, null, null, {ID: userIDs.join('|')})
+                        return OrderCloudSDK.Users.List(vm.buyer.ID, {pageSize: 100, filters: {ID: userIDs.join('|')}})
                             .then(function(userList){
                                 return ocMandrill.NegativeBalance(userList, order)
                                     .then(function(){
@@ -118,7 +126,7 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     }
 
     function finalSubmit(order) {
-        return OrderCloudSDK.Orders.Submit('Outgoing', order.ID)
+        return OrderCloudSDK.Orders.Submit('outgoing', order.ID)
             .then(function(order) {
                 $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
                 return toastr.success('Your order has been submitted', 'Success');
@@ -129,28 +137,28 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     }
     
     $rootScope.$on('OC:OrderShipAddressUpdated', function(event, order) {
-        OrderCloudSDK.Me.GetAddress(order.ShippingAddressID)
+        return OrderCloudSDK.Me.GetAddress(order.ShippingAddressID)
             .then(function(address){
                 vm.shippingAddress = address;
             });
     });
 
     $rootScope.$on('OC:OrderBillAddressUpdated', function(event, order){
-        OrderCloudSDK.Me.GetAddress(order.BillingAddressID)
+        return OrderCloudSDK.Me.GetAddress(order.BillingAddressID)
             .then(function(address){
                 vm.billingAddress = address;
             });
     });
 
     vm.removePromotion = function(order, promotion) {
-        OrderCloudSDK.Orders.RemovePromotion('Outgoing', order.ID, promotion.Code)
+        return OrderCloudSDK.Orders.RemovePromotion('outgoing', order.ID, promotion.Code)
             .then(function() {
                 $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
-            })
+            });
     };
 
     $rootScope.$on('OC:UpdatePromotions', function(event, orderid) {
-        OrderCloudSDK.Orders.ListPromotions('Outgoing', orderid)
+        OrderCloudSDK.Orders.ListPromotions('outgoing', orderid)
             .then(function(data) {
                 if (data.Meta) {
                     vm.promotions = data.Items;
@@ -162,7 +170,7 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
     });
 }
 
-function AddressSelectModalService($uibModal) {
+function AddressSelectModalService($uibModal, OrderCloudSDK) {
     var service = {
         Open: _open
     };
@@ -175,14 +183,13 @@ function AddressSelectModalService($uibModal) {
             backdrop: 'static',
             size: 'md',
             resolve: {
-                Addresses: function(OrderCloudSDK) {
-                    if (type == 'shipping') {
-                        return OrderCloudSDK.Me.ListAddresses(null, 1, 100, null, null, {Shipping: true});
-                    } else if (type == 'billing') {
-                        return OrderCloudSDK.Me.ListAddresses(null, 1, 100, null, null, {Billing: true});
-                    } else {
-                        return OrderCloudSDK.Me.ListAddresses(null, 1, 100);
-                    }
+                Addresses: function() {
+                    var parameters = {
+                        page: 1,
+                        pageSize: 100,
+                        filters: (type === 'shipping') ? {Shipping: true} : {Billing: true}
+                    };
+                    return OrderCloudSDK.Me.ListAddresses(parameters);
                 }
             }
         }).result;

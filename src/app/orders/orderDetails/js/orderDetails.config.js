@@ -5,7 +5,7 @@ angular.module('orderCloud')
 function OrderDetailConfig($stateProvider){
     $stateProvider
         .state('orderDetail', {
-            url: '/order/:orderid',
+            url: '/order/:orderid/:buyerid',
             parent: 'account',
             templateUrl: 'orders/orderDetails/templates/orderDetails.html',
             controller: 'OrderDetailsCtrl',
@@ -18,10 +18,10 @@ function OrderDetailConfig($stateProvider){
                     return ocOrderDetails.Get($stateParams.orderid);
                 },
                 OrderLineItems: function($stateParams, OrderCloudSDK){
-                    return OrderCloudSDK.LineItems.List('Outgoing', $stateParams.orderid, null, 1, null, null, null, null, $stateParams.buyerid);
+                    return OrderCloudSDK.LineItems.List('outgoing', $stateParams.orderid);
                 },
                 Shipments: function($stateParams, OrderCloudSDK){
-                    return OrderCloudSDK.Shipments.List($stateParams.orderid);
+                    return OrderCloudSDK.Shipments.List({orderID: $stateParams.orderid});
                 }
             }
         });

@@ -18,11 +18,10 @@ function OrdersConfig($stateProvider) {
                     return ocParameters.Get($stateParams);
                 },
                 OrderList: function(Parameters, CurrentUser, ocOrders, Buyer) {
-                    if (Parameters.status === undefined) Parameters.status = '!Unsubmitted';
                     return ocOrders.List(Parameters, CurrentUser, Buyer);
 
                 },
-                GroupAssignments: function($q, OrderCloudSDK) {
+                GroupAssignments: function(OrderCloudSDK) {
                     return OrderCloudSDK.Me.ListAddresses()
                         .then(function(addresses) {
                             return OrderCloudSDK.Me.ListUserGroups()

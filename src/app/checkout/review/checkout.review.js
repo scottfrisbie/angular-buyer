@@ -10,28 +10,11 @@ function checkoutReviewConfig($stateProvider) {
 			controller: 'CheckoutReviewCtrl',
 			controllerAs: 'checkoutReview',
 			resolve: {
-				LineItemsList: function($q, $state, toastr, OrderCloudSDK, ocLineItems, CurrentOrder) {
-					var dfd = $q.defer();
-					OrderCloudSDK.LineItems.List('Outgoing', CurrentOrder.ID)
-						.then(function(data) {
-							if (!data.Items.length) {
-								dfd.resolve(data);
-							}
-							else {
-								ocLineItems.GetProductInfo(data.Items)
-									.then(function() {
-										dfd.resolve(data);
-									});
-							}
-						})
-						.catch(function() {
-							toastr.error('Your order does not contain any line items.', 'Error');
-							dfd.reject();
-						});
-					return dfd.promise;
+				LineItemsList: function(OrderCloudSDK, CurrentOrder) {
+					return OrderCloudSDK.LineItems.List('outgoing', CurrentOrder.ID);
 				},
 				OrderPaymentsDetail: function($q, OrderCloudSDK, CurrentOrder, $state) {
-					return OrderCloudSDK.Payments.List(CurrentOrder.ID)
+					return OrderCloudSDK.Payments.List('outgoing', CurrentOrder.ID)
 						.then(function(data) {
 							//TODO: create a queue that can be resolved
 							var dfd = $q.defer();

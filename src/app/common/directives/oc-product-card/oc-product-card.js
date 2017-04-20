@@ -25,7 +25,7 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
             Quantity: vm.product.Quantity
         };
 
-        return OrderCloudSDK.LineItems.Create('Outgoing', vm.currentOrder.ID, li)
+        return OrderCloudSDK.LineItems.Create('outgoing', vm.currentOrder.ID, li)
             .then(function(lineItem) {
                 $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID, 'Updating Order');
                 vm.product.Quantity = 1;

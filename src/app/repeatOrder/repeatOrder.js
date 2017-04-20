@@ -70,6 +70,8 @@ function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderClou
     };
 
     function getValidLineItems(originalOrderID) {
+        //TODO: list all products is not a good idea here, instead grab line items from order and make sure
+        //user has access to them
         var dfd = $q.defer();
         ListAllMeProducts()
             .then(function(productList) {
@@ -124,7 +126,7 @@ function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderClou
                 Quantity: li.Quantity,
                 Specs: li.Specs
             };
-            queue.push(OrderCloudSDK.LineItems.Create('Outgoing', orderID, lineItemToAdd));
+            queue.push(OrderCloudSDK.LineItems.Create('outgoing', orderID, lineItemToAdd));
         });
         $q.all(queue)
             .then(function(){

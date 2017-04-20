@@ -19,7 +19,7 @@ angular.module('orderCloud')
                 //TODO: this was changed to include the below if statement on 2/7/2017 - this change could cause unknown issues
                 if (ex) {
                     $delegate(ex, cause);
-                    $injector.get('toastr').error(ex.data ? (ex.data.error || (ex.data.Errors ? ex.data.Errors[0].Message : ex.data)) : ex.message, 'Error');
+                    $injector.get('toastr').error(ex.response ? ex.response.body.Errors[0].Message : ex.message, 'Error');
                 }
             };
         }

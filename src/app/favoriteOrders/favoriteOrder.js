@@ -27,7 +27,7 @@ function FavoriteOrderCtrl(OrderCloudSDK, toastr){
 
     function addOrder(existingList) {
         existingList.push(vm.order.ID);
-        OrderCloudSDK.Me.Patch({xp: {FavoriteOrders: existingList}})
+        return OrderCloudSDK.Me.Patch({xp: {FavoriteOrders: existingList}})
             .then(function(){
                 vm.isFavorited = true;
                 toastr.success('Order added to your favorites', 'Success');
@@ -36,7 +36,7 @@ function FavoriteOrderCtrl(OrderCloudSDK, toastr){
 
     function removeOrder(){
         var updatedList = _.without(vm.currentUser.xp.FavoriteOrders, vm.order.ID);
-        OrderCloudSDK.Me.Patch({xp: {FavoriteOrders: updatedList}})
+        return OrderCloudSDK.Me.Patch({xp: {FavoriteOrders: updatedList}})
             .then(function(){
                 vm.isFavorited = false;
                 vm.currentUser.xp.FavoriteOrders = updatedList;

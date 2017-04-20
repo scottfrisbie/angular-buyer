@@ -64,7 +64,7 @@ function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentO
         vm.orderLoading = {
             message: message
         };
-        vm.orderLoading.promise = OrderCloudSDK.Orders.Get('Outgoing', OrderID)
+        vm.orderLoading.promise = OrderCloudSDK.Orders.Get('outgoing', OrderID)
             .then(function(data) {
                 vm.currentOrder = data;
             });
@@ -101,14 +101,14 @@ function NewOrderService($q, OrderCloudSDK) {
                 ExpeditedShipping: "ground",
                 sellerOrderID: 0
             };
-            OrderCloudSDK.Orders.Create('Outgoing', order)
+            OrderCloudSDK.Orders.Create('outgoing', order)
                 .then(function(order) {
                     var attempt = 0;
                     generateOrderNumber(order); //generates an order number in the form WXXXXXXX
                     
                     function generateOrderNumber(order){
                         var orderNumber = Math.floor((1000000 + Math.random() * 9000000)); //random # length 7 digits
-                        OrderCloudSDK.Orders.Patch('Outgoing', order.ID, {ID: 'W' + orderNumber})
+                        OrderCloudSDK.Orders.Patch('outgoing', order.ID, {ID: 'W' + orderNumber})
                             .then(function(newOrder){
                                 deferred.resolve(newOrder);
                             })

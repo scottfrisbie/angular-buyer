@@ -12,20 +12,20 @@ function checkoutConfirmationConfig($stateProvider) {
 			controllerAs: 'checkoutConfirmation',
 			resolve: {
 				SubmittedOrder: function($stateParams, OrderCloudSDK) {
-					return OrderCloudSDK.Me.GetOrder($stateParams.orderid);
+					return OrderCloudSDK.Orders.Get('outgoing', $stateParams.orderid);
 				},
 				OrderShipAddress: function(SubmittedOrder, OrderCloudSDK){
 					return OrderCloudSDK.Me.GetAddress(SubmittedOrder.ShippingAddressID);
 				},
 				OrderPromotions: function(SubmittedOrder, OrderCloudSDK) {
-					return OrderCloudSDK.Orders.ListPromotions('Outgoing', SubmittedOrder.ID);
+					return OrderCloudSDK.Orders.ListPromotions('outgoing', SubmittedOrder.ID);
 				},
 				OrderBillingAddress: function(SubmittedOrder, OrderCloudSDK){
 					return OrderCloudSDK.Me.GetAddress(SubmittedOrder.BillingAddressID);
 				},
 				OrderPayments: function($q, SubmittedOrder, OrderCloudSDK) {
 					var deferred = $q.defer();
-					OrderCloudSDK.Payments.List('Outgoing', SubmittedOrder.ID)
+					OrderCloudSDK.Payments.List('outgoing', SubmittedOrder.ID)
 						.then(function(data) {
 							var queue = [];
 							angular.forEach(data.Items, function(payment, index) {
@@ -59,16 +59,8 @@ function checkoutConfirmationConfig($stateProvider) {
 
 					return deferred.promise;
 				},
-				LineItemsList: function($q, $state, toastr, ocLineItems, SubmittedOrder, OrderCloudSDK) {
-					var dfd = $q.defer();
-					OrderCloudSDK.LineItems.List('Outgoing', SubmittedOrder.ID)
-						.then(function(data) {
-							ocLineItems.GetProductInfo(data.Items)
-								.then(function() {
-									dfd.resolve(data);
-								});
-						});
-					return dfd.promise;
+				LineItemsList: function(SubmittedOrder, OrderCloudSDK) {
+					return OrderCloudSDK.LineItems.List('outgoing', SubmittedOrder.ID);
 				}
 			}
 		});

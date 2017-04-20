@@ -3,7 +3,7 @@ angular.module('orderCloud')
     .controller('CategoryBrowseCtrl', CategoryBrowseController)
 ;
 
-function CategoryBrowseConfig($stateProvider, catalogid){
+function CategoryBrowseConfig($stateProvider){
     $stateProvider
         .state('categoryBrowse', {
             parent:'base',

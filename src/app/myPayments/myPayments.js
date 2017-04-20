@@ -22,7 +22,7 @@ function MyPaymentsConfig($stateProvider) {
                    return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '!*'});
                 },
                 GiftCards: function(OrderCloudSDK) {
-                    return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null,null, null, {'RedemptionCode': '*'});
+                    return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '*'});
                 }
             }
         });

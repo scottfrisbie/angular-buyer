@@ -12,7 +12,7 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK, CurrentOrder, CurrentUser, AddressSelectModal, CheckoutConfig, rebateCode) {
+function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK, CurrentOrder, CurrentUser, AddressSelectModal, rebateCode) {
     var vm = this;
 
     vm.rebateCode = rebateCode;
@@ -36,10 +36,9 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK
 
     function saveShipAddress(order, address) {
         if (order && order.ShippingAddressID) {
-            OrderCloudSDK.Orders.Patch('Outgoing', order.ID, {ShippingAddressID: order.ShippingAddressID, xp: {CustomerNumber: address.CompanyName}})
+            OrderCloudSDK.Orders.Patch('outgoing', order.ID, {ShippingAddressID: order.ShippingAddressID, xp: {CustomerNumber: address.CompanyName}})
                 .then(function(updatedOrder) {
                     $rootScope.$broadcast('OC:OrderShipAddressUpdated', updatedOrder);
-                    vm.getShippingRates(order);
                 })
                 .catch(function(ex){
                     $exceptionHandler(ex);
@@ -48,7 +47,7 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK
     }
 
     function toggleShipping(opt) {
-        OrderCloudSDK.Orders.Patch('Outgoing', vm.order.ID, {xp: {ExpeditedShipping: opt}})
+        OrderCloudSDK.Orders.Patch('outgoing', vm.order.ID, {xp: {ExpeditedShipping: opt}})
             .then(function(updatedOrder) {
                 $rootScope.$broadcast('OC:UpdateOrder', updatedOrder.ID);
             })
