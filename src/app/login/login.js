@@ -90,7 +90,7 @@ function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, ocRoles
     }
 }
 
-function LoginController($state, $stateParams, $exceptionHandler, OrderCloud, LoginService) {
+function LoginController($state, $stateParams, $exceptionHandler, OrderCloud, LoginService, toastr) {
     var vm = this;
     vm.credentials = {
         Username: null,
@@ -108,10 +108,26 @@ function LoginController($state, $stateParams, $exceptionHandler, OrderCloud, Lo
             .then(function(data) {
                 vm.rememberStatus ? OrderCloud.Refresh.SetToken(data['refresh_token']) : angular.noop();
                 OrderCloud.Auth.SetToken(data['access_token']);
-                $state.go('home');
+                return OrderCloud.Me.Get()
+                    .then(function(user){
+                        if(user && user.xp && user.xp.HasChangedPW) {
+                            $state.go('home');
+                        } else {
+                            vm.form = 'resetByToken';
+                        }
+                    });
             })
             .catch(function(ex) {
                 $exceptionHandler(ex);
+            });
+    };
+
+    vm.firstTimeReset = function (){
+        //reset password after logging in for first time
+        return OrderCloud.Me.Patch({Password: vm.credentials.NewPassword, xp: {HasChangedPW: true}})
+            .then(function(){
+                toastr.success('Password Updated', 'Success');
+                $state.go('home');
             });
     };
 
