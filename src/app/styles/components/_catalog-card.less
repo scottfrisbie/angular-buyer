@@ -1,4 +1,7 @@
 .c-product-card {
+    margin-bottom: @grid-gutter-width / 2;
+    padding: 0;
+    border: none;
     @media (min-width: @screen-sm-min) {
     // add flex display to product card wrapper
     // flex the product card to fill the grid item element
@@ -14,6 +17,49 @@
         }
     }
 }
+
+.c-product-card__img-wrap {
+    a {
+        display: block;
+    }
+}
+
+.c-product-card__img {
+    width: 100%;
+}
+
+.c-product-card__name {
+    flex: 1;
+    font-size: 15px;
+}
+
+.c-product-card__price {
+    font-size: 15px;
+    display: inline-block;
+    margin: 0;
+}
+
+.c-product-card__icons {
+    .fa {
+        font-size: 1.4em;
+        &:first-of-type {
+            margin-left: 7.5px;
+        }
+    }
+}
+
+.c-product-card__add-to-cart {
+    .oc-flex-layout.horizontal;
+    .c-qty-input {
+        max-width: 70px;
+        margin-right: 9px;
+    }
+    .c-product-card__add-to-cart-btn {
+        .oc-flex-layout.flex-auto;
+    }
+}
+
+
 .c-category-card {
     // add flex display to category card wrapper
     @media (min-width: @screen-sm-min) {

@@ -37,7 +37,10 @@ module.exports = {
     ],
     appFiles: [
         build + '**/app.module.js',
-        build + '**/app.config.js',
+        build + '**/common/config/routing.js',
+        build + '**/common/config/*.js',
+        build + '**/*s.config.js',
+        build + '**/*.config.js',
         build + '**/app.run.js',
         build + '**/app.controller.js',
         build + '**/*.js',
@@ -63,7 +66,8 @@ module.exports = {
         cascade: true
     },
     jsCache: 'jsscripts',
-    indentSize: 4
+    indentSize: 4,
+    checkBootswatchTheme: _checkBootswatchTheme
 };
 
 function getConstants() {
@@ -74,18 +78,26 @@ function getConstants() {
         case 'local':
             result.authurl = 'http://core.four51.com:11629/oauth/token';
             result.apiurl = 'http://core.four51.com:9002';
-            break;
-        case 'test':
-            result.authurl = 'https://testauth.ordercloud.io/oauth/token';
-            result.apiurl = 'https://testapi.ordercloud.io';
+            result.rebateCode = 'OnePercentRebate';
+            result.devapiurl = 'http://localhost:7203/api';
             break;
         case 'qa':
             result.authurl = 'https://qaauth.ordercloud.io/oauth/token';
             result.apiurl = 'https://qaapi.ordercloud.io';
+            result.rebateCode = 'OnePercentRebate';
+            result.devapiurl = 'http://localhost:7203/api';
+            break;
+        case 'staging':
+            result.authurl = 'https://stagingauth.ordercloud.io/oauth/token';
+            result.apiurl = 'https://stagingapi.ordercloud.io';
+            result.rebateCode = 'OnePercentRebate';
+            result.devapiurl = 'http://localhost:7203/api';
             break;
         default:
             result.authurl = 'https://auth.ordercloud.io/oauth/token';
             result.apiurl = 'https://api.ordercloud.io';
+            result.rebateCode = 'OnePercentRebate';
+            result.devapiurl = 'https://caferio.etundra.com/api';
             break;
     }
     if (process.env.apiurl && process.env.authurl) {
@@ -100,7 +112,24 @@ function getConstants() {
     if (process.env.appname) result.appname = process.env.appname;
     if (process.env.scope) result.scope = process.env.scope;
     if (process.env.ocscope) result.ocscope = process.env.ocscope;
-    if (process.env.buyerid) result.buyerid = process.env.buyerid;
+    if (process.env.html5mode) result.html5mode = process.env.html5mode;
+    if (process.env.bootswatchtheme) result.bootswatchtheme = process.env.bootswatchtheme;
     if (process.env.catalogid) result.catalogid = process.env.catalogid;
     return result;
+}
+
+function _checkBootswatchTheme() {
+    var bootswatchBower = {};
+    var constants = JSON.parse(fs.readFileSync(source + 'app/app.constants.json'));
+
+    var theme = process.env.bootswatchtheme || constants.bootswatchtheme;
+
+    if (theme) {
+        bootswatchBower.main = [
+            "./" + theme + "/bootswatch.less",
+            "./" + theme + "/variables.less"
+        ]
+    }
+
+    return bootswatchBower;
 }

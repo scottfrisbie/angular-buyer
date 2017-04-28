@@ -19,20 +19,28 @@ function BaseConfig($stateProvider) {
             }
         },
         resolve: {
-            CurrentUser: function($q, $state, OrderCloud, buyerid) {
-                return OrderCloud.Me.Get()
-                    .then(function(data) {
-                        OrderCloud.BuyerID.Set(buyerid);
-                        return data;
-                    })
+            Buyer: function(OrderCloud){
+                return OrderCloud.Buyers.List(null, 1, 1)
+                    .then(function(buyerList){
+                        var buyer = buyerList.Items[0];
+                        OrderCloud.BuyerID.Set(buyer.ID);
+                        OrderCloud.CatalogID.Set(buyer.DefaultCatalogID);
+                        return buyer;
+                    });
             },
-            ExistingOrder: function($q, OrderCloud, CurrentUser) {
+            Catalog: function(OrderCloud, Buyer){
+                return OrderCloud.Catalogs.Get(Buyer.DefaultCatalogID);
+            },
+            CurrentUser: function($q, $state, OrderCloud) {
+                return OrderCloud.Me.Get();
+            },
+            ExistingOrder: function($q, OrderCloud, CurrentUser, Catalog) {
                 return OrderCloud.Me.ListOutgoingOrders(null, 1, 1, null, "!DateCreated", {Status:"Unsubmitted"})
                     .then(function(data) {
                         return data.Items[0];
                     });
             },
-            CurrentOrder: function(ExistingOrder, NewOrder, CurrentUser) {
+            CurrentOrder: function(ExistingOrder, NewOrder) {
                 if (!ExistingOrder) {
                     return NewOrder.Create({});
                 } else {
@@ -46,7 +54,7 @@ function BaseConfig($stateProvider) {
     });
 }
 
-function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder, OrderCloud) {
+function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder,  OrderCloud) {
     var vm = this;
     vm.currentUser = CurrentUser;
     vm.currentOrder = CurrentOrder;
@@ -99,11 +107,35 @@ function NewOrderService($q, OrderCloud) {
         }
 
         function createOrder() {
+            order.xp = {
+                ExpeditedShipping: "ground",
+                sellerOrderID: 0
+            };
             OrderCloud.Orders.Create(order)
                 .then(function(order) {
-                    deferred.resolve(order);
+                    var attempt = 0;
+                    generateOrderNumber(order); //generates an order number in the form WXXXXXXX
+                    
+                    function generateOrderNumber(order){
+                        var orderNumber = Math.floor((1000000 + Math.random() * 9000000)); //random # length 7 digits
+                        OrderCloud.Orders.Patch(order.ID, {ID: 'W' + orderNumber})
+                            .then(function(newOrder){
+                                deferred.resolve(newOrder);
+                            })
+                            .catch(function(error){
+                                if(attempt > 3) {
+                                    deferred.resolve();
+                                } else {
+                                    //there was a conflict, generate a new random # and try again
+                                    attempt++;
+                                    generateOrderNumber(); 
+                                }
+                            });
+                        }
                 });
         }
+
+        
 
         return deferred.promise;
     }

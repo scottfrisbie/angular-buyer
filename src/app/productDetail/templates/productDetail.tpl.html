@@ -8,7 +8,7 @@
             <!--PRODUCT IMAGE-->
             <div class="thumbnail">
                 <img class="img-responsive" alt="{{productDetail.item.xp.image.Name || 'Product Image'}}"
-                     ng-src="{{productDetail.item.xp.image.URL || 'http://placehold.it/600x600?text=' + productDetail.item.Name}}">
+                     ng-src="{{productDetail.item.xp.image.URL || 'assets/images/image-unavailable.jpg'}}">
             </div>
         </div>
         <div class="col-md-6">
@@ -44,7 +44,7 @@
                 <oc-quantity-input product="productDetail.item" label="Quantity"></oc-quantity-input>
             </fieldset>
             <fieldset class="form-group">
-                <button type="submit" class="btn btn-block btn-success">Add to Cart  <span ng-if="productDetail.item.Quantity"  class="badge badge-success">{{productDetail.findPrice(productDetail.item.Quantity) | currency}}</span></button>
+                <button type="submit" class="btn btn-block btn-primary">Add to Cart  <span ng-if="productDetail.item.Quantity"  class="badge badge-success">{{productDetail.findPrice(productDetail.item.Quantity) | currency}}</span></button>
             </fieldset>
         </div>
     </div>

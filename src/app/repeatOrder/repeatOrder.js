@@ -19,20 +19,28 @@ function RepeatOrderCtrl(toastr, RepeatOrderFactory, $uibModal) {
     };
 
     vm.openReorderModal = function(){
-        $uibModal.open({
-            templateUrl: 'repeatOrder/templates/repeatOrder.modal.html',
-            controller:  RepeatOrderModalCtrl,
-            controllerAs: 'repeatModal',
-            size: 'md',
-            resolve: {
-                OrderID: function() {
-                    return vm.currentOrderId;
-                },
-                LineItems: function() {
-                    return RepeatOrderFactory.GetValidLineItems(vm.originalOrderId);
-                }
-            }
-        });
+
+        function getLineItems(){
+            return RepeatOrderFactory.GetValidLineItems(vm.originalOrderId);
+        }
+
+        vm.loading = getLineItems()
+            .then(function(lineitems){
+                $uibModal.open({
+                    templateUrl: 'repeatOrder/templates/repeatOrder.modal.html',
+                    controller:  RepeatOrderModalCtrl,
+                    controllerAs: 'repeatModal',
+                    size: 'md',
+                    resolve: {
+                        OrderID: function() {
+                            return vm.currentOrderId;
+                        },
+                        LineItems: function() {
+                            return lineitems;
+                        }
+                    }
+                });
+            })
     };
 }
 
@@ -42,17 +50,12 @@ function RepeatOrderModalCtrl(LineItems, OrderID, $uibModalInstance, $state, Rep
     vm.invalidLI = LineItems.invalid;
     vm.validLI = LineItems.valid;
 
-
     vm.cancel = function(){
         $uibModalInstance.dismiss();
     };
 
     vm.submit = function(){
-        vm.loading = {
-            templateUrl:'common/loading-indicators/templates/view.loading.tpl.html',
-            message:'Adding Products to Cart'
-        };
-        vm.loading.promise = RepeatOrderFactory.AddLineItemsToCart(vm.validLI, vm.orderid)
+        RepeatOrderFactory.AddLineItemsToCart(vm.validLI, vm.orderid)
             .then(function(){
                 $uibModalInstance.close();
                 $state.go('cart', {}, {reload: true});

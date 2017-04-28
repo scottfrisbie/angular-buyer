@@ -16,7 +16,7 @@ function MyAddressesConfig($stateProvider) {
             },
             resolve: {
                 AddressList: function(OrderCloud) {
-                    return OrderCloud.Me.ListAddresses(null, null, null, null, null, {Editable:true});
+                    return OrderCloud.Me.ListAddresses();
                 }
             }
         });
@@ -25,6 +25,10 @@ function MyAddressesConfig($stateProvider) {
 function MyAddressesController(toastr, OrderCloud, ocConfirm, MyAddressesModal, AddressList) {
     var vm = this;
     vm.list = AddressList;
+
+    vm.shippingAddresses = _.where(vm.list.Items, {Shipping: true});
+    vm.billingAddresses = _.where(vm.list.Items, {Billing: true});
+
     vm.create = function() {
         MyAddressesModal.Create()
             .then(function(data) {
@@ -43,7 +47,10 @@ function MyAddressesController(toastr, OrderCloud, ocConfirm, MyAddressesModal, 
 
     vm.delete = function(scope) {
         vm.loading = [];
-        ocConfirm.Confirm("Are you sure you want to delete this address?")
+        ocConfirm.Confirm({
+                message:'Are you sure you want to delete <br> <b>' + (scope.address.AddressName ? scope.address.AddressName : scope.address.ID) + '</b>?',
+                confirmText: 'Delete address',
+                type: 'delete'})
             .then(function() {
                 vm.loading[scope.$index] = OrderCloud.Me.DeleteAddress(scope.address.ID)
                     .then(function() {

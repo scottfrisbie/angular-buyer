@@ -20,7 +20,7 @@ function ProductSearchConfig($stateProvider) {
                     return ocParameters.Get($stateParams);
                 },
                 ProductList: function(OrderCloud, Parameters) {
-                    return OrderCloud.Me.ListProducts(Parameters.searchTerm, Parameters.page, Parameters.pageSize || 12, null, Parameters.sortBy);
+                    return OrderCloud.Me.ListProducts(Parameters.searchTerm, Parameters.page, Parameters.pageSize || 12, 'Name,ID', Parameters.sortBy);
                 }
             }
         });
@@ -79,11 +79,11 @@ function OrderCloudProductSearchComponent() {
     };
 }
 
-function ProductSearchDirectiveController($state, OrderCloud) {
+function ProductSearchDirectiveController($state, $scope, OrderCloud) {
     var vm = this;
 
     vm.getSearchResults = function() {
-        return OrderCloud.Me.ListProducts(vm.searchTerm, 1, vm.maxProducts || 5)
+        return OrderCloud.Me.ListProducts(vm.searchTerm, 1, vm.maxProducts || 5, 'Name,ID')
             .then(function(data) {
                 return data.Items;
             });
@@ -92,12 +92,17 @@ function ProductSearchDirectiveController($state, OrderCloud) {
     vm.onSelect = function(productID) {
         $state.go('productDetail', {
             productid: productID
+        }).then(function(){
+            vm.searchTerm = null;
         });
     };
 
     vm.onHardEnter = function(searchTerm) {
         $state.go('productSearchResults', {
             searchTerm: searchTerm
+        }).then(function(){
+            vm.searchTerm = null;
+            $scope.loading = false;
         });
     };
 }
@@ -128,7 +133,7 @@ function ProductSearchModalController($uibModalInstance, $timeout, $scope, Order
     }, 300);
 
     vm.getSearchResults = function() {
-        return OrderCloud.Me.ListProducts(vm.searchTerm, 1, vm.maxProducts || 5)
+        return OrderCloud.Me.ListProducts(vm.searchTerm, 1, vm.maxProducts || 5, 'Name,ID')
             .then(function(data) {
                 return data.Items;
             });

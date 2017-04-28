@@ -11,47 +11,29 @@ function checkoutPaymentConfig($stateProvider) {
 			templateUrl: 'checkout/payment/templates/checkout.payment.tpl.html',
 			controller: 'CheckoutPaymentCtrl',
 			controllerAs: 'checkoutPayment'
+            //taxes not being returned from integration comment out for now
+            // resolve: {
+            //     InitializeTaxes: function(TaxIntegration, CurrentOrder, OrderCloud, $rootScope){
+            //         return OrderCloud.LineItems.List(CurrentOrder.ID, null, null, 100)
+            //             .then(function(LineItemList){
+            //                 return TaxIntegration.Get(CurrentOrder.BillingAddress, LineItemList)
+            //                     .then(function(data){
+            //                         return OrderCloud.Orders.Patch(CurrentOrder.ID, {TaxCost: data.Data.TotalTax})
+            //                             .then(function(){
+            //                                 $rootScope.$broadcast('OC:UpdateOrder', CurrentOrder.ID);
+            //                             });
+            //                     });
+            //             });
+			// 	}
+            // }
 		})
     ;
 }
 
-function CheckoutPaymentController($exceptionHandler, $rootScope, toastr, OrderCloud, AddressSelectModal, MyAddressesModal) {
+function CheckoutPaymentController(rebateCode) {
 	var vm = this;
-    vm.createAddress = createAddress;
-    vm.changeBillingAddress = changeBillingAddress;
 
-    function createAddress(order){
-        return MyAddressesModal.Create()
-            .then(function(address) {
-                toastr.success('Address Created', 'Success');
-                order.BillingAddressID = address.ID;
-                saveBillingAddress(order);
-            });
-    }
-
-    function changeBillingAddress(order) {
-        AddressSelectModal.Open('billing')
-            .then(function(address) {
-                if (address == 'create') {
-                    createAddress(order);
-                } else {
-                    order.BillingAddressID = address.ID;
-                    saveBillingAddress(order);
-                }
-            });
-    }
-
-    function saveBillingAddress(order) {
-        if (order && order.BillingAddressID) {
-            OrderCloud.Orders.Patch(order.ID, {BillingAddressID: order.BillingAddressID})
-                .then(function(updatedOrder) {
-                    $rootScope.$broadcast('OC:OrderBillAddressUpdated', updatedOrder);
-                })
-                .catch(function(ex) {
-                    $exceptionHandler(ex);
-                });
-        }
-    }
+    vm.rebateCode = rebateCode;
 }
 
 function CheckoutPaymentService($q, OrderCloud) {
@@ -66,7 +48,7 @@ function CheckoutPaymentService($q, OrderCloud) {
             paymentTotal += payment.Amount;
         });
 
-        return paymentTotal.toFixed(2) > orderTotal;
+        return paymentTotal.toFixed(2) > orderTotal.toFixed(2);
     }
 
     function _removeAllPayments(payments, order) {

@@ -18,6 +18,18 @@
                     </h3>
                 </div>
                 <div class="panel-body">
+                    <div class="well text-center">
+                        <div ng-if="base.currentOrder.Subtotal >= 250">
+                            Your order over $250 will be shipped freight free.
+                            <br>
+                            Tax will be calculated at time of shipment.
+                        </div>
+                        <div ng-if="base.currentOrder.Subtotal < 250">
+                            Freight will be calculated at time of shipment. Order $250 to qualify for free freight.
+                            <br>
+                            Tax will be calculated at time of shipment.
+                        </div>
+                    </div>
                     <p>
                         <ng-pluralize count="cart.lineItems.Meta.TotalCount" when="{
 							'1': '1 Item in Your Cart',
@@ -26,10 +38,12 @@
                     </p>
                     <h4>Subtotal: <span class="pull-right">{{base.currentOrder.Subtotal | currency}}</span></h4>
                     <hr>
-                    <oc-add-promotion order="base.currentOrder"></oc-add-promotion>
+                    <!--<oc-add-promotion order="base.currentOrder"></oc-add-promotion>-->
                     <h5 ng-repeat="promotion in cart.promotions" class="text-danger">
-                        {{promotion.Code}}
-                        <a href="" ng-click="cart.removePromotion(base.currentOrder, this)">remove</a>
+                        {{cart.rebateCode ? promotion.Name : promotion.Code}}
+                        <div ng-if="promotion.Code !== cart.rebateCode">
+                            <a href="" ng-click="checkout.removePromotion(base.currentOrder, promotion)">remove</a>
+                        </div>
                         <span class="pull-right">- {{promotion.Amount | currency}}</span></h5>
                 </div>
                 <div class="panel-footer">
@@ -61,7 +75,7 @@
                 <div class="row c-line-item" ng-repeat="lineItem in cart.lineItems.Items track by $index" cg-busy="cart.lineLoading[$index]">
                     <div class="col-xs-3 col-sm-2">
                         <div class="thumbnail c-line-item__img">
-                            <img class="img-responsive" ng-src="{{lineItem.xp.image.URL || 'http://placehold.it/100x100?text=' + lineItem.Product.Name}}"
+                            <img class="img-responsive" ng-src="{{lineItem.Product.xp.image.URL || 'assets/images/image-unavailable.jpg'}}"
                                 alt="{{lineItem.Product.xp.image.Name || 'Product Image'}}">
                         </div>
                     </div>
@@ -86,7 +100,7 @@
                                     </div>
                                     <div class="col-xs-4">
                                         <div class="c-line-item__qty-input">
-                                            <oc-quantity-input lineitem="lineItem" order="base.currentOrder"></oc-quantity-input>
+                                            <oc-quantity-input lineitem="lineItem" index="$index" order="base.currentOrder" on-update="cart.updatePromo(li)"></oc-quantity-input>
                                         </div>
                                     </div>
                                     <div class="col-xs-3">

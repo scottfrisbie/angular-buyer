@@ -2,13 +2,6 @@ angular.module('orderCloud')
     .config(LoginConfig)
     .factory('LoginService', LoginService)
     .controller('LoginCtrl', LoginController)
-    .directive('prettySubmit', function () {
-        return function (scope, element) {
-            $(element).submit(function(event) {
-                event.preventDefault();
-            });
-        };
-    })
 ;
 
 function LoginConfig($stateProvider) {
@@ -22,12 +15,11 @@ function LoginConfig($stateProvider) {
     ;
 }
 
-function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, clientid, buyerid, anonymous) {
+function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, ocRolesService, clientid, anonymous) {
     return {
         SendVerificationCode: _sendVerificationCode,
         ResetPassword: _resetPassword,
         RememberMe: _rememberMe,
-        AuthAnonymous: _authAnonymous,
         Logout: _logout
     };
 
@@ -71,19 +63,11 @@ function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, clienti
         return deferred.promise;
     }
 
-    function _authAnonymous() {
-        return OrderCloud.Auth.GetToken('')
-            .then(function(data) {
-                OrderCloud.BuyerID.Set(buyerid);
-                OrderCloud.Auth.SetToken(data.access_token);
-                $state.go('home');
-            });
-    }
-
     function _logout() {
         angular.forEach($cookies.getAll(), function(val, key) {
             $cookies.remove(key);
         });
+        ocRolesService.Remove();
         $state.go(anonymous ? 'home' : 'login', {}, {reload: true});
     }
 
@@ -93,7 +77,6 @@ function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, clienti
         if (availableRefreshToken) {
             OrderCloud.Refresh.GetToken(availableRefreshToken)
                 .then(function(data) {
-                    OrderCloud.BuyerID.Set(buyerid);
                     OrderCloud.Auth.SetToken(data.access_token);
                     $state.go('home');
                 })
@@ -107,7 +90,7 @@ function LoginService($q, $window, $state, $cookies, toastr, OrderCloud, clienti
     }
 }
 
-function LoginController($state, $stateParams, $exceptionHandler, OrderCloud, LoginService, buyerid) {
+function LoginController($state, $stateParams, $exceptionHandler, OrderCloud, LoginService, toastr) {
     var vm = this;
     vm.credentials = {
         Username: null,
@@ -121,24 +104,35 @@ function LoginController($state, $stateParams, $exceptionHandler, OrderCloud, Lo
     vm.rememberStatus = false;
 
     vm.submit = function() {
-        $('#Username').blur();
-        $('#Password').blur();
-        $('#Remember').blur();
-        $('#submit_login').blur();
         vm.loading = OrderCloud.Auth.GetToken(vm.credentials)
             .then(function(data) {
                 vm.rememberStatus ? OrderCloud.Refresh.SetToken(data['refresh_token']) : angular.noop();
-                OrderCloud.BuyerID.Set(buyerid);
                 OrderCloud.Auth.SetToken(data['access_token']);
-                $state.go('home');
+                return OrderCloud.Me.Get()
+                    .then(function(user){
+                        if(user && user.xp && user.xp.HasChangedPW) {
+                            $state.go('home');
+                        } else {
+                            vm.form = 'resetByToken';
+                        }
+                    });
             })
             .catch(function(ex) {
                 $exceptionHandler(ex);
             });
     };
 
+    vm.firstTimeReset = function (){
+        //reset password after logging in for first time
+        return OrderCloud.Me.Patch({Password: vm.credentials.NewPassword, xp: {HasChangedPW: true}})
+            .then(function(){
+                toastr.success('Password Updated', 'Success');
+                $state.go('home');
+            });
+    };
+
     vm.forgotPassword = function() {
-        LoginService.SendVerificationCode(vm.credentials.Email)
+        vm.loading = LoginService.SendVerificationCode(vm.credentials.Email)
             .then(function() {
                 vm.setForm('verificationCodeSuccess');
                 vm.credentials.Email = null;
@@ -149,7 +143,7 @@ function LoginController($state, $stateParams, $exceptionHandler, OrderCloud, Lo
     };
 
     vm.resetPassword = function() {
-        LoginService.ResetPassword(vm.credentials, vm.token)
+        vm.loading = LoginService.ResetPassword(vm.credentials, vm.token)
             .then(function() {
                 vm.setForm('resetSuccess');
                 vm.token = null;
