@@ -86,7 +86,7 @@ function CheckoutController($state, $exceptionHandler, $rootScope, toastr, Order
                 if(payment && payment.SpendingAccountID){
                     return OrderCloud.SpendingAccounts.Get(payment.SpendingAccountID)
                         .then(function(budget){
-                            if( budget && budget.Balance && budget.Balance - order.Total  < 0){
+                            if( budget && budget.Balance < 0){
                                 //send email alerting negative balance
                                 order.BudgetBalance = budget.Balance;
                                 order.BugetBalanceName = budget.Name;
