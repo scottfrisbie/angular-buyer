@@ -259,8 +259,7 @@ function OCPayment() {
 
 function PaymentController($scope, $rootScope, OrderCloud, CheckoutConfig, CheckoutPaymentService) {
 	$scope.methods = [
-		{Value: 'SpendingAccount', Display: 'Budget'},
-		{Value: 'PurchaseOrder', Display: 'Purchase Order'}
+		{Value: 'SpendingAccount', Display: 'Budget'}
 	];
 
 	if (!$scope.payment) {
@@ -305,8 +304,7 @@ function OCPayments() {
 
 function PaymentsController($rootScope, $scope, $exceptionHandler, toastr, OrderCloud, CheckoutPaymentService, CheckoutConfig) {
 	$scope.methods = [
-		{Value: 'SpendingAccount', Display: 'Budget'},
-		{Value: 'PurchaseOrder', Display: 'Purchase Order'}
+		{Value: 'SpendingAccount', Display: 'Budget'}
 	];
 
 	OrderCloud.Payments.List($scope.order.ID)
