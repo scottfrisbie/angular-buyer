@@ -31,7 +31,7 @@ function BaseConfig($stateProvider) {
             CurrentUser: function(OrderCloudSDK) {
                 return OrderCloudSDK.Me.Get();
             },
-            ExistingOrder: function($q, OrderCloudSDK) {
+            ExistingOrder: function(OrderCloudSDK) {
                 return OrderCloudSDK.Me.ListOrders({sortBy:'!DateCreated', filters:{Status:'Unsubmitted'}})
                     .then(function(orderList) {
                         return orderList.Items[0];
