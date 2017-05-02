@@ -79,25 +79,21 @@ function getConstants() {
             result.authurl = 'http://core.four51.com:11629';
             result.apiurl = 'http://core.four51.com:9002';
             result.rebateCode = 'OnePercentRebate';
-            result.devapiurl = 'http://localhost:7203/api';
             break;
         case 'qa':
             result.authurl = 'https://qaauth.ordercloud.io';
             result.apiurl = 'https://qaapi.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
-            result.devapiurl = 'http://localhost:7203/api';
             break;
         case 'staging':
             result.authurl = 'https://stagingauth.ordercloud.io';
             result.apiurl = 'https://stagingapi.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
-            result.devapiurl = 'http://localhost:7203/api';
             break;
         default:
             result.authurl = 'https://auth.ordercloud.io';
             result.apiurl = 'https://api.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
-            result.devapiurl = 'https://caferio.etundra.com/api';
             break;
     }
     if (process.env.apiurl && process.env.authurl) {
@@ -108,6 +104,8 @@ function getConstants() {
         result.authurl = 'https://auth.ordercloud.io/oauth/token';
         result.apiurl = 'https://api.ordercloud.io';
     }
+    result.devapiurl = "http://localhost:7203/api";
+    if(process.env.devapiurl) result.devapiurl = process.env.devapiurl;
     if (process.env.clientid) result.clientid = process.env.clientid;
     if (process.env.appname) result.appname = process.env.appname;
     if (process.env.scope) result.scope = process.env.scope;
