@@ -15,6 +15,7 @@ angular.module('orderCloud', [
         'angularPayments',
         'slick',
         'ngCookies',
-        'ordercloud-angular-sdk'
+        'ordercloud-angular-sdk',
+        'ngResource'
     ]
 );
