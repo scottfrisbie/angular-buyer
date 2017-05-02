@@ -63,13 +63,15 @@ function RepeatOrderModalCtrl(LineItems, OrderID, $uibModalInstance, $state, Rep
     };
 }
 
-function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderCloud, ocLineItems) {
+function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderCloudSDK, ocLineItems) {
     return {
         GetValidLineItems: getValidLineItems,
         AddLineItemsToCart: addLineItemsToCart
     };
 
     function getValidLineItems(originalOrderID) {
+        //TODO: list all products is not a good idea here, instead grab line items from order and make sure
+        //user has access to them
         var dfd = $q.defer();
         ListAllMeProducts()
             .then(function(productList) {
@@ -90,14 +92,14 @@ function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderClou
         function ListAllMeProducts() {
             var dfd = $q.defer();
             var queue = [];
-            OrderCloud.Me.ListProducts(null, 1, 100)
+            OrderCloudSDK.Me.ListProducts(null, 1, 100)
                 .then(function(data) {
                     var productList = data;
                     if (data.Meta.TotalPages > data.Meta.Page) {
                         var page = data.Meta.Page;
                         while (page < data.Meta.TotalPages) {
                             page += 1;
-                            queue.push(OrderCloud.Me.ListProducts(null, page, 100));
+                            queue.push(OrderCloudSDK.Me.ListProducts(null, page, 100));
                         }
                     }
                     $q.all(queue)
@@ -124,7 +126,7 @@ function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderClou
                 Quantity: li.Quantity,
                 Specs: li.Specs
             };
-            queue.push(OrderCloud.LineItems.Create(orderID, lineItemToAdd));
+            queue.push(OrderCloudSDK.LineItems.Create('outgoing', orderID, lineItemToAdd));
         });
         $q.all(queue)
             .then(function(){

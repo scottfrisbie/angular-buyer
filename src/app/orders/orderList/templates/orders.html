@@ -142,7 +142,7 @@
                             <td><a ng-click="orders.goToOrder(order)">{{order.ID}}</a></td>
                             <td>{{order.Status | humanize}}</td>
                             <td>{{(order.DateSubmitted || order.DateCreated) | date:'short'}}</td>
-                            <td>{{order.FromUserFirstName + ' ' + order.FromUserLastName}}</td>
+                            <td>{{order.FromUser.FirstName + ' ' + order.FromUser.LastName}}</td>
                             <td>{{order.Subtotal | currency}}</td>
                         </tr>
                     </tbody>

@@ -15,9 +15,9 @@ describe('Component: Checkout Shipping', function() {
             TaxRates: false
         });
     }));
-    beforeEach(inject(function($q, $rootScope, OrderCloud, CheckoutConfig) {
+    beforeEach(inject(function($q, $rootScope, OrderCloudSDK, CheckoutConfig) {
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         scope = $rootScope.$new();
         rootScope = $rootScope;
         checkoutConfig = CheckoutConfig;

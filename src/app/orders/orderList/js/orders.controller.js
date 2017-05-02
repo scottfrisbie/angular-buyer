@@ -23,10 +23,10 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, ocR
         vm.userGroups.push( {
             Name: group.Name,
             Value: group.ID
-        })
+        });
     });
 
-    vm.sortSelection = Parameters.sortBy ? (Parameters.sortBy.indexOf('!') == 0 ? Parameters.sortBy.split('!')[1] : Parameters.sortBy) : null;
+    vm.sortSelection = Parameters.sortBy ? (Parameters.sortBy.indexOf('!') === 0 ? Parameters.sortBy.split('!')[1] : Parameters.sortBy) : null;
     vm.filtersApplied = vm.parameters.fromDate || vm.parameters.toDate || ($ocMedia('max-width:767px') && vm.sortSelection); //Check if filters are applied, Sort by is a filter on mobile devices
     vm.showFilters = vm.filtersApplied;
     vm.searchResults = Parameters.search && Parameters.search.length > 0; //Check if search was used
@@ -65,9 +65,9 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, ocR
 
     function goToOrder(order){
         if(vm.parameters.tab === 'approvals') {
-            $state.go('orderDetail.approvals', {orderid: order.ID});
+            $state.go('orderDetail.approvals', {orderid: order.ID, buyerid: order.FromCompanyID});
         } else {
-            $state.go('orderDetail', {orderid: order.ID});
+            $state.go('orderDetail', {orderid: order.ID, buyerid: order.FromCompanyID});
         }
     }
 

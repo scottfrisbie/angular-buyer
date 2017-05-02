@@ -25,8 +25,8 @@ function ocReportingService(ocCSVExport, $filter){
             return {
                 OrderID: order.ID,
                 OrderStatus: order.Status,
-                Submitted: format(order.DateCreated, 'date'),
-                SubmittedBy: order.FromUserFirstName + ' ' + order.FromUserLastName,
+                Submitted: format(order.DateSubmitted, 'date'),
+                SubmittedBy: order.FromUser.FirstName + ' ' + order.FromUser.LastName,
                 Subtotal: format(order.Subtotal || 0, 'currency')
             };
         }

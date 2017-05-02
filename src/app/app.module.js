@@ -6,7 +6,6 @@ angular.module('orderCloud', [
         'ui.tree',
         'ui.router',
         'ui.bootstrap',
-        'orderCloud.sdk',
         'LocalForageModule',
         'toastr',
         'angular-busy',
@@ -14,6 +13,9 @@ angular.module('orderCloud', [
         'treeControl',
         'hl.sticky',
         'angularPayments',
-        'slick'
+        'slick',
+        'ngCookies',
+        'ordercloud-angular-sdk',
+        'ngResource'
     ]
 );

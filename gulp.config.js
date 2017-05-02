@@ -76,22 +76,22 @@ function getConstants() {
     var environment = process.env.environment || constants.environment;
     switch (environment) {
         case 'local':
-            result.authurl = 'http://core.four51.com:11629/oauth/token';
+            result.authurl = 'http://core.four51.com:11629';
             result.apiurl = 'http://core.four51.com:9002';
             result.rebateCode = 'OnePercentRebate';
             break;
         case 'qa':
-            result.authurl = 'https://qaauth.ordercloud.io/oauth/token';
+            result.authurl = 'https://qaauth.ordercloud.io';
             result.apiurl = 'https://qaapi.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
             break;
         case 'staging':
-            result.authurl = 'https://stagingauth.ordercloud.io/oauth/token';
+            result.authurl = 'https://stagingauth.ordercloud.io';
             result.apiurl = 'https://stagingapi.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
             break;
         default:
-            result.authurl = 'https://auth.ordercloud.io/oauth/token';
+            result.authurl = 'https://auth.ordercloud.io';
             result.apiurl = 'https://api.ordercloud.io';
             result.rebateCode = 'OnePercentRebate';
             break;

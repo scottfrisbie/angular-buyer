@@ -2,14 +2,14 @@ angular.module('orderCloud')
     .controller('OrderDetailsCtrl', OrderDetailsController)
 ;
 
-function OrderDetailsController($stateParams, Shipments, OrderCloud, SelectedOrder, OrderLineItems) {
+function OrderDetailsController($stateParams, Shipments, OrderCloudSDK, SelectedOrder, OrderLineItems) {
     var vm = this;
     vm.order = SelectedOrder;
     vm.lineItems = OrderLineItems;
     vm.shipments = Shipments;
 
     vm.pageChanged = function() {
-        return OrderCloud.LineItems.List($stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
+        return OrderCloudSDK.LineItems.List('outgoing', $stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
             .then(function(data) {
                 vm.lineItems = data;
             });
@@ -17,7 +17,7 @@ function OrderDetailsController($stateParams, Shipments, OrderCloud, SelectedOrd
 
     vm.loadMore = function() {
         vm.lineItems.Meta.Page++;
-        return OrderCloud.LineItems.List($stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
+        return OrderCloudSDK.LineItems.List('outgoing', $stateParams.orderid, null, vm.lineItems.Meta.Page, vm.lineItems.Meta.PageSize, null, null, null, $stateParams.buyerid)
             .then(function(data) {
                 vm.lineItems.Items = vm.lineItems.Items.concat(data.Items);
                 vm.lineItem.Meta = data.Meta;
