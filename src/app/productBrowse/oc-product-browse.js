@@ -16,7 +16,7 @@ function ocProductBrowseService($q, OrderCloudSDK, ocUtility){
             //only cache simple product-lists, don't cache if any of the above parameters exist
             return _ocProductListCall(Parameters);
         } else {
-            var cacheKey = (Parameters.page || 1).toString() + (Parameters.categoryid || 'NOCAT').toString();
+            var cacheKey = (Parameters.page || 1).toString() + (Parameters.categoryID || 'NOCAT').toString();
             function onCacheEmpty(){
                 return _ocProductListCall(Parameters);
             }
