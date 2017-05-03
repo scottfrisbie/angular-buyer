@@ -11,7 +11,8 @@ function ocOrdersService(OrderCloudSDK){
         var parameters = angular.copy(Parameters);
 
         //exclude unsubmitted orders from list
-        parameters.filters = {Status: '!Unsubmitted'};
+        //parameters.filters = {Status: '!Unsubmitted'};  //TODO: replace this line with below once api can negate enumerable properties
+        parameters.filters = {Status: 'Open|AwaitingApproval|Completed|Canceled|Declined'};
 
         if(parameters.status){
             angular.extend(parameters.filters, {Status: parameters.status});
