@@ -74,7 +74,9 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
     ;
 }
 
-function CheckoutController($state, $rootScope, toastr, OrderCloudSDK, OrderShipAddress, CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, SpendingAccount, CheckoutConfig, ocMandrill, Buyer) {
+function CheckoutController($state, $rootScope, toastr, OrderCloudSDK, OrderShipAddress, 
+CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, SpendingAccount, CheckoutConfig, 
+ocMandrill, Buyer) {
 
     var vm = this;
     vm.shippingAddress = OrderShipAddress;
@@ -109,7 +111,7 @@ function CheckoutController($state, $rootScope, toastr, OrderCloudSDK, OrderShip
     };
 
     function submitAndAlert(order){
-        return OrderCloudSDK.UserGroups.Get(order.xp.CustomerNumber)
+        return OrderCloudSDK.UserGroups.Get(vm.buyer.ID, order.xp.CustomerNumber)
             .then(function(userGroup){
                 return OrderCloudSDK.UserGroups.ListUserAssignments(vm.buyer.ID, {pageSize: 100, userGroupID: userGroup.xp.LevelBlueGroup})
                     .then(function(userGroupList){
