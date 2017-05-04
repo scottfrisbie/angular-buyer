@@ -20,7 +20,7 @@ function ProductSearchConfig($stateProvider) {
                     return ocParameters.Get($stateParams);
                 },
                 ProductList: function(OrderCloudSDK, Parameters) {
-                    return OrderCloudSDK.Me.ListProducts(Parameters.searchTerm, Parameters.page, Parameters.pageSize || 12, 'Name,ID', Parameters.sortBy);
+                    return OrderCloudSDK.Me.ListProducts({search: Parameters.searchTerm, page: Parameters.page, pageSize: Parameters.pageSize || 12, searchOn: 'Name,ID', sortBy: Parameters.sortBy});
                 }
             }
         });
@@ -83,7 +83,7 @@ function ProductSearchDirectiveController($state, $scope, OrderCloudSDK) {
     var vm = this;
 
     vm.getSearchResults = function() {
-        return OrderCloudSDK.Me.ListProducts(vm.searchTerm, 1, vm.maxProducts || 5, 'Name,ID')
+        return OrderCloudSDK.Me.ListProducts({search: vm.searchTerm, page: 1, pageSize: vm.maxProducts || 5, searchOn:'Name,ID'})
             .then(function(data) {
                 return data.Items;
             });
@@ -133,7 +133,7 @@ function ProductSearchModalController($uibModalInstance, $timeout, $scope, Order
     }, 300);
 
     vm.getSearchResults = function() {
-        return OrderCloudSDK.Me.ListProducts(vm.searchTerm, 1, vm.maxProducts || 5, 'Name,ID')
+        return OrderCloudSDK.Me.ListProducts({search: vm.searchTerm, page: 1, pageSize: vm.maxProducts || 5, searchOn:'Name,ID'})
             .then(function(data) {
                 return data.Items;
             });
