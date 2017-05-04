@@ -13,8 +13,8 @@ function ApprovalsConfig($stateProvider){
                 pageTitle: 'Order Approvals'
             },
             resolve: {
-                OrderApprovals: function($stateParams, ocApprovals) {
-                    return ocApprovals.List($stateParams.orderid, $stateParams.buyerid);
+                OrderApprovals: function($stateParams, ocApprovals, Buyer) {
+                    return ocApprovals.List($stateParams.orderid, Buyer.ID);
                 },
                 CanApprove: function(CurrentUser, $stateParams, OrderCloudSDK){
                     return OrderCloudSDK.Orders.ListEligibleApprovers('outgoing', $stateParams.orderid, {pageSize: 100})
