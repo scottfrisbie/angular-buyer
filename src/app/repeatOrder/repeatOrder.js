@@ -20,12 +20,12 @@ function RepeatOrderCtrl(toastr, RepeatOrderFactory, $uibModal) {
 
     vm.openReorderModal = function(){
 
-        function getLineItems(){
+        var lineItems = function getLineItems(){
             return RepeatOrderFactory.GetValidLineItems(vm.originalOrderId);
-        }
+        };
 
-        vm.loading = getLineItems()
-            .then(function(lineitems){
+        vm.loading = lineItems()
+            .then(function(lineItems){
                 $uibModal.open({
                     templateUrl: 'repeatOrder/templates/repeatOrder.modal.html',
                     controller:  RepeatOrderModalCtrl,
@@ -36,7 +36,7 @@ function RepeatOrderCtrl(toastr, RepeatOrderFactory, $uibModal) {
                             return vm.currentOrderId;
                         },
                         LineItems: function() {
-                            return lineitems;
+                            return lineItems;
                         }
                     }
                 });
@@ -75,16 +75,24 @@ function RepeatOrderFactory($q, toastr, $exceptionHandler, OrderCloudSDK, ocUtil
                 var productIds = _.pluck(li.Items, 'ProductID');
                 return getValidProducts(productIds)
                     .then(function(productList){
-                        var validIds = _.pluck(productList, 'ProductID');
-                        var invalidIds = _.without(productIds, validIds);
-                        return {valid: validIds, invalid: invalidIds};
+                        var validLI = [];
+                        var invalidLI = [];
+                        var validProductIDs = _.pluck(productList, 'ID');
+                        _.each(li.Items, function(lineItem){
+                            if(validProductIDs.indexOf(lineItem.ProductID) > -1){
+                                validLI.push(lineItem)
+                            } else {
+                                invalidLI.push(lineItem);
+                            }
+                        });
+                        return {valid: validLI, invalid: invalidLI};
                     });
             });
 
             function getValidProducts(ids, products){
                 var validProducts = products || []; 
                 var chunk = ids.splice(0, 25); //keep small so query params dont get overloaded;
-                return OrderCloudSDK.Me.ListProducts({filters: {ProductID: chunk.join('|')}})
+                return OrderCloudSDK.Me.ListProducts({filters: {ID: chunk.join('|')}})
                     .then(function(productList){
                         validProducts = validProducts.concat(productList.Items);
                         if(ids.length) {

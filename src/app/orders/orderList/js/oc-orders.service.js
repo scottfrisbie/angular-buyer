@@ -52,7 +52,7 @@ function ocOrdersService(OrderCloudSDK){
                     .then(function(address) {
                         var shippingAddressID = address.Items[0].ID;
                         parameters.filters = {ShippingAddressID: shippingAddressID, Status: parameters.status};
-                        return OrderCloudSDK.Me.ListOutgoingOrders(parameters);
+                        return OrderCloudSDK.Me.ListOrders(parameters);
                     });
             } else {
                 return [];
