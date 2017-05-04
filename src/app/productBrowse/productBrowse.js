@@ -32,7 +32,7 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
             }
         })
         .state('productBrowse.products', {
-            url: '/products?categoryid?favorites?search?page?pageSize?searchOn?sortBy?depth',
+            url: '/products?categoryID?favorites?search?page?pageSize?searchOn?sortBy?depth',
             templateUrl: 'productBrowse/templates/productView.tpl.html',
             controller: 'ProductViewCtrl',
             controllerAs: 'productView',
@@ -67,7 +67,7 @@ function ProductBrowseController($state, $uibModal, CategoryList, CategoryTree, 
     };
 
     vm.treeConfig.selectNode = function(node) {
-        $state.go('productBrowse.products', {categoryid:node.ID, page:''});
+        $state.go('productBrowse.products', {categoryID:node.ID, page:''});
     };
 
     //Initiate breadcrumbs is triggered by product list view (child state "productBrowse.products")
@@ -117,7 +117,7 @@ function ProductBrowseController($state, $uibModal, CategoryList, CategoryTree, 
             }
         })
         .result.then(function(node){
-            $state.go('productBrowse.products', {categoryid:node.ID, page:''});
+            $state.go('productBrowse.products', {categoryID:node.ID, page:''});
         });
     };
 }

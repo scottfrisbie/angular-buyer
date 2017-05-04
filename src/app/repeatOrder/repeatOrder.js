@@ -63,59 +63,39 @@ function RepeatOrderModalCtrl(LineItems, OrderID, $uibModalInstance, $state, Rep
     };
 }
 
-function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderCloudSDK, ocLineItems) {
+function RepeatOrderFactory($q, toastr, $exceptionHandler, OrderCloudSDK, ocUtility) {
     return {
         GetValidLineItems: getValidLineItems,
         AddLineItemsToCart: addLineItemsToCart
     };
 
     function getValidLineItems(originalOrderID) {
-        //TODO: list all products is not a good idea here, instead grab line items from order and make sure
-        //user has access to them
-        var dfd = $q.defer();
-        ListAllMeProducts()
-            .then(function(productList) {
-                var productIds = _.pluck(productList, 'ID');
-                ocLineItems.ListAll(originalOrderID)
-                    .then(function(lineItemList) {
-                        lineItemList.ProductIds = productIds;
-                        var valid = [];
-                        var invalid = [];
-                        angular.forEach(lineItemList, function(li) {
-                            productIds.indexOf(li.ProductID) > -1 ? valid.push(li) : invalid.push(li);
-                        });
-                        dfd.resolve({valid: valid, invalid: invalid});
+        return ocUtility.ListAll(OrderCloudSDK.LineItems.List, 'outgoing', originalOrderID, {})
+            .then(function(li){
+                var productIds = _.pluck(li.Items, 'ProductID');
+                return getValidProducts(productIds)
+                    .then(function(productList){
+                        var validIds = _.pluck(productList, 'ProductID');
+                        var invalidIds = _.without(productIds, validIds);
+                        return {valid: validIds, invalid: invalidIds};
                     });
             });
-        return dfd.promise;
 
-        function ListAllMeProducts() {
-            var dfd = $q.defer();
-            var queue = [];
-            OrderCloudSDK.Me.ListProducts(null, 1, 100)
-                .then(function(data) {
-                    var productList = data;
-                    if (data.Meta.TotalPages > data.Meta.Page) {
-                        var page = data.Meta.Page;
-                        while (page < data.Meta.TotalPages) {
-                            page += 1;
-                            queue.push(OrderCloudSDK.Me.ListProducts(null, page, 100));
+            function getValidProducts(ids, products){
+                var validProducts = products || []; 
+                var chunk = ids.splice(0, 25); //keep small so query params dont get overloaded;
+                return OrderCloudSDK.Me.ListProducts({filters: {ProductID: chunk.join('|')}})
+                    .then(function(productList){
+                        validProducts = validProducts.concat(productList.Items);
+                        if(ids.length) {
+                            return getValidProducts(ids, validProducts);
+                        } else {
+                            return validProducts;
                         }
-                    }
-                    $q.all(queue)
-                        .then(function(results) {
-                            angular.forEach(results, function(result) {
-                                productList.Items = [].concat(productList.Items, result.Items);
-                            });
-                            dfd.resolve(productList.Items);
-                        })
-                        .catch(function(err) {
-                            dfd.reject(err);
-                        });
-                });
-            return dfd.promise;
-        }
+                    });
+            }
     }
+
 
     function addLineItemsToCart(validLI, orderID) {
         var queue = [];

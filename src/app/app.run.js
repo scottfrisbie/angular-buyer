@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .run(AppRun)
 ;
 
-function AppRun(ocStateLoading, defaultErrorMessageResolver, ocErrorMessages, validator) {
+function AppRun(ocStateLoading, defaultErrorMessageResolver, ocErrorMessages, validator, ocRefreshToken) {
     ocStateLoading.Init();
 
     defaultErrorMessageResolver.getErrorMessages().then(function (errorMessages) {
