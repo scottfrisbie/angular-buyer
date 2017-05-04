@@ -47,7 +47,7 @@
                         <span class="pull-right">- {{promotion.Amount | currency}}</span></h5>
                 </div>
                 <div class="panel-footer">
-                    <button ng-if="cart.lineItems.Items.length > 0" type="button" ui-sref="checkout.shipping" class="btn btn-block btn-primary" ng-disabled="OrderLineItemForm.$invalid">Proceed to Checkout</button>
+                    <button ng-if="cart.lineItems.Items.length > 0" type="button" ui-sref="checkout.shipping" ui-sref-opts="{reload:true}" class="btn btn-block btn-primary" ng-disabled="OrderLineItemForm.$invalid">Proceed to Checkout</button>
                 </div>
             </div>
         </aside>
