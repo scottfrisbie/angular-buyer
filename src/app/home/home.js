@@ -32,9 +32,7 @@ function HomeConfig($stateProvider) {
 							'xp.Featured': true
 						}
 					};
-					return null;
-					//TODO: uncomment below line once api bug EX- is resolved
-					// return OrderCloudSDK.Me.ListCategories(params);
+					return OrderCloudSDK.Me.ListCategories(params);
 				}
 			}
 		})

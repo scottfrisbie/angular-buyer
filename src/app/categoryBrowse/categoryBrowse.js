@@ -17,11 +17,13 @@ function CategoryBrowseConfig($stateProvider){
                 },
                 CategoryList: function(OrderCloudSDK, Parameters) {
                     if(Parameters.categoryID) { Parameters.filters ? Parameters.filters.ParentID = Parameters.categoryID : Parameters.filters = {ParentID:Parameters.categoryID}; } 
+                    Parameters.page = Parameters.categoryPage;
                     return OrderCloudSDK.Me.ListCategories(Parameters);
                 },
                 ProductList: function(OrderCloudSDK, Parameters) {
                     if(Parameters && Parameters.filters && Parameters.filters.ParentID) {
                         delete Parameters.filters.ParentID;
+                        Parameters.page = Parameters.productPage;
                         return OrderCloudSDK.Me.ListProducts(Parameters);
                     } else {
                         return null;
