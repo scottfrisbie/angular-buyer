@@ -47,13 +47,14 @@ function CartController($rootScope, $state, toastr, OrderCloudSDK, LineItemsList
         vm.lineLoading = [];
         vm.lineLoading[scope.$index] = OrderCloudSDK.LineItems.Delete('outgoing', order.ID, scope.lineItem.ID)
             .then(function () {
-                vm.lineItems.Items.splice(scope.$index, 1);
+                var index = _.pluck(vm.lineItems, 'ID').indexOf(scope.lineItem.ID);
+                vm.lineItems.Items.splice(index, 1);
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                 return AddRebate.ApplyPromo(order)
                     .then(function() {
                         $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                         toastr.success('Line Item Removed');
-                    })
+                    });
             });
     }
 
