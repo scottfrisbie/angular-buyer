@@ -5,7 +5,7 @@ angular.module('orderCloud')
 function OrderDetailConfig($stateProvider){
     $stateProvider
         .state('orderDetail', {
-            url: '/order/:orderid/:buyerid',
+            url: '/order/:orderid',
             parent: 'account',
             templateUrl: 'orders/orderDetails/templates/orderDetails.html',
             controller: 'OrderDetailsCtrl',
