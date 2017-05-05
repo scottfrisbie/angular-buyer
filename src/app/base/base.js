@@ -19,42 +19,32 @@ function BaseConfig($stateProvider) {
             }
         },
         resolve: {
-            Buyer: function(OrderCloud){
-                return OrderCloud.Buyers.List(null, 1, 1)
+            Buyer: function(OrderCloudSDK){
+                return OrderCloudSDK.Buyers.List({pageSize:1})
                     .then(function(buyerList){
-                        var buyer = buyerList.Items[0];
-                        OrderCloud.BuyerID.Set(buyer.ID);
-                        OrderCloud.CatalogID.Set(buyer.DefaultCatalogID);
-                        return buyer;
+                        return buyerList.Items[0];
                     });
             },
-            Catalog: function(OrderCloud, Buyer){
-                return OrderCloud.Catalogs.Get(Buyer.DefaultCatalogID);
+            Catalog: function(OrderCloudSDK, Buyer){
+                return OrderCloudSDK.Catalogs.Get(Buyer.DefaultCatalogID);
             },
-            CurrentUser: function($q, $state, OrderCloud) {
-                return OrderCloud.Me.Get();
+            CurrentUser: function(OrderCloudSDK) {
+                return OrderCloudSDK.Me.Get();
             },
-            ExistingOrder: function($q, OrderCloud, CurrentUser, Catalog) {
-                return OrderCloud.Me.ListOutgoingOrders(null, 1, 1, null, "!DateCreated", {Status:"Unsubmitted"})
-                    .then(function(data) {
-                        return data.Items[0];
+            ExistingOrder: function(OrderCloudSDK) {
+                return OrderCloudSDK.Me.ListOrders({sortBy:'!DateCreated', filters:{Status:'Unsubmitted'}})
+                    .then(function(orderList) {
+                        return orderList.Items[0];
                     });
             },
             CurrentOrder: function(ExistingOrder, NewOrder) {
-                if (!ExistingOrder) {
-                    return NewOrder.Create({});
-                } else {
-                    return ExistingOrder;
-                }
-            },
-            AnonymousUser: function($q, OrderCloud, CurrentUser) {
-                CurrentUser.Anonymous = angular.isDefined(JSON.parse(atob(OrderCloud.Auth.ReadToken().split('.')[1])).orderid);
+                return !ExistingOrder ? NewOrder.Create({}) : ExistingOrder;
             }
         }
     });
 }
 
-function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder,  OrderCloud) {
+function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder,  OrderCloudSDK) {
     var vm = this;
     vm.currentUser = CurrentUser;
     vm.currentOrder = CurrentOrder;
@@ -74,14 +64,14 @@ function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentO
         vm.orderLoading = {
             message: message
         };
-        vm.orderLoading.promise = OrderCloud.Orders.Get(OrderID)
+        vm.orderLoading.promise = OrderCloudSDK.Orders.Get('outgoing', OrderID)
             .then(function(data) {
                 vm.currentOrder = data;
             });
     });
 }
 
-function NewOrderService($q, OrderCloud) {
+function NewOrderService($q, OrderCloudSDK) {
     var service = {
         Create: _create
     };
@@ -90,8 +80,8 @@ function NewOrderService($q, OrderCloud) {
         var deferred = $q.defer();
         var order = {};
 
-        //ShippingAddressID
-        OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {Shipping: true})
+        //ShippingAddressID{pageSize: 100, filters: {Shipping: true}}
+        OrderCloudSDK.Me.ListAddresses({pageSize: 100, filters: {Shipping: true}})
             .then(function(shippingAddresses) {
                 if (shippingAddresses.Items.length) order.ShippingAddressID = shippingAddresses.Items[0].ID;
                 setBillingAddress();
@@ -99,7 +89,7 @@ function NewOrderService($q, OrderCloud) {
 
         //BillingAddressID
         function setBillingAddress() {
-            OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {Billing: true})
+            OrderCloudSDK.Me.ListAddresses({pageSize: 100, filters: {Billing: true}})
                 .then(function(billingAddresses) {
                     if (billingAddresses.Items.length) order.BillingAddressID = billingAddresses.Items[0].ID;
                     createOrder();
@@ -111,14 +101,14 @@ function NewOrderService($q, OrderCloud) {
                 ExpeditedShipping: "ground",
                 sellerOrderID: 0
             };
-            OrderCloud.Orders.Create(order)
+            OrderCloudSDK.Orders.Create('outgoing', order)
                 .then(function(order) {
                     var attempt = 0;
                     generateOrderNumber(order); //generates an order number in the form WXXXXXXX
                     
                     function generateOrderNumber(order){
                         var orderNumber = Math.floor((1000000 + Math.random() * 9000000)); //random # length 7 digits
-                        OrderCloud.Orders.Patch(order.ID, {ID: 'W' + orderNumber})
+                        OrderCloudSDK.Orders.Patch('outgoing', order.ID, {ID: 'W' + orderNumber})
                             .then(function(newOrder){
                                 deferred.resolve(newOrder);
                             })

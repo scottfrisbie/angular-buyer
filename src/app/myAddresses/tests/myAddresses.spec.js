@@ -6,10 +6,10 @@ describe('Component: myAddresses', function(){
         ;
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($rootScope, $q, OrderCloud, $state){
+    beforeEach(inject(function($rootScope, $q, OrderCloudSDK, $state){
         scope = $rootScope.$new();
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         state = $state;
     }));
 

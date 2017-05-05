@@ -18,13 +18,13 @@
                 <thead class="thead-inverse">
                 <tr>
                     <th>Product ID</th>
-                    <th>Quantity</th>
+                    <th>Product Name</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="li in repeatModal.invalidLI track by $index">
-                    <td>{{li.ProductID}}</td>
-                    <td>{{li.Quantity}}</td>
+                <tr ng-repeat="product in repeatModal.invalidLI track by $index">
+                    <td>{{product.Product.ID}}</td>
+                    <td>{{product.Product.Name}}</td>
                 </tr>
                 </tbody>
             </table>

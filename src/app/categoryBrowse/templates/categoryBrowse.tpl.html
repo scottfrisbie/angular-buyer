@@ -37,7 +37,7 @@
     <!-- Product List Pagination -->
     <uib-pagination boundary-links="categoryBrowse.productList.Meta.TotalPages > 5" max-size="5" total-items="categoryBrowse.productList.Meta.TotalCount"
         items-per-page="categoryBrowse.productList.Meta.PageSize" ng-model="categoryBrowse.productList.Meta.Page" ng-change="categoryBrowse.changeProductPage(categoryBrowse.productList.Meta.Page)"
-        ng-if="categoryBrowse.categoryList.Meta.TotalPages > 1">
+        ng-if="categoryBrowse.productList.Meta.TotalPages > 1">
     </uib-pagination>
     <!-- No Results -->
     <div ng-if="!categoryBrowse.productList.Items.length && !categoryBrowse.categoryList.Items.length">

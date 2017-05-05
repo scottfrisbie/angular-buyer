@@ -2,19 +2,19 @@ angular.module('orderCloud')
     .factory('ocOrderDetails', ocOrderDetailsService)
 ;
 
-function ocOrderDetailsService($q, $exceptionHandler, OrderCloud){
+function ocOrderDetailsService($exceptionHandler, OrderCloudSDK){
     var service = {
         Get: _get
     };
 
     function _get(orderID){
-        return OrderCloud.Orders.Get(orderID)
+        return OrderCloudSDK.Orders.Get('outgoing', orderID)
             .then(function(order){
                 return getBuyerOrg(order);
             });
 
         function getBuyerOrg(order){
-            return OrderCloud.Buyers.Get(order.FromCompanyID)
+            return OrderCloudSDK.Buyers.Get(order.FromCompanyID)
                 .then(function(buyer){
                     order.FromCompany = buyer;
                     return order;

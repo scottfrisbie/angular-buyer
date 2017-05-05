@@ -8,9 +8,9 @@ angular.module('orderCloud')
         controller: AddPromotionComponentCtrl
     });
 
-function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, toastr) {
+function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloudSDK, toastr) {
     this.submit = function(orderID, promoCode) {
-        OrderCloud.Orders.AddPromotion(orderID, promoCode)
+        OrderCloudSDK.Orders.AddPromotion('outgoing', orderID, promoCode)
             .then(function(promo) {
                 $rootScope.$broadcast('OC:UpdatePromotions', orderID);
                 $rootScope.$broadcast('OC:UpdateOrder', orderID);
@@ -22,7 +22,7 @@ function AddPromotionComponentCtrl($exceptionHandler, $rootScope, OrderCloud, to
     };
 }
 
-function AddRebate(OrderCloud, $rootScope, rebateCode, $q) {
+function AddRebate(OrderCloudSDK, $rootScope, rebateCode, $q) {
     //This Service is called from the base.js on CurrentOrder
     var service = {
         ApplyPromo: _apply
@@ -30,12 +30,12 @@ function AddRebate(OrderCloud, $rootScope, rebateCode, $q) {
 
     function _apply(order) {
         if (order.Total > 0) {
-            return OrderCloud.Orders.ListPromotions(order.ID)
+            return OrderCloudSDK.Orders.ListPromotions('outgoing', order.ID)
                 .then(function (promos) {
                         if (promos.Items.length) {
-                            return OrderCloud.Orders.RemovePromotion(order.ID, rebateCode)
+                            return OrderCloudSDK.Orders.RemovePromotion('outgoing', order.ID, rebateCode)
                                 .then(function (updatedOrder) {
-                                    return OrderCloud.Orders.AddPromotion(updatedOrder.ID, rebateCode)
+                                    return OrderCloudSDK.Orders.AddPromotion('outgoing', updatedOrder.ID, rebateCode)
                                         .then(function() {
                                             $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
                                             $rootScope.$broadcast('OC:UpdateOrder', order.ID);
@@ -43,9 +43,9 @@ function AddRebate(OrderCloud, $rootScope, rebateCode, $q) {
                                         });
                                 });
                         } else {
-                            return OrderCloud.Orders.AddPromotion(order.ID, rebateCode)
+                            return OrderCloudSDK.Orders.AddPromotion('outgoing', order.ID, rebateCode)
                                 .then(function () {
-                                    return OrderCloud.Orders.Patch(order.ID, order)
+                                    return OrderCloudSDK.Orders.Patch('outgoing', order.ID, order)
                                         .then(function(orderData) {
                                             $rootScope.$broadcast('OC:UpdateOrder', orderData.ID);
                                             return orderData;

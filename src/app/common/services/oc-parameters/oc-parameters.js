@@ -4,8 +4,8 @@ angular.module('orderCloud')
 
 function OrderCloudParametersService($filter) {
 	var service = {
-		Get: _get, //get params for use in OrderCloud service
-		Create: _create //create params obj ready for use in OrderCloud $state.go()
+		Get: _get, //get params for use in OrderCloudSDK service
+		Create: _create //create params obj ready for use in OrderCloudSDK $state.go()
 	};
 
 	function _get(stateParams, suffix) {

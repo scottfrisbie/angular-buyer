@@ -2,16 +2,21 @@ angular.module('orderCloud')
     .factory('ocOrders', ocOrdersService)
 ;
 
-function ocOrdersService(OrderCloud, toastr){
+function ocOrdersService(OrderCloudSDK){
     var service = {
         List: _list
     };
     
-    function _list(Parameters, CurrentUser, Buyer){
+    function _list(Parameters, CurrentUser){
         var parameters = angular.copy(Parameters);
 
         //exclude unsubmitted orders from list
-        parameters.filters = {Status: '!Unsubmitted'};
+        //parameters.filters = {Status: '!Unsubmitted'};  //TODO: replace this line with below once api can negate enumerable properties
+        parameters.filters = {Status: 'Open|AwaitingApproval|Completed|Canceled|Declined'};
+
+        if(parameters.status){
+            angular.extend(parameters.filters, {Status: parameters.status});
+        }
 
         //set outgoing params to iso8601 format as expected by api
         //set returning params to date object as expected by uib-datepicker
@@ -43,23 +48,21 @@ function ocOrdersService(OrderCloud, toastr){
 
         if(parameters.tab === 'grouporders') {
             if(parameters.group) {
-                return OrderCloud.Me.ListAddresses(null, null, null, null, null, {CompanyName: parameters.group})
+                return OrderCloudSDK.Me.ListAddresses(null, null, null, null, null, {CompanyName: parameters.group})
                     .then(function(address) {
                         var shippingAddressID = address.Items[0].ID;
-                        return OrderCloud.Me.ListOutgoingOrders(parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, {ShippingAddressID: shippingAddressID, Status: parameters.status}, parameters.from, parameters.to)
+                        parameters.filters = {ShippingAddressID: shippingAddressID, Status: parameters.status};
+                        return OrderCloudSDK.Me.ListOrders(parameters);
                     });
             } else {
                 return [];
             }
         }
 
-        if(parameters.status){
-            angular.extend(parameters.filters, {Status: parameters.status});
-        }
-
         // list orders with generated parameters
-        var listType = parameters.tab === 'approvals' ? 'ListIncomingOrders' : 'ListOutgoingOrders';
-        return OrderCloud.Me[listType](parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, parameters.filters);
+        console.log(parameters);
+        var listType = parameters.tab === 'approvals' ? 'ListApprovableOrders' : 'ListOrders';
+        return OrderCloudSDK.Me[listType](parameters);
     }
 
     return service;

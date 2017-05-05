@@ -17,10 +17,10 @@ describe('Component: orderApprovals', function() {
     }));
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($q, $rootScope, OrderCloud, ocParameters, ocApprovals) {
+    beforeEach(inject(function($q, $rootScope, OrderCloudSDK, ocParameters, ocApprovals) {
         q = $q;
         scope = $rootScope.$new();
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         _ocApprovals = ocApprovals;
     }));
 
@@ -65,7 +65,7 @@ describe('Component: orderApprovals', function() {
 
             orderApprovalsCtrl = $controller('OrderApprovalsCtrl', {
                 $stateParams: $stateParams,
-                OrderCloud: oc,
+                OrderCloudSDK: oc,
                 ocApprovals: _ocApprovals,
                 OrderApprovals: {Meta: {Page: 1, PageSize: 12}, Items: [{ApprovalRuleID: 'Approval1', Status: 'Approved'}] },
                 CanApprove: true
@@ -148,12 +148,12 @@ describe('Component: orderApprovals', function() {
         });
 
         describe('submit', function(){
-            it('should call OrderCloud.Orders.Submit if intent is set to "Submit"', function(){
+            it('should call OrderCloudSDK.Orders.Submit if intent is set to "Submit"', function(){
                 approvalModalCtrl.intent = 'Approve';
                 approvalModalCtrl.submit(); 
                 expect(oc.Orders.Approve).toHaveBeenCalledWith(mockOrderID, null);
             });
-            it('should call OrderCloud.Orders.Decline if intent is set to "Decline"', function(){
+            it('should call OrderCloudSDK.Orders.Decline if intent is set to "Decline"', function(){
                 approvalModalCtrl.intent = 'Decline';
                 approvalModalCtrl.submit();
                 expect(oc.Orders.Decline).toHaveBeenCalledWith(mockOrderID, null);

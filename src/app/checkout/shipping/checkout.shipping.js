@@ -12,7 +12,7 @@ function checkoutShippingConfig($stateProvider) {
         });
 }
 
-function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, CurrentOrder, CurrentUser, AddressSelectModal, ShippingRates, CheckoutConfig, rebateCode) {
+function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloudSDK, CurrentOrder, CurrentUser, AddressSelectModal, rebateCode) {
     var vm = this;
 
     vm.rebateCode = rebateCode;
@@ -20,11 +20,7 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, C
     vm.user = CurrentUser;
     vm.changeShippingAddress = changeShippingAddress;
     vm.saveShipAddress = saveShipAddress;
-    vm.shipperSelected = shipperSelected;
     vm.toggleShipping = toggleShipping;
-    vm.initShippingRates = initShippingRates;
-    vm.getShippingRates = getShippingRates;
-    vm.analyzeShipments = analyzeShipments;
 
     function changeShippingAddress(order) {
         AddressSelectModal.Open('shipping', vm.user)
@@ -40,10 +36,9 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, C
 
     function saveShipAddress(order, address) {
         if (order && order.ShippingAddressID) {
-            OrderCloud.Orders.Patch(order.ID, {ShippingAddressID: order.ShippingAddressID, xp: {CustomerNumber: address.CompanyName}})
+            OrderCloudSDK.Orders.Patch('outgoing', order.ID, {ShippingAddressID: order.ShippingAddressID, xp: {CustomerNumber: address.CompanyName}})
                 .then(function(updatedOrder) {
                     $rootScope.$broadcast('OC:OrderShipAddressUpdated', updatedOrder);
-                    vm.getShippingRates(order);
                 })
                 .catch(function(ex){
                     $exceptionHandler(ex);
@@ -51,33 +46,8 @@ function CheckoutShippingController($exceptionHandler, $rootScope, OrderCloud, C
         }
     }
 
-    function initShippingRates(order) {
-        if (CheckoutConfig.ShippingRates && order.ShippingAddressID) vm.getShippingRates(order);
-    }
-
-    function getShippingRates(order) {
-        vm.shippersAreLoading = true;
-        vm.shippersLoading = ShippingRates.GetRates(order)
-            .then(function(shipments) {
-                vm.shippersAreLoading = false;
-                vm.shippingRates = shipments;
-                vm.analyzeShipments(order);
-            });
-    }
-
-    function analyzeShipments(order) {
-        vm.shippingRates = ShippingRates.AnalyzeShipments(order, vm.shippingRates);
-    }
-
-    function shipperSelected(order) {
-        ShippingRates.ManageShipments(order, vm.shippingRates)
-            .then(function() {
-                $rootScope.$broadcast('OC:UpdateOrder', order.ID);
-            });
-    }
-
     function toggleShipping(opt) {
-        OrderCloud.Orders.Patch(vm.order.ID, {xp: {ExpeditedShipping: opt}})
+        OrderCloudSDK.Orders.Patch('outgoing', vm.order.ID, {xp: {ExpeditedShipping: opt}})
             .then(function(updatedOrder) {
                 $rootScope.$broadcast('OC:UpdateOrder', updatedOrder.ID);
             })

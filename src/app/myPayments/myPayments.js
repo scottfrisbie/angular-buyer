@@ -15,14 +15,14 @@ function MyPaymentsConfig($stateProvider) {
                 pageTitle: "Payment Methods"
             },
             resolve: {
-                UserCreditCards: function(OrderCloud) {
-                    return OrderCloud.Me.ListCreditCards(null, null, null, null, null, {'Editable':true});
+                UserCreditCards: function(OrderCloudSDK) {
+                    return OrderCloudSDK.Me.ListCreditCards(null, null, null, null, null, {'Editable':true});
                 },
-                UserSpendingAccounts: function(OrderCloud) {
-                   return OrderCloud.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '!*'});
+                UserSpendingAccounts: function(OrderCloudSDK) {
+                   return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '!*'});
                 },
-                GiftCards: function(OrderCloud) {
-                    return OrderCloud.Me.ListSpendingAccounts(null, null, null,null, null, {'RedemptionCode': '*'});
+                GiftCards: function(OrderCloudSDK) {
+                    return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '*'});
                 }
             }
         });

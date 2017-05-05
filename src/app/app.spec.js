@@ -26,10 +26,10 @@ describe('Application', function() {
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
     beforeEach(module('ui.router'));
-    beforeEach(inject(function($q, $rootScope, OrderCloud, ocStateLoading) {
+    beforeEach(inject(function($q, $rootScope, OrderCloudSDK, ocStateLoading) {
         q = $q;
         scope = $rootScope.$new();
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         stateLoading = ocStateLoading;
     }));
 

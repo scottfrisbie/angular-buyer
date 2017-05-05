@@ -88,8 +88,8 @@ describe('Component: ordercloudRepeatOrder', function(){
             ocLIs,
             originalOrderID
             ;
-        beforeEach(inject(function(OrderCloud, toastr, RepeatOrderFactory){
-            oc = OrderCloud;
+        beforeEach(inject(function(OrderCloudSDK, toastr, RepeatOrderFactory){
+            oc = OrderCloudSDK;
             toaster = toastr;
             repeatOrderFactory = RepeatOrderFactory;
             originalOrderID = 'testOriginalOrderID123';
@@ -114,7 +114,7 @@ describe('Component: ordercloudRepeatOrder', function(){
                 spyOn(ocLIs, 'ListAll').and.returnValue(defer.promise);
                 repeatOrderFactory.GetValidLineItems(originalOrderID);
             }));
-            it('should call the OrderCloud Me ListProducts method', function(){
+            it('should call the OrderCloudSDK Me ListProducts method', function(){
                 expect(oc.Me.ListProducts).toHaveBeenCalledWith(null, 1, 100);
             });
             it('should call lineItemHelpers ListAll method', function(){
@@ -142,7 +142,7 @@ describe('Component: ordercloudRepeatOrder', function(){
                 spyOn(toaster, 'success');
                 repeatOrderFactory.AddLineItemsToCart(validLI, originalOrderID);
             });
-            it('should call the OrderCloud LineItems Create method', function(){
+            it('should call the OrderCloudSDK LineItems Create method', function(){
                 expect(oc.LineItems.Create).toHaveBeenCalledTimes(2);
             });
             it('should call the toastr success method', function(){

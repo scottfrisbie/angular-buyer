@@ -20,9 +20,10 @@ function FavoriteProductsConfig($stateProvider){
                 Parameters: function ($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                FavoriteProducts: function(OrderCloud, Parameters, CurrentUser){
+                FavoriteProducts: function(OrderCloudSDK, Parameters, CurrentUser){
                     if (CurrentUser.xp && CurrentUser.xp.FavoriteProducts.length) {
-                        return OrderCloud.Me.ListProducts(Parameters.search, Parameters.page, Parameters.pageSize || 6, Parameters.searchOn, Parameters.sortBy, {ID: CurrentUser.xp.FavoriteProducts.join('|')});
+                        Parameters.filters = {ID: CurrentUser.xp.FavoriteProducts.join('|')}
+                        return OrderCloudSDK.Me.ListProducts(Parameters);
                     } else {
                         return null;
                     }
@@ -31,7 +32,7 @@ function FavoriteProductsConfig($stateProvider){
         });
 }
 
-function FavoriteProductsController(ocParameters, OrderCloud, $state, $ocMedia, Parameters, CurrentUser, FavoriteProducts){
+function FavoriteProductsController(ocParameters, OrderCloudSDK, $state, $ocMedia, Parameters, CurrentUser, FavoriteProducts){
     var vm = this;
     vm.currentUser = CurrentUser;
     vm.list = FavoriteProducts;
@@ -86,7 +87,7 @@ function FavoriteProductsController(ocParameters, OrderCloud, $state, $ocMedia, 
 
     //load the next page of results with all the same parameters
     vm.loadMore = function() {
-        return OrderCloud.Me.ListProducts(Parameters.search, vm.list.Meta.Page + 1, Parameters.pageSize || vm.list.Meta.PageSize, Parameters.searchOn, Parameters.sortBy, Parameters.filters)
+        return OrderCloudSDK.Me.ListProducts(Parameters)
             .then(function(data) {
                 vm.list.Items = vm.list.Items.concat(data.Items);
                 vm.list.Meta = data.Meta;
@@ -107,7 +108,7 @@ function FavoriteProductDirective(){
     };
 }
 
-function FavoriteProductController($scope, OrderCloud, toastr){
+function FavoriteProductController($scope, OrderCloudSDK, toastr){
     var vm = this;
     vm.checkHasFavorites = checkHasFavorites;
     vm.toggleFavoriteProduct = toggleFavoriteProduct;
@@ -140,7 +141,7 @@ function FavoriteProductController($scope, OrderCloud, toastr){
                 $scope.currentUser.xp ={};
                 $scope.currentUser.xp.FavoriteProducts = [];
             }
-            OrderCloud.Me.Patch( {xp:$scope.currentUser.xp})
+            return OrderCloudSDK.Me.Patch( {xp:$scope.currentUser.xp})
                 .then(function(){
                     vm.hasFavorites = true;
                 })
@@ -152,21 +153,21 @@ function FavoriteProductController($scope, OrderCloud, toastr){
 
     function addProduct(existingList){
         existingList.push($scope.product.ID);
-        OrderCloud.Me.Patch({xp: {FavoriteProducts: existingList}})
+        return OrderCloudSDK.Me.Patch({xp: {FavoriteProducts: existingList}})
             .then(function(data){
                 vm.hasFavorites = data.xp && data.xp.FavoriteProducts;
                 vm.isFavorited = true;
-                toastr.success($scope.product.Name + ' was added to your favorites');
+                return toastr.success($scope.product.Name + ' was added to your favorites');
             });
     }
 
     function removeProduct(){
         var updatedList = _.without($scope.currentUser.xp.FavoriteProducts, $scope.product.ID);
-        OrderCloud.Me.Patch({xp: {FavoriteProducts: updatedList}})
+        return OrderCloudSDK.Me.Patch({xp: {FavoriteProducts: updatedList}})
             .then(function(){
                 vm.isFavorited = false;
                 $scope.currentUser.xp.FavoriteProducts = updatedList;
-                toastr.success($scope.product.Name + ' was removed from your favorites');
+                return toastr.success($scope.product.Name + ' was removed from your favorites');
             });
     }
 

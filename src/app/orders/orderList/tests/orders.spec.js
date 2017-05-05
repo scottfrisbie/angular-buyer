@@ -16,10 +16,10 @@ describe('Component: orders', function() {
     }));
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($q, $rootScope, OrderCloud, ocParameters, ocOrders, CurrentUser, $state) {
+    beforeEach(inject(function($q, $rootScope, OrderCloudSDK, ocParameters, ocOrders, CurrentUser, $state) {
         q = $q;
         scope = $rootScope.$new();
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         _ocParameters = ocParameters;
         _ocOrders = ocOrders;
         state = $state;
@@ -59,7 +59,7 @@ describe('Component: orders', function() {
             ordersCtrl = $controller('OrdersCtrl', {
                 $state: state,
                 $ocMedia: ocMedia,
-                OrderCloud: oc,
+                OrderCloudSDK: oc,
                 ocParameters: _ocParameters,
                 OrderList: [],
                 Parameters: Parameters

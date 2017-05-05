@@ -13,10 +13,10 @@ describe('Factory: ocLineItem', function() {
         };
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($rootScope, $q, OrderCloud, ocLineItems) {
+    beforeEach(inject(function($rootScope, $q, OrderCloudSDK, ocLineItems) {
         scope = $rootScope.$new();
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         _ocLineItems = ocLineItems;
     }));
     describe('AddItem', function() {
@@ -25,7 +25,7 @@ describe('Factory: ocLineItem', function() {
             _ocLineItems.AddItem(order, product);
             expect(q.defer).toHaveBeenCalled();
         });
-        it ('should call OrderCloud.LineItems.Create()', function() {
+        it ('should call OrderCloudSDK.LineItems.Create()', function() {
             var defer = q.defer();
             defer.resolve("NEW_LINE_ITEM");
             spyOn(oc.LineItems, 'Create').and.returnValue(defer.promise);

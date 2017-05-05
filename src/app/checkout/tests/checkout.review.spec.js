@@ -29,9 +29,9 @@ describe('Component: Checkout Review', function() {
             }
         });
     }));
-    beforeEach(inject(function($q, $rootScope, OrderCloud, CurrentOrder, OrderPayments, ocLineItems) {
+    beforeEach(inject(function($q, $rootScope, OrderCloudSDK, CurrentOrder, OrderPayments, ocLineItems) {
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         scope = $rootScope.$new();
         lineItemHelpers = ocLineItems;
         currentOrder = CurrentOrder;

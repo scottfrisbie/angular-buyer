@@ -29,7 +29,7 @@ then define a route of `/products/:id`, ad infinitum.
 This is our main app file. It kickstarts the whole process by
 requiring all the modules that we need.
 
-By default, the OrderCloud AngularJS Seed includes a few useful modules written
+By default, the OrderCloudSDK AngularJS Seed includes a few useful modules written
 by the AngularJS team. Along with one by the Angular-UI team called `ui.router`.
 Lastly, we include the `orderCloud.sdk` module for connecting to the API.
 
@@ -86,7 +86,7 @@ not specific to the template or route, such as menu logic or page title wiring.
 .controller('AppCtrl', function AppCtrl($scope, $location) {
   $scope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     if (angular.isDefined(toState.data.pageTitle)) {
-      $scope.pageTitle = 'OrderCloud | ' + toState.data.pageTitle;
+      $scope.pageTitle = 'OrderCloudSDK | ' + toState.data.pageTitle;
     }
   });
 })
@@ -94,7 +94,7 @@ not specific to the template or route, such as menu logic or page title wiring.
 
 ### Testing
 
-One of the design philosophies of `OrderCloud-Seed-AngularJS` is that tests should exist
+One of the design philosophies of `OrderCloudSDK-Seed-AngularJS` is that tests should exist
 alongside the code they test and that the build system should be smart enough to
 know the difference and react accordingly. As such, the unit test for `app.*.js`
 is `app.spec.js`, though it is quite minimal.

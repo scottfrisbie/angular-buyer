@@ -8,10 +8,10 @@ describe('Component: Base', function() {
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
     beforeEach(module('ui.router'));
-    beforeEach(inject(function($q, $rootScope, $state, OrderCloud, $injector) {
+    beforeEach(inject(function($q, $rootScope, $state, OrderCloudSDK, $injector) {
         q = $q;
         scope = $rootScope.$new();
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         state = $state;
         injector = $injector;
     }));
@@ -25,7 +25,7 @@ describe('Component: Base', function() {
             user.resolve('TEST USER');
             spyOn(oc.Me, 'Get').and.returnValue(user.promise);
             spyOn(oc.BuyerID, 'Set').and.callThrough();
-            injector.invoke(base.resolve.CurrentUser, scope, {$q:q, $state:state, OrderCloud:oc, buyerid:buyerid});
+            injector.invoke(base.resolve.CurrentUser, scope, {$q:q, $state:state, OrderCloudSDK:oc, buyerid:buyerid});
             expect(oc.Me.Get).toHaveBeenCalled();
             scope.$digest();
             expect(oc.BuyerID.Set).toHaveBeenCalledWith('BUYERID');
@@ -35,7 +35,7 @@ describe('Component: Base', function() {
             orderList.resolve({Items:['TEST ORDER']});
             spyOn(oc.Me, 'ListOutgoingOrders').and.returnValue(orderList.promise);
             var currentUser = injector.invoke(base.resolve.CurrentUser);
-            injector.invoke(base.resolve.ExistingOrder, scope, {$q:q, OrderCloud:oc, CurrentUser:currentUser});
+            injector.invoke(base.resolve.ExistingOrder, scope, {$q:q, OrderCloudSDK:oc, CurrentUser:currentUser});
             expect(oc.Me.ListOutgoingOrders).toHaveBeenCalledWith(null, 1, 1, null, "!DateCreated", {Status: "Unsubmitted"});
         });
         it ('should create a new order if there is not an existing unsubmitted order', inject(function(NewOrder) {
