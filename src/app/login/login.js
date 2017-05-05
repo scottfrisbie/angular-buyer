@@ -147,14 +147,11 @@ function LoginController($state, $stateParams, $exceptionHandler, OrderCloudSDK,
     vm.resetPasswordByToken = function() {
         vm.loading = OrderCloudSDK.Me.ResetPasswordByToken({NewPassword:vm.credentials.NewPassword})
             .then(function(data) {
-                return OrderCloudSDK.Me.Patch({xp: {HasChangedPW: true}})
-                    .then(function(){
-                        vm.setForm('resetSuccess');
-                        vm.credentials = {
-                            Username:null,
-                            Password:null
-                        };
-                    });
+                vm.setForm('resetSuccess');
+                vm.credentials = {
+                    Username:null,
+                    Password:null
+                };
             })
             .catch(function(ex) {
                 $exceptionHandler(ex);
