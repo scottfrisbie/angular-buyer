@@ -35,7 +35,7 @@ return getToken()
         return getEmailAddresses();
     })
     .then(function(approvals){
-        sendEmails(approvals);
+        return sendEmails(approvals);
     });
 
 function getLevelTwoGroups(){
