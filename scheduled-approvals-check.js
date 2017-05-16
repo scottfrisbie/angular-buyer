@@ -119,8 +119,7 @@ function getImpersonationToken(token){
 }
 
 function getToken(){
-    //TODO: remove qa once testing is complete
-    var authurl = 'https://qaauth.ordercloud.io';
+    var authurl = 'https://auth.ordercloud.io';
     var deferred = q.defer();
     var requestBody = {
         url: authurl + '/oauth/token',
@@ -139,8 +138,7 @@ function getToken(){
 
 function makeApiCall(requestObj){
     //requestObj = {method: method, route: route, body: body, token: token}
-    //TODO: remove qa once testing is complete
-    var apiurl = 'https://qaapi.ordercloud.io/v1';
+    var apiurl = 'https://api.ordercloud.io/v1';
     var deferred = q.defer();
     var requestBody = {
         url: apiurl + requestObj.route,
