@@ -99,7 +99,8 @@ function NewOrderService($q, OrderCloudSDK) {
         function createOrder() {
             order.xp = {
                 ExpeditedShipping: "ground",
-                sellerOrderID: 0
+                sellerOrderID: 0,
+                Over48: "no"
             };
             OrderCloudSDK.Orders.Create('outgoing', order)
                 .then(function(order) {
