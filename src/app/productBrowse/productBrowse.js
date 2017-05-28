@@ -40,8 +40,14 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
                 Parameters: function ($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                ProductList: function(CurrentUser, Parameters, ocProductBrowse) {
-                    return ocProductBrowse.ListProducts(Parameters, CurrentUser);
+                ProductList: function(OrderCloudSDK, CurrentUser, Parameters) {
+                    var filters = {};
+                    if (Parameters.favorites && CurrentUser.xp.FavoriteProducts) {
+                        angular.extend(filters, {ID:CurrentUser.xp.FavoriteProducts.join('|')});
+                    } 
+                    Parameters.filters = filters;
+                    Parameters.depth = 'all';
+                    return OrderCloudSDK.Me.ListProducts(Parameters);
                 }
             }
         });
