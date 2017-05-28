@@ -4,30 +4,9 @@ angular.module('orderCloud')
 
 function ocProductBrowseService($q, OrderCloudSDK, ocUtility){
     var service = {
-        ListProducts: _listProducts,
         ListCategories: _listCategories,
         GetCategoryTree: _getCategoryTree
     };
-
-
-    function _listProducts(parameters, CurrentUser){
-        var Parameters = _formatProductParams(parameters, CurrentUser);
-        if(Parameters.search || Parameters.pageSize || Parameters.searchOn || Parameters.sortBy || Parameters.favorites) {
-            //only cache simple product-lists, don't cache if any of the above parameters exist
-            return _ocProductListCall(Parameters);
-        } else {
-            var cacheKey = (Parameters.page || 1).toString() + (Parameters.categoryID || 'NOCAT').toString();
-            function onCacheEmpty(){
-                return _ocProductListCall(Parameters);
-            }
-            return ocUtility.GetCache(cacheKey, onCacheEmpty);
-        }
-
-        function _ocProductListCall(Parameters){
-            Parameters.depth = 'all';
-            return OrderCloudSDK.Me.ListProducts(Parameters);
-        }
-    }
 
     function _listCategories(Catalog){
         var timeLastUpdated = 0;
@@ -65,17 +44,6 @@ function ocProductBrowseService($q, OrderCloudSDK, ocUtility){
             return node;
         }
         return $q.when(result);
-    }
-
-    function _formatProductParams(Parameters, CurrentUser){
-        var filters = {};
-
-        if (Parameters.favorites && CurrentUser.xp.FavoriteProducts) {
-            angular.extend(filters, {ID:CurrentUser.xp.FavoriteProducts.join('|')});
-        } 
-
-        Parameters.filters = filters;
-        return Parameters;
     }
 
     return service;
