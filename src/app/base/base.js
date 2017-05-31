@@ -39,15 +39,19 @@ function BaseConfig($stateProvider) {
             },
             CurrentOrder: function(ExistingOrder, NewOrder) {
                 return !ExistingOrder ? NewOrder.Create({}) : ExistingOrder;
+            },
+            LineItemsList: function(OrderCloudSDK, CurrentOrder) {
+                return OrderCloudSDK.LineItems.List('outgoing', CurrentOrder.ID);
             }
         }
     });
 }
 
-function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder,  OrderCloudSDK) {
+function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder, LineItemsList, OrderCloudSDK) {
     var vm = this;
     vm.currentUser = CurrentUser;
     vm.currentOrder = CurrentOrder;
+    vm.lineItems = LineItemsList;
 
     vm.mobileSearch = function() {
         ProductSearch.Open()
@@ -67,6 +71,10 @@ function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentO
         vm.orderLoading.promise = OrderCloudSDK.Orders.Get('outgoing', OrderID)
             .then(function(data) {
                 vm.currentOrder = data;
+                OrderCloudSDK.LineItems.List('outgoing', vm.currentOrder.ID)
+                    .then(function(lineitems) {
+                        vm.lineItems = lineitems;
+                    })
             });
     });
 }
