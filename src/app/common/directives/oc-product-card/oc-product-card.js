@@ -6,7 +6,8 @@ angular.module('orderCloud')
         bindings: {
             product: '<',
             currentOrder: '=',
-            currentUser: '<'
+            currentUser: '<',
+            lineItemsList: '<'
         }
     });
 
@@ -20,21 +21,33 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
     });
 
     vm.addToCart = function(OCProductForm) {
+        var existingLI = _.findWhere(vm.lineItemsList.Items, {ProductID: vm.product.ID});
         var li = {
             ProductID: vm.product.ID,
-            Quantity: vm.product.Quantity
+            Quantity: existingLI ? vm.product.Quantity + existingLI.Quantity : vm.product.Quantity
         };
-
-        return OrderCloudSDK.LineItems.Create('outgoing', vm.currentOrder.ID, li)
-            .then(function(lineItem) {
-                $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID, 'Updating Order');
-                vm.product.Quantity = 1;
-                toastr.success('Product added to cart', 'Success');
-            })
-            .catch(function(ex) {
-                $exceptionHandler(ex);
-            })
-
+        if (existingLI) {
+            return OrderCloudSDK.LineItems.Patch('outgoing', vm.currentOrder.ID, existingLI.ID, li)
+                .then(function(lineItem) {
+                    updateOrder(lineItem);
+                })
+                .catch(function(ex) {
+                    $exceptionHandler(ex);
+                })
+        } else {
+            return OrderCloudSDK.LineItems.Create('outgoing', vm.currentOrder.ID, li)
+                .then(function(lineItem) {
+                    updateOrder(lineItem);
+                })
+                .catch(function(ex) {
+                    $exceptionHandler(ex);
+                })
+        }
+        function updateOrder(lineItem) {
+            $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID, 'Updating Order');
+            vm.product.Quantity = 1;
+            toastr.success('Product added to cart', 'Success');
+        };
     };
 
     vm.findPrice = function(qty){
