@@ -7,16 +7,14 @@
   "html5mode": true,
   "bootswatchtheme": "yeti",
   "scope": [
-    "FullAccess",
     "AdminAddressAdmin",
-    "BuyerImpersonation",
+    "ApprovalRuleReader",
     "BuyerReader",
     "CatalogReader",
-    "MeAddressAdmin",
     "MeAdmin",
-    "MeCreditCardAdmin",
     "MeXpAdmin",
     "PasswordReset",
+    "ShipmentReader",
     "Shopper"
   ]
 }
