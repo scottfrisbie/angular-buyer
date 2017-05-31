@@ -12,22 +12,8 @@ function ocApprovals(OrderCloudSDK, $exceptionHandler, $uibModal, $state){
 
         return OrderCloudSDK.Orders.ListApprovals('outgoing', orderID, {page: page})
             .then(function(data) {
-                return getApprovingUserGroups(data);
+                return getApprovalRules(data);
             });
-
-        function getApprovingUserGroups(data) {
-            var userGroupIDs = _.uniq(_.pluck(data.Items, 'ApprovingGroupID'));
-            return OrderCloudSDK.UserGroups.List(buyerID, {pageSize:100, filters: {ID: userGroupIDs.join('|')}})
-                .then(function(userGroupList) {
-                    _.each(data.Items, function(approval) {
-                        approval.ApprovingUserGroup = _.findWhere(userGroupList.Items, {ID: approval.ApprovingGroupID});
-                    });
-                    return getApprovalRules(data);
-                })
-                .catch(function(ex) {
-                    return $exceptionHandler(ex);
-                });
-        }
 
         function getApprovalRules(data) {
             var approvalRuleIDs = _.pluck(data.Items, 'ApprovalRuleID');
