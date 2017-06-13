@@ -96,18 +96,13 @@ function LoginController($state, $stateParams, $exceptionHandler, OrderCloudSDK,
             .then(function(data) {
                 OrderCloudSDK.SetToken(data.access_token);
                 if (vm.rememberStatus) OrderCloudSDK.SetRefreshToken(data['refresh_token']);
-                return OrderCloudSDK.Me.Get()
-                    .then(function(user){
-                        var roles = ocRolesService.Set(data.access_token);
-                        if (roles.length === 1 && roles[0] === 'PasswordReset') {
-                            vm.token = data.access_token;
-                            vm.form = 'resetByToken';
-                        } else if( (user && !user.xp) || (user && user.xp && !user.xp.HasChangedPW) ){
-                            vm.form = 'firstLogin';
-                        } else {
-                            $state.go('home');
-                        }
-                    });
+                var roles = ocRolesService.Set(data.access_token);
+                if (roles.length === 1 && roles[0] === 'PasswordReset') {
+                    vm.token = data.access_token;
+                    vm.form = 'resetByToken';
+                } else {
+                    $state.go('home');
+                }
             })
             .catch(function(ex) {
                 $exceptionHandler(ex);
@@ -141,14 +136,11 @@ function LoginController($state, $stateParams, $exceptionHandler, OrderCloudSDK,
     vm.resetPasswordByToken = function() {
         vm.loading = OrderCloudSDK.Me.ResetPasswordByToken({NewPassword:vm.credentials.NewPassword})
             .then(function(data) {
-                return OrderCloudSDK.Me.Patch({xp: {HasChangedPW: true}})
-                    .then(function(){
-                        vm.setForm('resetSuccess');
-                        vm.credentials = {
-                            Username:null,
-                            Password:null
-                        };
-                    });
+                vm.setForm('resetSuccess');
+                vm.credentials = {
+                    Username:null,
+                    Password:null
+                };
             })
             .catch(function(ex) {
                 $exceptionHandler(ex);
