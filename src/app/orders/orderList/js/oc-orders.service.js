@@ -11,7 +11,7 @@ function ocOrdersService(OrderCloudSDK){
         var parameters = angular.copy(Parameters);
 
         //exclude unsubmitted orders from list
-        //parameters.filters = {Status: '!Unsubmitted'};  //TODO: replace this line with below once api can negate enumerable properties
+        //parameters.filters = {Status: '!Unsubmitted'};  //TODO: replace this line with below once api can reverse filter enums (EX-1166)
         parameters.filters = {Status: 'Open|AwaitingApproval|Completed|Canceled|Declined'};
 
         if(parameters.status){
@@ -48,7 +48,7 @@ function ocOrdersService(OrderCloudSDK){
 
         if(parameters.tab === 'grouporders') {
             if(parameters.group) {
-                return OrderCloudSDK.Me.ListAddresses(null, null, null, null, null, {CompanyName: parameters.group})
+                return OrderCloudSDK.Me.ListAddresses({CompanyName: parameters.group})
                     .then(function(address) {
                         var shippingAddressID = address.Items[0].ID;
                         parameters.filters = {ShippingAddressID: shippingAddressID, Status: parameters.status};
@@ -60,9 +60,13 @@ function ocOrdersService(OrderCloudSDK){
         }
 
         // list orders with generated parameters
-        console.log(parameters);
-        var listType = parameters.tab === 'approvals' ? 'ListApprovableOrders' : 'ListOrders';
-        return OrderCloudSDK.Me[listType](parameters);
+        if(parameters.tab === 'approvals') {
+            return OrderCloudSDK.Me.ListApprovableOrders(parameters);
+        } else if(parameters.tab === 'all') {
+            return OrderCloudSDK.Orders.List('outgoing', parameters);
+        } else {
+            return OrderCloudSDK.Me.ListOrders(parameters);
+        }
     }
 
     return service;

@@ -33,6 +33,12 @@ function OrdersConfig($stateProvider) {
                                     return _.compact(userGroupsArr);
                                 });
                         });
+                },
+                CanSeeAllOrders: function(OrderCloudSDK){
+                    return OrderCloudSDK.Me.ListUserGroups({search: 'CanViewAllOrders', searchOn: 'ID', pageSize: 1})
+                        .then(function(userGroupList){
+                            return userGroupList.Items.length > 0;
+                        });
                 }
             }
         });
