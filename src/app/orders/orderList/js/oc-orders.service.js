@@ -12,7 +12,7 @@ function ocOrdersService(OrderCloudSDK){
 
         //exclude unsubmitted orders from list
         //parameters.filters = {Status: '!Unsubmitted'};  //TODO: replace this line with below once api can reverse filter enums (EX-1166)
-        parameters.filters = {Status: 'Open|AwaitingApproval|Completed|Cancelled|Declined'};
+        parameters.filters = {Status: 'Open|AwaitingApproval|Canceled|Completed|Declined'};
 
         if(parameters.status){
             angular.extend(parameters.filters, {Status: parameters.status});
@@ -51,7 +51,7 @@ function ocOrdersService(OrderCloudSDK){
                 return OrderCloudSDK.Me.ListAddresses()
                     .then(function(addresses) {
                         var shippingAddress = _.where(addresses.Items, {CompanyName: parameters.group});
-                        parameters.filters = {ShippingAddressID: shippingAddress[0].ID, Status: parameters.status};
+                        angular.extend(parameters.filters, {ShippingAddressID: shippingAddress[0].ID});
                         return OrderCloudSDK.Orders.List('Outgoing', parameters);
                     });
             } else {
