@@ -48,10 +48,16 @@ function ocOrdersService(OrderCloudSDK){
 
         if(parameters.tab === 'grouporders') {
             if(parameters.group) {
-                return OrderCloudSDK.Me.ListAddresses()
+                var options = {
+                    filters: {
+                        CompanyName: parameters.group
+                    }
+
+                }
+                return OrderCloudSDK.Me.ListAddresses(options)
                     .then(function(addresses) {
-                        var shippingAddress = _.where(addresses.Items, {CompanyName: parameters.group});
-                        angular.extend(parameters.filters, {ShippingAddressID: shippingAddress[0].ID});
+                        var shippingAddress = addresses.Items[0];
+                        angular.extend(parameters.filters, {ShippingAddressID: shippingAddress.ID});
                         return OrderCloudSDK.Orders.List('Outgoing', parameters);
                     });
             } else {
