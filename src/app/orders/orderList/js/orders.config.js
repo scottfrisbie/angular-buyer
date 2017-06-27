@@ -21,18 +21,11 @@ function OrdersConfig($stateProvider) {
                     return ocOrders.List(Parameters, CurrentUser, Buyer);
 
                 },
-                GroupAssignments: function(OrderCloudSDK) {
-                    return OrderCloudSDK.Me.ListAddresses()
-                        .then(function(addresses) {
-                            return OrderCloudSDK.Me.ListUserGroups()
-                                .then(function(userGroups) {
-                                    var userGroupsArr = [];
-                                    _.each(addresses.Items, function(address) {
-                                        userGroupsArr.push(_.findWhere(userGroups.Items, {ID: address.CompanyName}));
-                                    });
-                                    return _.compact(userGroupsArr);
-                                });
-                        });
+                GroupAssignments: function(OrderCloudSDK, ocUtility) {
+                    return ocUtility.ListAll(OrderCloudSDK.Me.ListUserGroups, {pageSize: 100, page: 'page'})
+                        .then(function(userGroups) {
+                            return userGroups.Items;
+                    });
                 },
                 CanSeeAllOrders: function(OrderCloudSDK){
                     return OrderCloudSDK.Me.ListUserGroups({search: 'CanViewAllOrders', searchOn: 'ID', pageSize: 1})
