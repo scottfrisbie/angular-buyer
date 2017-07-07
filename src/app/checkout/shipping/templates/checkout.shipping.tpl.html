@@ -1,4 +1,4 @@
-<div ng-form="OC_Checkout_Shipping" ng-init="checkoutShipping.initShippingRates(base.currentOrder)">
+<div ng-form="OC_Checkout_Shipping">
     <div class="row">
         <div class="col-md-8">
             <div cg-busy="{promise:checkoutShipping.shippersLoading, message:'Loading Shipping Rates'}">
@@ -61,10 +61,14 @@
                 <div class="panel-body">
                     <div class="well text-center">
                         <div ng-if="base.currentOrder.Total >= 250">
-                            Your order over $250 will be shipped freight free
+                            Your order over $250 will be shipped freight free.
+                            <br>
+                            Tax will be calculated at time of shipment.
                         </div>
                         <div ng-if="base.currentOrder.Total < 250">
                             Freight will be calculated at time of shipment. Order $250 to qualify for free freight.
+                            <br>
+                            Tax will be calculated at time of shipment.
                         </div>
                     </div>
                     <p>
@@ -77,7 +81,7 @@
                     <h5 ng-if="base.currentOrder.ShippingCost" class="text-muted">Estimated Shipping: <span class="pull-right"> + {{base.currentOrder.ShippingCost | currency}}</span></h5>
                     <hr ng-if="checkout.promotions.length">
                     <h5 ng-repeat="promotion in checkout.promotions" class="text-danger">
-                        {{promotion.Name}}
+                        {{checkoutShipping.rebateCode ? promotion.Name : promotion.Code}}
                         <div ng-if="promotion.Code !== checkoutShipping.rebateCode">
                             <a href="" ng-click="checkout.removePromotion(base.currentOrder, promotion)">remove</a>
                         </div>
@@ -87,7 +91,7 @@
                 </div>
                 <div class="panel-footer">
                     <button type="button" class="btn btn-primary form-control" ng-disabled="!checkout.shippingAddress || checkoutShipping.shippersAreLoading || OC_Checkout_Shipping.$invalid"
-                        ui-sref="checkout.payment">Next</button>
+                        ui-sref="checkout.payment" ui-sref-opts="{reload:true}">Next</button>
                 </div>
             </div>
         </div>

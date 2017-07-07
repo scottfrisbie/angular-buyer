@@ -1,7 +1,7 @@
 <div class="c-product-card__img-wrap">
     <a ui-sref="productDetail({productid: productCard.product.ID})">
         <img class="img-responsive c-product-card__img"
-             ng-src="{{productCard.product.xp.image.URL || 'http://placehold.it/300x300'}}">
+             ng-src="{{productCard.product.xp.image.URL || 'assets/images/image-unavailable.jpg'}}">
     </a>
 </div>
 <div class="caption c-product-card__body">
@@ -10,7 +10,7 @@
     <h4 class="c-product-card__name" ng-if="productCard.product.Name">{{productCard.product.Name}}</h4>
     <div class="clearfix">
         <h4 class="c-product-card__price text-primary">
-            {{productCard.product.StandardPriceSchedule.PriceBreaks[0].Price | currency}}</h4>
+            {{productCard.product.PriceSchedule.PriceBreaks[0].Price | currency}}</h4>
         <div class="c-product-card__icons pull-right hidden-xs" prevent-click>
             <ordercloud-product-quick-view product="productCard.product"
                                            current-order="productCard.currentOrder"></ordercloud-product-quick-view>

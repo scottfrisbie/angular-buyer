@@ -6,11 +6,12 @@ angular.module('orderCloud')
         bindings: {
             product: '<',
             currentOrder: '=',
-            currentUser: '<'
+            currentUser: '<',
+            lineItemsList: '<'
         }
     });
 
-function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud){
+function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloudSDK){
     var vm = this;
 
     $scope.$watch(function(){
@@ -20,27 +21,39 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
     });
 
     vm.addToCart = function(OCProductForm) {
+        var existingLI = _.findWhere(vm.lineItemsList.Items, {ProductID: vm.product.ID});
         var li = {
             ProductID: vm.product.ID,
-            Quantity: vm.product.Quantity
+            Quantity: existingLI ? vm.product.Quantity + existingLI.Quantity : vm.product.Quantity
         };
-
-        return OrderCloud.LineItems.Create(vm.currentOrder.ID, li)
-            .then(function(lineItem) {
-                $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID, 'Updating Order');
-                vm.product.Quantity = 1;
-                toastr.success('Product added to cart', 'Success');
-            })
-            .catch(function(ex) {
-                $exceptionHandler(ex);
-            })
-
+        if (existingLI) {
+            return OrderCloudSDK.LineItems.Patch('outgoing', vm.currentOrder.ID, existingLI.ID, li)
+                .then(function(lineItem) {
+                    updateOrder(lineItem);
+                })
+                .catch(function(ex) {
+                    $exceptionHandler(ex);
+                })
+        } else {
+            return OrderCloudSDK.LineItems.Create('outgoing', vm.currentOrder.ID, li)
+                .then(function(lineItem) {
+                    updateOrder(lineItem);
+                })
+                .catch(function(ex) {
+                    $exceptionHandler(ex);
+                })
+        }
+        function updateOrder(lineItem) {
+            $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID, 'Updating Order');
+            vm.product.Quantity = 1;
+            toastr.success('Product added to cart', 'Success');
+        };
     };
 
     vm.findPrice = function(qty){
         if(qty){
             var finalPriceBreak;
-            angular.forEach(vm.product.StandardPriceSchedule.PriceBreaks, function(priceBreak) {
+            angular.forEach(vm.product.PriceSchedule.PriceBreaks, function(priceBreak) {
                 if (priceBreak.Quantity <= qty)
                     finalPriceBreak = angular.copy(priceBreak);
             });

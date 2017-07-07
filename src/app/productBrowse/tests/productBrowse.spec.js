@@ -12,8 +12,8 @@ describe('Component: ProductBrowse', function(){
         $provide.value('ProductList', {});
         $provide.value('CategoryList', {});
     }));
-    beforeEach(inject(function(OrderCloud, Parameters, ProductList, CategoryList){
-        oc = OrderCloud;
+    beforeEach(inject(function(OrderCloudSDK, Parameters, ProductList, CategoryList){
+        oc = OrderCloudSDK;
         parameters = Parameters;
         currentUser = {
             ID: "U01",

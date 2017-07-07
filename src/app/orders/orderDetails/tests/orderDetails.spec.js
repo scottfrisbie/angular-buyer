@@ -20,10 +20,10 @@ describe('Component: orderDetails', function() {
     }));
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($q, $rootScope, OrderCloud, ocParameters, ocOrderDetails) {
+    beforeEach(inject(function($q, $rootScope, OrderCloudSDK, ocParameters, ocOrderDetails) {
         q = $q;
         scope = $rootScope.$new();
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         _ocOrderDetails = ocOrderDetails;
     }));
 
@@ -63,7 +63,7 @@ describe('Component: orderDetails', function() {
 
             orderDetailsCtrl = $controller('OrderDetailsCtrl', {
                 $stateParams: $stateParams,
-                OrderCloud: oc,
+                OrderCloudSDK: oc,
                 SelectedOrder: {ID: 'Order123', Name:'mockSelectedOrder'},
                 OrderLineItems: {Meta: {Page: 1, PageSize: 12}, Items: [{Name: 'LineItem1'}] }
             });

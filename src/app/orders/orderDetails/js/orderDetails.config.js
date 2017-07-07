@@ -17,8 +17,18 @@ function OrderDetailConfig($stateProvider){
                 SelectedOrder: function($stateParams, ocOrderDetails){
                     return ocOrderDetails.Get($stateParams.orderid);
                 },
-                OrderLineItems: function($stateParams, OrderCloud){
-                    return OrderCloud.LineItems.List($stateParams.orderid, null, 1, null, null, null, null, $stateParams.buyerid);
+                OrderLineItems: function($stateParams, OrderCloudSDK){
+                    return OrderCloudSDK.LineItems.List('outgoing', $stateParams.orderid);
+                },
+                Shipments: function($stateParams, OrderCloudSDK){
+                    return OrderCloudSDK.Shipments.List({orderID: $stateParams.orderid});
+                },
+                IsMyOrder: function (OrderCloudSDK, $stateParams){
+                    //display reorder and favorite order buttons if this is currently authenticated user's order
+                    return OrderCloudSDK.Me.ListOrders({search: $stateParams.orderid, searchOn: 'ID', pageSize: 1})
+                        .then(function(orderList){
+                            return orderList.Items.length > 0;
+                        });
                 }
             }
         });

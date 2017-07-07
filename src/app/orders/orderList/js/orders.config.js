@@ -17,19 +17,21 @@ function OrdersConfig($stateProvider) {
                 Parameters: function($stateParams, ocParameters){
                     return ocParameters.Get($stateParams);
                 },
-                GroupAssignments: function(OrderCloud) {
-                    return OrderCloud.Me.ListUserGroups()
-                        .then(function(userGroups) {
-                            return userGroups
-                        });
-                },
                 OrderList: function(Parameters, CurrentUser, ocOrders, Buyer) {
-                    if (Parameters.status === undefined) Parameters.status = '!Unsubmitted';
-                    if (Parameters.group) {
-                        return ocOrders.List(Parameters, CurrentUser, Buyer, Parameters.group);
-                    } else {
-                        return ocOrders.List(Parameters, CurrentUser, Buyer);
-                    }
+                    return ocOrders.List(Parameters, CurrentUser, Buyer);
+
+                },
+                GroupAssignments: function(OrderCloudSDK, ocUtility) {
+                    return ocUtility.ListAll(OrderCloudSDK.Me.ListUserGroups, {pageSize: 100, page: 'page'})
+                        .then(function(userGroups) {
+                            return userGroups.Items;
+                    });
+                },
+                CanSeeAllOrders: function(OrderCloudSDK){
+                    return OrderCloudSDK.Me.ListUserGroups({search: 'CanViewAllOrders', searchOn: 'ID', pageSize: 1})
+                        .then(function(userGroupList){
+                            return userGroupList.Items.length > 0;
+                        });
                 }
             }
         });

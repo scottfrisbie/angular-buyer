@@ -12,10 +12,10 @@ describe('Component: Product Search', function(){
     }));
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($rootScope, $q, OrderCloud, ocParameters, $state, Parameters){
+    beforeEach(inject(function($rootScope, $q, OrderCloudSDK, ocParameters, $state, Parameters){
         scope = $rootScope.$new();
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         state = $state;
         _ocParameters = ocParameters;
         parameters = Parameters;
@@ -109,7 +109,7 @@ describe('Component: Product Search', function(){
                 $state:state,
                 $timeout: timeout,
                 $scope: scope,
-                OrderCloud:oc
+                OrderCloudSDK:oc
             });
             spyOn(state, 'go');
         }));

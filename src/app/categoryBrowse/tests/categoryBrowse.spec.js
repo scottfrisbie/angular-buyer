@@ -12,10 +12,10 @@ describe('Component: Category Browse', function(){
     }));
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($rootScope, $q, OrderCloud, ocParameters, $state){
+    beforeEach(inject(function($rootScope, $q, OrderCloudSDK, ocParameters, $state){
         scope = $rootScope.$new();
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         state = $state;
         _ocParameters = ocParameters;
         categoryList = ['category1', 'category2'];

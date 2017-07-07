@@ -2,37 +2,17 @@ angular.module('orderCloud')
     .factory('ocProductBrowse', ocProductBrowseService)
 ;
 
-function ocProductBrowseService($q, OrderCloud, ocUtility){
+function ocProductBrowseService($q, OrderCloudSDK, ocUtility){
     var service = {
-        ListProducts: _listProducts,
         ListCategories: _listCategories,
         GetCategoryTree: _getCategoryTree
     };
-
-
-    function _listProducts(parameters, CurrentUser){
-        var Parameters = _formatProductParams(parameters, CurrentUser);
-        if(Parameters.search || Parameters.pageSize || Parameters.searchOn || Parameters.sortBy || Parameters.favorites) {
-            //only cache simple product-lists, don't cache if any of the above parameters exist
-            return _ocProductListCall(Parameters);
-        } else {
-            var cacheKey = (Parameters.page || 1).toString() + (Parameters.categoryid || 'NOCAT').toString();
-            function onCacheEmpty(){
-                return _ocProductListCall(Parameters);
-            }
-            return ocUtility.GetCache(cacheKey, onCacheEmpty);
-        }
-
-        function _ocProductListCall(Parameters){
-            return OrderCloud.Me.ListProducts(Parameters.search, Parameters.page, Parameters.pageSize, Parameters.searchOn, Parameters.sortBy, Parameters.filters, Parameters.categoryid);
-        }
-    }
 
     function _listCategories(Catalog){
         var timeLastUpdated = 0;
         if(Catalog.xp && Catalog.xp.CatalogUpdated) timeLastUpdated = Catalog.xp.CatalogUpdated;
         function onCacheEmpty(){
-            return ocUtility.ListAll(OrderCloud.Me.ListCategories, null, 'page', 100, null, null, null, 'all');
+            return ocUtility.ListAll(OrderCloudSDK.Me.ListCategories, {depth:'all'});
         }
         return ocUtility.GetCache('CategoryList', onCacheEmpty, timeLastUpdated);
     }
@@ -64,17 +44,6 @@ function ocProductBrowseService($q, OrderCloud, ocUtility){
             return node;
         }
         return $q.when(result);
-    }
-
-    function _formatProductParams(Parameters, CurrentUser){
-        var filters = {};
-
-        if (Parameters.favorites && CurrentUser.xp.FavoriteProducts) {
-            angular.extend(filters, {ID:CurrentUser.xp.FavoriteProducts.join('|')});
-        } 
-
-        Parameters.filters = filters;
-        return Parameters;
     }
 
     return service;

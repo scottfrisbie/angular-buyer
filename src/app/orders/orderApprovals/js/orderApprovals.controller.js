@@ -3,13 +3,13 @@ angular.module('orderCloud')
     .controller('ApprovalModalCtrl', ApprovalModalController)
 ;
 
-function OrderApprovalsController($stateParams, OrderCloud, ocApprovals, OrderApprovals, CanApprove) {
+function OrderApprovalsController($stateParams, ocApprovals, OrderApprovals, CanApprove) {
     var vm = this;
     vm.list = OrderApprovals;
     vm.canApprove = CanApprove;
 
     vm.pageChanged = function() {
-        ocApprovals.List($stateParams.orderid, $stateParams.buyerid, vm.list.Meta.Page, vm.list.Meta.PageSize)
+        ocApprovals.List($stateParams.orderid, $stateParams.buyerid, vm.list.Meta.Page)
             .then(function(data) {
                 vm.list = data;
             });
@@ -17,7 +17,7 @@ function OrderApprovalsController($stateParams, OrderCloud, ocApprovals, OrderAp
 
     vm.loadMore = function() {
         vm.list.Meta.Page++;
-        ocApprovals.List($stateParams.orderid, $stateParams.buyerid, vm.list.Meta.Page, vm.list.Meta.PageSize)
+        ocApprovals.List($stateParams.orderid, $stateParams.buyerid, vm.list.Meta.Page)
             .then(function(data) {
                 vm.list.Items = vm.list.Items.concat(data.Items);
                 vm.list.Meta = data.Meta;
@@ -30,7 +30,7 @@ function OrderApprovalsController($stateParams, OrderCloud, ocApprovals, OrderAp
     };
 }
 
-function ApprovalModalController(OrderID, Intent, $exceptionHandler, $uibModalInstance, OrderCloud, toastr){
+function ApprovalModalController(OrderID, Intent, $exceptionHandler, $uibModalInstance, OrderCloudSDK, toastr){
     var vm = this;
     vm.intent = Intent; // 'Approve' or 'Decline'
     vm.orderid = OrderID;
@@ -44,7 +44,7 @@ function ApprovalModalController(OrderID, Intent, $exceptionHandler, $uibModalIn
     }
 
     function submit(){
-        return OrderCloud.Orders[vm.intent](vm.orderid, vm.comments)
+        return OrderCloudSDK.Orders[vm.intent]('outgoing', vm.orderid, {Comments: vm.comments})
             .then(function(){
                 toastr.success('Order ' + vm.intent + 'd');
                 $uibModalInstance.close();

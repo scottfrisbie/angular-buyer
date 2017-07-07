@@ -30,9 +30,9 @@ describe('Component: Checkout Confirmation', function() {
             }
         });
     }));
-    beforeEach(inject(function($q, $rootScope, OrderCloud, ocLineItems, SubmittedOrder, OrderPayments) {
+    beforeEach(inject(function($q, $rootScope, OrderCloudSDK, ocLineItems, SubmittedOrder, OrderPayments) {
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         scope = $rootScope.$new();
         lineItemHelpers = ocLineItems;
         submittedOrder = SubmittedOrder;

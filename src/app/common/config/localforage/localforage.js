@@ -5,8 +5,8 @@ angular.module('orderCloud')
 function LocalForage($localForageProvider) {
 	$localForageProvider.config({
 		version: 1.0,
-		name: 'OrderCloud',
+		name: 'OrderCloudSDK',
 		storeName: 'four51',
-		description: 'Four51 OrderCloud Local Storage'
+		description: 'Four51 OrderCloudSDK Local Storage'
 	});
 }

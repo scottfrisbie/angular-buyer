@@ -9,6 +9,7 @@
                 <li role="presentation" ng-if="orders.groups.length > 1" ng-class="{active: orders.parameters.tab == 'grouporders'}"><a ng-click="orders.selectTab('grouporders')">User Group Orders</a></li>
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'approvals'}"><a ng-click="orders.selectTab('approvals')">Awaiting Approval</a></li>
                 <li role="presentation" ng-class="{active: orders.parameters.tab == 'favorites'}"><a ng-click="orders.selectTab('favorites')">Favorite Orders</a></li>
+                <li role="presentation" ng-if="orders.canSeeAllOrders" ng-class="{active: orders.parameters.tab == 'all'}"><a ng-click="orders.selectTab('all')">All Orders</a></li>
             </ul>
         </nav>
     </header>
@@ -142,7 +143,7 @@
                             <td><a ng-click="orders.goToOrder(order)">{{order.ID}}</a></td>
                             <td>{{order.Status | humanize}}</td>
                             <td>{{(order.DateSubmitted || order.DateCreated) | date:'short'}}</td>
-                            <td>{{order.FromUserFirstName + ' ' + order.FromUserLastName}}</td>
+                            <td>{{order.FromUser.FirstName + ' ' + order.FromUser.LastName}}</td>
                             <td>{{order.Subtotal | currency}}</td>
                         </tr>
                     </tbody>

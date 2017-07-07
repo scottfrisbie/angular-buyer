@@ -2,16 +2,21 @@ angular.module('orderCloud')
     .factory('ocOrders', ocOrdersService)
 ;
 
-function ocOrdersService(OrderCloud){
+function ocOrdersService(OrderCloudSDK){
     var service = {
         List: _list
     };
     
-    function _list(Parameters, CurrentUser, Buyer, GroupID){
+    function _list(Parameters, CurrentUser){
         var parameters = angular.copy(Parameters);
 
         //exclude unsubmitted orders from list
-        parameters.filters = {Status: '!Unsubmitted'};
+        //parameters.filters = {Status: '!Unsubmitted'};  //TODO: replace this line with below once api can reverse filter enums (EX-1166)
+        parameters.filters = {Status: 'Open|AwaitingApproval|Canceled|Completed|Declined'};
+
+        if(parameters.status){
+            angular.extend(parameters.filters, {Status: parameters.status});
+        }
 
         //set outgoing params to iso8601 format as expected by api
         //set returning params to date object as expected by uib-datepicker
@@ -42,27 +47,32 @@ function ocOrdersService(OrderCloud){
         }
 
         if(parameters.tab === 'grouporders') {
-            if(GroupID) {
-                return OrderCloud.Me.ListAddresses(null, null, null, null, null, {CompanyName: GroupID})
-                    .then(function(address) {
-                        var shippingAddressID = address.Items[0].ID;
-                        return OrderCloud.Orders.ListIncoming(parameters.from, parameters.to, parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, {ShippingAddressID: shippingAddressID, Status: parameters.status}, Buyer.ID)
-                            .then(function(orders) {
-                                return orders;
-                            })
+            if(parameters.group) {
+                var options = {
+                    filters: {
+                        CompanyName: parameters.group
+                    }
+
+                }
+                return OrderCloudSDK.Me.ListAddresses(options)
+                    .then(function(addresses) {
+                        var shippingAddress = addresses.Items[0];
+                        angular.extend(parameters.filters, {ShippingAddressID: shippingAddress.ID});
+                        return OrderCloudSDK.Orders.List('Outgoing', parameters);
                     });
             } else {
                 return [];
             }
         }
 
-        if(parameters.status){
-            angular.extend(parameters.filters, {Status: parameters.status});
-        }
-
         // list orders with generated parameters
-        var listType = parameters.tab === 'approvals' ? 'ListIncomingOrders' : 'ListOutgoingOrders';
-        return OrderCloud.Me[listType](parameters.search, parameters.page, parameters.pageSize || 12, parameters.searchOn, parameters.sortBy, parameters.filters);
+        if(parameters.tab === 'approvals') {
+            return OrderCloudSDK.Me.ListApprovableOrders(parameters);
+        } else if(parameters.tab === 'all') {
+            return OrderCloudSDK.Orders.List('outgoing', parameters);
+        } else {
+            return OrderCloudSDK.Me.ListOrders(parameters);
+        }
     }
 
     return service;

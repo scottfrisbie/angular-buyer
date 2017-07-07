@@ -32,7 +32,7 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
             }
         })
         .state('productBrowse.products', {
-            url: '/products?categoryid?favorites?search?page?pageSize?searchOn?sortBy?depth',
+            url: '/products?categoryID?favorites?search?page?pageSize?searchOn?sortBy?depth',
             templateUrl: 'productBrowse/templates/productView.tpl.html',
             controller: 'ProductViewCtrl',
             controllerAs: 'productView',
@@ -40,8 +40,14 @@ function ProductBrowseConfig($urlRouterProvider, $stateProvider) {
                 Parameters: function ($stateParams, ocParameters) {
                     return ocParameters.Get($stateParams);
                 },
-                ProductList: function(CurrentUser, Parameters, ocProductBrowse) {
-                    return ocProductBrowse.ListProducts(Parameters, CurrentUser);
+                ProductList: function(OrderCloudSDK, CurrentUser, Parameters) {
+                    var filters = {};
+                    if (Parameters.favorites && CurrentUser.xp.FavoriteProducts) {
+                        angular.extend(filters, {ID:CurrentUser.xp.FavoriteProducts.join('|')});
+                    } 
+                    Parameters.filters = filters;
+                    Parameters.depth = 'all';
+                    return OrderCloudSDK.Me.ListProducts(Parameters);
                 }
             }
         });
@@ -67,7 +73,7 @@ function ProductBrowseController($state, $uibModal, CategoryList, CategoryTree, 
     };
 
     vm.treeConfig.selectNode = function(node) {
-        $state.go('productBrowse.products', {categoryid:node.ID, page:''});
+        $state.go('productBrowse.products', {categoryID:node.ID, page:''});
     };
 
     //Initiate breadcrumbs is triggered by product list view (child state "productBrowse.products")
@@ -117,12 +123,12 @@ function ProductBrowseController($state, $uibModal, CategoryList, CategoryTree, 
             }
         })
         .result.then(function(node){
-            $state.go('productBrowse.products', {categoryid:node.ID, page:''});
+            $state.go('productBrowse.products', {categoryID:node.ID, page:''});
         });
     };
 }
 
-function ProductViewController($state, $ocMedia, ocParameters, OrderCloud, CurrentOrder, ProductList, CategoryList, Parameters){
+function ProductViewController($state, $ocMedia, ocParameters, OrderCloudSDK, CurrentOrder, ProductList, CategoryList, Parameters){
     var vm = this;
     vm.parameters = Parameters;
     vm.categories = CategoryList;
@@ -177,7 +183,8 @@ function ProductViewController($state, $ocMedia, ocParameters, OrderCloud, Curre
 
     //load the next page of results with all the same parameters
     vm.loadMore = function() {
-        return OrderCloud.Me.ListProducts(Parameters.search, vm.list.Meta.Page + 1, Parameters.pageSize || vm.list.Meta.PageSize, Parameters.searchOn, Parameters.sortBy, Parameters.filters)
+        Parameters.page = vm.list.Meta.Page + 1;
+        return OrderCloudSDK.Me.ListProducts(Parameters)
             .then(function(data) {
                 vm.list.Items = vm.list.Items.concat(data.Items);
                 vm.list.Meta = data.Meta;

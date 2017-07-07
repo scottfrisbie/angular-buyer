@@ -15,47 +15,20 @@ function CartConfig($stateProvider) {
                 pageTitle: "Shopping Cart"
             },
             resolve: {
-                LineItemsList: function($q, $state, toastr, OrderCloud, ocLineItems, CurrentOrder) {
-                    var dfd = $q.defer();
-                    OrderCloud.LineItems.List(CurrentOrder.ID)
-                        .then(function(data) {
-                            if (!data.Items.length) {
-                                dfd.resolve(data);
-                            }
-                            else {
-                                ocLineItems.GetProductInfo(data.Items)
-                                    .then(function() {
-                                        dfd.resolve(data);
-                                    });
-                            }
-                        })
-                        .catch(function() {
-                            toastr.error('Your order does not contain any line items.', 'Error');
-                            dfd.reject();
+                LineItemsList: function(OrderCloudSDK, CurrentOrder) {
+                    return OrderCloudSDK.LineItems.List('outgoing', CurrentOrder.ID);
+                },
+                CurrentPromotions: function(CurrentOrder, OrderCloudSDK, AddRebate) {
+                    return AddRebate.ApplyPromo(CurrentOrder)
+                        .then(function(){
+                            return OrderCloudSDK.Orders.ListPromotions('outgoing', CurrentOrder.ID);
                         });
-                    return dfd.promise;
-                },
-                ExistingOrder: function($q, OrderCloud, CurrentUser) {
-                    return OrderCloud.Me.ListOutgoingOrders(null, 1, 1, null, "!DateCreated", {Status:"Unsubmitted"})
-                        .then(function(data) {
-                            return data.Items[0];
-                        });
-                },
-                CurrentOrderCart: function(OrderCloud, ExistingOrder, NewOrder, AddRebate) {
-                    if (!ExistingOrder) {
-                        return NewOrder.Create({});
-                    } else {
-                        return AddRebate.ApplyPromo(ExistingOrder)
-                    }
-                },
-                CurrentPromotions: function(CurrentOrderCart, OrderCloud) {
-                    return OrderCloud.Orders.ListPromotions(CurrentOrderCart.ID);
                 }
             }
         });
 }
 
-function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, CurrentPromotions, CurrentOrderCart, ocConfirm, AddRebate, rebateCode) {
+function CartController($rootScope, $state, toastr, OrderCloudSDK, LineItemsList, CurrentPromotions, CurrentOrder, ocConfirm, AddRebate, rebateCode) {
     var vm = this;
     vm.lineItems = LineItemsList;
     vm.promotions = CurrentPromotions.Meta ? CurrentPromotions.Items : CurrentPromotions;
@@ -67,26 +40,27 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
     vm.cancelOrder = cancelOrder;
 
     function updatePromo(){
-        return AddRebate.ApplyPromo(CurrentOrderCart);
+        return AddRebate.ApplyPromo(CurrentOrder);
     }
 
     function removeItem(order, scope) {
         vm.lineLoading = [];
-        vm.lineLoading[scope.$index] = OrderCloud.LineItems.Delete(order.ID, scope.lineItem.ID)
+        vm.lineLoading[scope.$index] = OrderCloudSDK.LineItems.Delete('outgoing', order.ID, scope.lineItem.ID)
             .then(function () {
-                vm.lineItems.Items.splice(scope.$index, 1);
+                var index = _.pluck(vm.lineItems, 'ID').indexOf(scope.lineItem.ID);
+                vm.lineItems.Items.splice(index, 1);
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                 return AddRebate.ApplyPromo(order)
                     .then(function() {
                         $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                         toastr.success('Line Item Removed');
-                    })
+                    });
             });
     }
 
     //TODO: missing unit tests
     function removePromotion(order, scope) {
-        OrderCloud.Orders.RemovePromotion(order.ID, scope.promotion.Code)
+        OrderCloudSDK.Orders.RemovePromotion('outgoing', order.ID, scope.promotion.Code)
             .then(function() {
                 $rootScope.$broadcast('OC:UpdateOrder', order.ID);
                 vm.promotions.splice(scope.$index, 1);
@@ -99,10 +73,10 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
                 confirmText: 'Yes, cancel order',
                 type: 'delete'})
             .then(function() {
-                return OrderCloud.Orders.RemovePromotion(order.ID, vm.rebateCode)
+                return OrderCloudSDK.Orders.RemovePromotion('outgoing', order.ID, vm.rebateCode)
                     .then(function() {
                         $rootScope.$broadcast('OC:UpdatePromotions', order.ID);
-                        return OrderCloud.Orders.Delete(order.ID)
+                        return OrderCloudSDK.Orders.Delete('outgoing', order.ID)
                             .then(function(){
                                 $state.go("home",{}, {reload:'base'})
                             });
@@ -112,7 +86,7 @@ function CartController($rootScope, $state, toastr, OrderCloud, LineItemsList, C
 
     //TODO: missing unit tests
     $rootScope.$on('OC:UpdatePromotions', function(event, orderid) {
-        return OrderCloud.Orders.ListPromotions(orderid)
+        return OrderCloudSDK.Orders.ListPromotions('outgoing', orderid)
             .then(function(data) {
                 if (data.Meta) {
                     vm.promotions = data.Items;
