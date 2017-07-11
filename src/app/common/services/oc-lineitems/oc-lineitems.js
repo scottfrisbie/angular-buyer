@@ -74,23 +74,6 @@ function LineItemFactory($rootScope, $q, $uibModal, $exceptionHandler, toastr, O
             deferred.resolve();
         };
 
-        // OrderCloudSDK.LineItems.Create('outgoing', order.ID, li)
-        //     .then(function(lineItem) {
-        //         $rootScope.$broadcast('OC:UpdateOrder', order.ID);
-        //         deferred.resolve();
-        //     })
-        //     .catch(function(error) {
-        //         deferred.reject(error);
-        //     });
-
-        // function isSingleShipping(order) {
-        //     return _.pluck(order.LineItems, 'ShippingAddressID').length == 1;
-        // }
-
-        // function getSingleShippingAddressID(order) {
-        //     return order.LineItems[0].ShippingAddressID;
-        // }
-
         return deferred.promise;
     }
 
