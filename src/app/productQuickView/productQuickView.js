@@ -53,10 +53,7 @@ function ProductQuickViewController(toastr, $uibModalInstance, SelectedProduct, 
 			.then(function(){
 				toastr.success('Product added to cart', 'Success');
 				$uibModalInstance.close();
-			})
-            .catch(function(error){
-               $exceptionHandler(error);
-            });
+			});
 	};
 
 	vm.findPrice = function(qty){

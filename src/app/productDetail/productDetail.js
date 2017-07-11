@@ -31,9 +31,6 @@ function ProductDetailController($exceptionHandler, Product, CurrentOrder, ocLin
         ocLineItems.AddItem(vm.currentOrder, vm.item, vm.lineItemsList)
             .then(function(){
                 toastr.success('Product added to cart', 'Success')
-            })
-            .catch(function(error){
-               $exceptionHandler(error);
             });
     };
 
