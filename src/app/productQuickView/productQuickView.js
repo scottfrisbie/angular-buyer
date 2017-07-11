@@ -23,11 +23,11 @@ function ProductQuickViewService($uibModal) {
 	function _open(currentOrder, product) {
 		return $uibModal.open({
 			backdrop:'static',
-			templateUrl: 'productQuickView/templates/productQuickView.modal.tpl.html',
+			templateUrl: 'productQuickView/templates/productQuickView.modal.html',
 			controller: 'ProductQuickViewCtrl',
 			controllerAs: 'productQuickView',
 			size: 'lg',
-			animation:false,
+			animation: false,
 			resolve: {
 				SelectedProduct: function() {
 					return product;
@@ -42,15 +42,21 @@ function ProductQuickViewService($uibModal) {
 	return service;
 }
 
-function ProductQuickViewController(toastr, $uibModalInstance, SelectedProduct, CurrentOrder, ocLineItems) {
+function ProductQuickViewController(toastr, $uibModalInstance, SelectedProduct, CurrentOrder, ocLineItems, LineItemsList) {
 	var vm = this;
+	vm.currentOrder = CurrentOrder;
 	vm.item = SelectedProduct;
+	vm.lineItemsList = LineItemsList;
+
 	vm.addToCart = function() {
-		ocLineItems.AddItem(CurrentOrder, vm.item)
+		ocLineItems.AddItem(vm.currentOrder, vm.item, vm.lineItemsList)
 			.then(function(){
 				toastr.success('Product added to cart', 'Success');
 				$uibModalInstance.close();
-			});
+			})
+            .catch(function(error){
+               $exceptionHandler(error);
+            });
 	};
 
 	vm.findPrice = function(qty){
