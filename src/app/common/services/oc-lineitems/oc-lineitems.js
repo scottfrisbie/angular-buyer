@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocLineItems', LineItemFactory)
 ;
 
-function LineItemFactory($rootScope, $q, $uibModal, OrderCloudSDK) {
+function LineItemFactory($rootScope, $q, $uibModal, $exceptionHandler, toastr, OrderCloudSDK) {
     return {
         SpecConvert: _specConvert,
         AddItem: _addItem,
@@ -35,31 +35,44 @@ function LineItemFactory($rootScope, $q, $uibModal, OrderCloudSDK) {
         return results;
     }
 
-    function _addItem(order, product){
+    function _addItem(order, product, lineItems){
         var deferred = $q.defer();
+
+        var existingLI = _.findWhere(lineItems.Items, {ProductID: product.ID});
 
         var li = {
             ProductID: product.ID,
-            Quantity: product.Quantity,
-            Specs: _specConvert(product.Specs)
+            Quantity: existingLI ? product.Quantity + existingLI.Quantity : product.Quantity,
+            Specs: _specConvert(product.Specs),
+            ShippingAddressID: order.ShippingAddressID
         };
-        li.ShippingAddressID = isSingleShipping(order) ? getSingleShippingAddressID(order) : null;
-        OrderCloudSDK.LineItems.Create('outgoing', order.ID, li)
-            .then(function(lineItem) {
-                $rootScope.$broadcast('OC:UpdateOrder', order.ID);
-                deferred.resolve();
-            })
-            .catch(function(error) {
-                deferred.reject(error);
-            });
-
-        function isSingleShipping(order) {
-            return _.pluck(order.LineItems, 'ShippingAddressID').length == 1;
+        
+        if (existingLI) {
+            OrderCloudSDK.LineItems.Patch('outgoing', order.ID, existingLI.ID, li)
+                .then(function(lineItem) {
+                    updateOrder(lineItem);
+                })
+                .catch(function(ex) {
+                    $exceptionHandler(ex);
+                    deferred.reject(ex);
+                })
+        } else {
+            OrderCloudSDK.LineItems.Create('outgoing', order.ID, li)
+                .then(function(lineItem) {
+                    updateOrder(lineItem);
+                })
+                .catch(function(ex) {
+                    $exceptionHandler(ex);
+                    deferred.reject(ex);
+                })
         }
 
-        function getSingleShippingAddressID(order) {
-            return order.LineItems[0].ShippingAddressID;
-        }
+        function updateOrder(lineItem) {
+            $rootScope.$broadcast('OC:UpdateOrder', order.ID, 'Updating Order');
+            product.Quantity = 1;
+            toastr.success('Product added to cart', 'Success');
+            deferred.resolve();
+        };
 
         return deferred.promise;
     }

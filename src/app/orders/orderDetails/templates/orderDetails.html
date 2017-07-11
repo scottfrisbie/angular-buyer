@@ -34,6 +34,7 @@
                         <b>Buyer Company: </b> {{orderDetails.order.FromCompany.Name}} <br>
                         <b>Created By: </b> {{orderDetails.order.FromUser.FirstName + ' ' + orderDetails.order.FromUser.LastName}} <br>
                         <b>Tracking Number: </b> {{orderDetails.shipments.Items[0].TrackingNumber || 'N/A'}} <br>
+                        <b>PO ID: </b> {{orderDetails.order.xp.POID || '(N/A)'}} <br>
                         <div ng-if="orderDetails.order.Comments">
                             <b>Comments: </b> {{orderDetails.order.Comments}}
                         </div>

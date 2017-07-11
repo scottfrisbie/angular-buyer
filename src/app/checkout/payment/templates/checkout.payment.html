@@ -1,6 +1,10 @@
 <div ng-form="OC_Checkout_Payment" novalidate>
     <div class="row">
         <div class="col-md-8">
+            <div class="form-group">
+                <label for="POIDInput"><h4>PO ID</h4></label>
+                <input id="POIDInput" placeholder="(Optional)" ng-model="base.currentOrder.xp.POID" type="text" class="form-control">
+            </div>
             <div>
                 <h4>Payment</h4>
                 <oc-payment order="base.currentOrder" spendingacct="checkout.spendingAccount"></oc-payment>
