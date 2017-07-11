@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocLineItems', LineItemFactory)
 ;
 
-function LineItemFactory($rootScope, $q, $uibModal, $exceptionHandler, toastr, OrderCloudSDK) {
+function LineItemFactory($rootScope, $q, $uibModal, $exceptionHandler, OrderCloudSDK) {
     return {
         SpecConvert: _specConvert,
         AddItem: _addItem,
@@ -70,7 +70,6 @@ function LineItemFactory($rootScope, $q, $uibModal, $exceptionHandler, toastr, O
         function updateOrder(lineItem) {
             $rootScope.$broadcast('OC:UpdateOrder', order.ID, 'Updating Order');
             product.Quantity = 1;
-            toastr.success('Product added to cart', 'Success');
             deferred.resolve();
         };
 
