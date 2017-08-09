@@ -22,7 +22,7 @@ function AccountConfig($stateProvider) {
 	;
 }
 
-function AccountService($q, $uibModal, OrderCloudSDK, toastr) {
+function AccountService($q, $uibModal, OrderCloudSDK, toastr, clientid, scope) {
 	var service = {
 		Update: _update,
 		ChangePassword: _changePassword
@@ -48,12 +48,8 @@ function AccountService($q, $uibModal, OrderCloudSDK, toastr) {
 			controllerAs: 'confirmPassword',
 			size: 'md'
 		}).result.then(function(password) {
-			var checkPasswordCredentials = {
-				Username: currentProfile.Username,
-				Password: password
-			};
 
-			OrderCloudSDK.Auth.GetToken(checkPasswordCredentials)
+			OrderCloudSDK.Auth.Login(currentProfile.Username, password, clientid, scope)
 				.then(function() {
 					updateUser();
 					toastr.success('Account changes were saved.', 'Success!');
@@ -71,11 +67,6 @@ function AccountService($q, $uibModal, OrderCloudSDK, toastr) {
 	function _changePassword(currentUser) {
 		var deferred = $q.defer();
 
-		var checkPasswordCredentials = {
-			Username: currentUser.Username,
-			Password: currentUser.CurrentPassword
-		};
-
 		function changePassword() {
 			currentUser.Password = currentUser.NewPassword;
 			OrderCloudSDK.Me.Update(currentUser)
@@ -84,7 +75,7 @@ function AccountService($q, $uibModal, OrderCloudSDK, toastr) {
 				});
 		}
 
-		OrderCloudSDK.Auth.GetToken(checkPasswordCredentials)
+		OrderCloudSDK.Auth.Login(currentUser.Username, currentUser.CurrentPassword, clientid, scope)
 			.then(function() {
 				changePassword();
 			})
@@ -183,7 +174,7 @@ function ChangePasswordModalController(toastr, $state, $exceptionHandler, Accoun
 				vm.currentUser.NewPassword = null;
 				vm.currentUser.ConfirmPassword = null;
 				vm.submit();
-				$state.go('account.information');
+				$state.go('account');
 			})
 			.catch(function(ex) {
 				$exceptionHandler(ex);
