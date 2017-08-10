@@ -13,7 +13,8 @@
             {{productCard.product.PriceSchedule.PriceBreaks[0].Price | currency}}</h4>
         <div class="c-product-card__icons pull-right hidden-xs" prevent-click>
             <ordercloud-product-quick-view product="productCard.product"
-                                           current-order="productCard.currentOrder"></ordercloud-product-quick-view>
+                                           current-order="productCard.currentOrder"
+                                           line-items="base.lineItems"></ordercloud-product-quick-view>
             <ordercloud-favorite-product product="productCard.product"
                                          current-user="productCard.currentUser"></ordercloud-favorite-product>
         </div>
