@@ -4,19 +4,18 @@ angular.module('orderCloud')
 	.component('ordercloudProductQuickView', {
 		bindings: {
 			product: '<',
-			currentOrder: '<',
-			lineItems: '<'
+			currentOrder: '<'
 		},
 		template: '<i class="fa fa-eye text-primary" ng-click="$ctrl.quickView($ctrl.currentOrder, $ctrl.product)"></i>',
 		controller: function(ProductQuickView){
-			this.quickView = function(currentorder, product, lineItems){
-				ProductQuickView.Open(currentorder, product, lineItems);
+			this.quickView = function(currentorder, product){
+				ProductQuickView.Open(currentorder, product);
 			};
 		}
 	})
 ;
 
-function ProductQuickViewService($uibModal) {
+function ProductQuickViewService(OrderCloudSDK, $uibModal) {
 	var service = {
 		Open: _open
 	};
@@ -37,7 +36,7 @@ function ProductQuickViewService($uibModal) {
 					return currentOrder;
 				},
 				LineItemsList: function() {
-					return lineItems;
+					return OrderCloudSDK.LineItems.List('outgoing', currentOrder.ID);
 				}
 			}
 		}).result
