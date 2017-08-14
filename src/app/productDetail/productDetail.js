@@ -14,6 +14,9 @@ function ProductConfig($stateProvider) {
             resolve: {
                 Product: function ($stateParams, OrderCloudSDK) {
                     return OrderCloudSDK.Me.GetProduct($stateParams.productid);
+                },
+                LineItemsList: function (OrderCloudSDK, CurrentOrder) {
+                    return OrderCloudSDK.LineItems.List('outgoing', CurrentOrder.ID);
                 }
             }
         });

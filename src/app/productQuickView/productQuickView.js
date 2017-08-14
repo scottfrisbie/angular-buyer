@@ -15,12 +15,12 @@ angular.module('orderCloud')
 	})
 ;
 
-function ProductQuickViewService($uibModal) {
+function ProductQuickViewService(OrderCloudSDK, $uibModal) {
 	var service = {
 		Open: _open
 	};
 
-	function _open(currentOrder, product) {
+	function _open(currentOrder, product, lineItems) {
 		return $uibModal.open({
 			backdrop:'static',
 			templateUrl: 'productQuickView/templates/productQuickView.modal.html',
@@ -34,6 +34,9 @@ function ProductQuickViewService($uibModal) {
 				},
 				CurrentOrder: function() {
 					return currentOrder;
+				},
+				LineItemsList: function() {
+					return OrderCloudSDK.LineItems.List('outgoing', currentOrder.ID);
 				}
 			}
 		}).result
