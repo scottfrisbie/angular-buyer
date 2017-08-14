@@ -7,7 +7,7 @@
         You currently do not have any addresses available. <br />
     </div>
     <div class="row">
-        <div class="col-sm-6" ng-repeat="address in addressSelect.addresses">
+        <div class="col-sm-6" ng-repeat="address in addressSelect.addresses.Items">
             <div class="panel panel-default">
                 <div class="panel-body">
                     <div class="pull-right">
@@ -15,6 +15,16 @@
                     </div>
                     <p ng-bind-html="address | address:'full'"></p>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="text-center" ng-if="addressSelect.addresses.Meta.TotalPages > 1">
+            <ul uib-pagination boundary-links="addressSelect.addresses.Meta.TotalPages > 5"
+                max-size="5" total-items="addressSelect.addresses.Meta.TotalCount"
+                items-per-page="addressSelect.addresses.Meta.PageSize"
+                ng-model="addressSelect.addresses.Meta.Page"
+                ng-change="addressSelect.pageChanged()"></ul>
             </div>
         </div>
     </div>

@@ -178,7 +178,7 @@ ocMandrill, Buyer) {
     });
 }
 
-function AddressSelectModalService($uibModal, OrderCloudSDK) {
+function AddressSelectModalService($uibModal, OrderCloudSDK, $stateParams, ocParameters) {
     var service = {
         Open: _open
     };
@@ -192,12 +192,10 @@ function AddressSelectModalService($uibModal, OrderCloudSDK) {
             size: 'md',
             resolve: {
                 Addresses: function() {
-                    var parameters = {
-                        page: 1,
-                        pageSize: 100,
-                        filters: (type === 'shipping') ? {Shipping: true} : {Billing: true}
-                    };
-                    return OrderCloudSDK.Me.ListAddresses(parameters);
+                    var options = {
+                        filters: type === 'shipping' ? {Shipping: true} : {Billing: true}
+                    }
+                    return OrderCloudSDK.Me.ListAddresses(options);
                 }
             }
         }).result;
@@ -206,9 +204,20 @@ function AddressSelectModalService($uibModal, OrderCloudSDK) {
     return service;
 }
 
-function AddressSelectController($uibModalInstance, Addresses) {
+function AddressSelectController($state, $uibModalInstance, Addresses, OrderCloudSDK) {
     var vm = this;
-    vm.addresses = Addresses.Items;
+    vm.addresses = Addresses;
+
+    vm.pageChanged = function() {
+        var options = {
+            page: vm.addresses.Meta.Page,
+            filters: vm.addresses.Items[0].Shipping ? {Shipping: true} : {Billing: true}
+        }
+        return OrderCloudSDK.Me.ListAddresses(options)
+            .then(function(newAddresses) {
+                vm.addresses = newAddresses;
+            });
+    };
 
     vm.select = function (address) {
         $uibModalInstance.close(address);
