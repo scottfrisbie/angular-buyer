@@ -178,7 +178,7 @@ ocMandrill, Buyer) {
     });
 }
 
-function AddressSelectModalService($uibModal, OrderCloudSDK, $stateParams, ocParameters) {
+function AddressSelectModalService($uibModal, OrderCloudSDK) {
     var service = {
         Open: _open
     };
