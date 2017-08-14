@@ -7,7 +7,7 @@ function MyPaymentsConfig($stateProvider) {
     $stateProvider
         .state('myPayments', {
             parent: 'account',
-            url: '/payments',
+            url: '/payments?page?pageSize',
             templateUrl: 'myPayments/templates/myPayments.tpl.html',
             controller: 'MyPaymentsCtrl',
             controllerAs: 'myPayments',
@@ -15,14 +15,20 @@ function MyPaymentsConfig($stateProvider) {
                 pageTitle: "Payment Methods"
             },
             resolve: {
-                UserCreditCards: function(OrderCloudSDK) {
-                    return OrderCloudSDK.Me.ListCreditCards(null, null, null, null, null, {'Editable':true});
+                Parameters: function ($stateParams, ocParameters) {
+                    return ocParameters.Get($stateParams);
                 },
-                UserSpendingAccounts: function(OrderCloudSDK) {
-                   return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '!*'});
+                UserCreditCards: function(OrderCloudSDK, Parameters) {
+                    Parameters.filters = {Editable: true} 
+                    return OrderCloudSDK.Me.ListCreditCards(Parameters);
                 },
-                GiftCards: function(OrderCloudSDK) {
-                    return OrderCloudSDK.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '*'});
+                UserSpendingAccounts: function(OrderCloudSDK, Parameters) {
+                    Parameters.filters = {RedemptionCode: '!*'} 
+                    return OrderCloudSDK.Me.ListSpendingAccounts(Parameters);
+                },
+                GiftCards: function(OrderCloudSDK, Parameters) {
+                    Parameters.filters = {RedemptionCode: '*'} 
+                    return OrderCloudSDK.Me.ListSpendingAccounts(Parameters);
                 }
             }
         });
@@ -33,6 +39,12 @@ function MyPaymentsController($q, $state, toastr, $exceptionHandler, ocConfirm, 
     vm.personalCreditCards =  UserCreditCards;
     vm.personalSpendingAccounts = UserSpendingAccounts;
     vm.giftCards = GiftCards;
+
+    vm.pageChanged = function() {
+        $state.go('.', {
+            page: vm.personalSpendingAccounts.Meta.Page
+        });
+    };
 
     vm.createCreditCard = function(){
         MyPaymentCreditCardModal.Create()
