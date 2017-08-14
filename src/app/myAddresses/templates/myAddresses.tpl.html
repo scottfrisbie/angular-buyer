@@ -3,48 +3,49 @@
     <h3><i class="fa fa-map-marker"></i> Personal Addresses</h3>
     <hr>
     <div class="row">
-        <div class="well text-center" ng-if="!myAddresses.shippingAddresses.length">
+        <div class="well text-center" ng-if="!myAddresses.shippingAddresses.Items.length">
             You do not have any shipping addresses assigned to you.
         </div>
-        <div ng-if="myAddresses.shippingAddresses.length">
+        <div ng-if="myAddresses.shippingAddresses.Items.length">
             <h4>
-                <ng-pluralize count="myAddresses.shippingAddresses.length" when="{
+                <ng-pluralize count="myAddresses.shippingAddresses.Items.length" when="{
                 '1': 'Shipping Address',
                 'other': 'Shipping Addresses'
             }"></ng-pluralize>
             </h4>
-            <div class="col-sm-6" ng-repeat="shipAddress in myAddresses.shippingAddresses">
+            <div class="col-sm-6" ng-repeat="shipAddress in myAddresses.shippingAddresses.Items">
                 <div class="panel panel-default" cg-busy="myAddresses.loading[$index]">
                     <div class="panel-body">
-                        <!--<div class="pull-right">-->
-                        <!--<a href="" ng-click="myAddresses.delete(this)">Delete</a> |-->
-                        <!--<a href="" ng-click="myAddresses.edit(this)">Edit</a>-->
-                        <!--</div>-->
                         <p ng-bind-html="shipAddress | address:'full'"></p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="text-center" ng-if="application.$ocMedia('min-width:768px') && myAddresses.shippingAddresses.Meta.TotalPages > 1">
+                <ul uib-pagination boundary-links="myAddresses.shippingAddresses.Meta.TotalPages > 5"
+                    max-size="5" total-items="myAddresses.shippingAddresses.Meta.TotalCount"
+                    items-per-page="myAddresses.shippingAddresses.Meta.PageSize"
+                    ng-model="myAddresses.shippingAddresses.Meta.Page"
+                    ng-change="myAddresses.pageChanged()"></ul>
+        </div>
+    </div>
     <hr>
     <div class="row">
         <h4>
-            <ng-pluralize count="myAddresses.billingAddresses.length" when="{
+            <ng-pluralize count="myAddresses.billingAddresses.Items.length" when="{
                 '1': 'Billing Address',
                 'other': 'Billing Addresses'
             }"></ng-pluralize>
         </h4>
-        <div class="well text-center" ng-if="!myAddresses.billingAddresses.length">
+        <div class="well text-center" ng-if="!myAddresses.billingAddresses.Items.length">
             You do not have any billing addresses assigned to you.
         </div>
-        <div ng-if="myAddresses.billingAddresses.length">
-            <div class="col-sm-6" ng-repeat="billAddress in myAddresses.billingAddresses">
+        <div ng-if="myAddresses.billingAddresses.Items.length">
+            <div class="col-sm-6" ng-repeat="billAddress in myAddresses.billingAddresses.Items">
                 <div class="panel panel-default" cg-busy="myAddresses.loading[$index]">
                     <div class="panel-body">
-                        <!--<div class="pull-right">-->
-                        <!--<a href="" ng-click="myAddresses.delete(this)">Delete</a> |-->
-                        <!--<a href="" ng-click="myAddresses.edit(this)">Edit</a>-->
-                        <!--</div>-->
                         <p ng-bind-html="billAddress | address:'full'"></p>
                     </div>
                 </div>

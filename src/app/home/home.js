@@ -15,15 +15,15 @@ function HomeConfig($stateProvider) {
 				pageTitle: 'Home'
 			},
 			resolve: {
-				FeaturedProducts: function(OrderCloudSDK){
-					var params = {
-						pageSize: 100,
-						filters: {
-							'xp.Featured': true
-						}
-					};
-					return OrderCloudSDK.Me.ListProducts(params);
-				},
+				// FeaturedProducts: function(OrderCloudSDK){
+				// 	var params = {
+				// 		pageSize: 100,
+				// 		filters: {
+				// 			'xp.Featured': true
+				// 		}
+				// 	};
+				// 	return OrderCloudSDK.Me.ListProducts(params);
+				// },
 				FeaturedCategories: function(OrderCloudSDK){
 					var params = {
 						pageSize: 100,
@@ -39,9 +39,9 @@ function HomeConfig($stateProvider) {
 	;
 }
 
-function HomeController(FeaturedProducts, FeaturedCategories) {
+function HomeController(FeaturedCategories) {
 	var vm = this;
-	vm.productList = FeaturedProducts;
+	// vm.productList = FeaturedProducts;
 	vm.categoryList = FeaturedCategories;
 
 	//settings used by slider
