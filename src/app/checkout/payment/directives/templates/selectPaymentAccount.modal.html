@@ -31,6 +31,16 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <div class="text-center" ng-if="selectPaymentAccount.accounts.Meta.TotalPages > 1">
+                <ul uib-pagination boundary-links="selectPaymentAccount.accounts.Meta.TotalPages > 5"
+                    max-size="5" total-items="selectPaymentAccount.accounts.Meta.TotalCount"
+                    items-per-page="selectPaymentAccount.accounts.Meta.PageSize"
+                    ng-model="selectPaymentAccount.accounts.Meta.Page"
+                    ng-change="selectPaymentAccount.pageChanged()"></ul>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="modal-body" ng-if="selectPaymentAccount.payment.Type == 'CreditCard'">
         <div class="panel panel-default" ng-class="{'panel-primary': creditCard.ID == selectPaymentAccount.payment.CreditCardID}" ng-repeat="creditCard in selectPaymentAccount.accounts.Items">

@@ -42,7 +42,7 @@ function OrderCloudCheckoutPaymentService($exceptionHandler, $q, $uibModal, Orde
             size: 'md',
             resolve: {
                 Accounts: function(OrderCloudSDK) {
-                    var options = {page: 1, pageSize: 100};
+                    var options = {page: 1, pageSize: 20};
                     if (payment.Type == 'SpendingAccount') {
                         options.filters = {RedemptionCode: '!*', AllowAsPaymentMethod: true};
 		                return OrderCloudSDK.Me.ListSpendingAccounts(options);
