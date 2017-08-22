@@ -74,7 +74,7 @@ function checkoutConfig($urlRouterProvider, $stateProvider) {
     ;
 }
 
-function CheckoutController($state, $rootScope, toastr, OrderCloudSDK, OrderShipAddress, 
+function CheckoutController($state, $rootScope, $exceptionHandler, toastr, OrderCloudSDK, OrderShipAddress, 
 CurrentUserAddresses, CurrentPromotions, OrderBillingAddress, SpendingAccount, CheckoutConfig, 
 ocMandrill, Buyer) {
 
@@ -88,7 +88,7 @@ ocMandrill, Buyer) {
     vm.spendingAccount = SpendingAccount;
     vm.buyer = Buyer;
 
-    vm.submitOrder = function(order){
+    vm.submitOrder = function(order) {
         vm.orderLoading = OrderCloudSDK.Payments.List('outgoing', order.ID, {filters: {Type: 'SpendingAccount'}})
             .then(function(paymentList){
                 var payment = paymentList.Items[0];
@@ -129,12 +129,18 @@ ocMandrill, Buyer) {
 
     function finalSubmit(order) {
         return OrderCloudSDK.Orders.Submit('outgoing', order.ID)
-            .then(function(order) {
-                $state.go('confirmation', {orderid:order.ID}, {reload:'base'});
-                return toastr.success('Your order has been submitted', 'Success');
+            .then(function(orderData) {
+                return OrderCloudSDK.Orders.Patch('outgoing', orderData.ID, {xp: {POID: order.xp.POID}})
+                    .then(function() {
+                        $state.go('confirmation', {orderid:orderData.ID}, {reload:'base'});
+                        return toastr.success('Your order has been submitted', 'Success');
+                    })
+                    .catch(function(ex) {
+                        $exceptionHandler(ex);
+                    });
             })
             .catch(function(ex) {
-                return toastr.error('Your order did not submit successfully.', 'Error');
+                $exceptionHandler(ex);
             });
     }
     
@@ -186,12 +192,10 @@ function AddressSelectModalService($uibModal, OrderCloudSDK) {
             size: 'md',
             resolve: {
                 Addresses: function() {
-                    var parameters = {
-                        page: 1,
-                        pageSize: 100,
-                        filters: (type === 'shipping') ? {Shipping: true} : {Billing: true}
-                    };
-                    return OrderCloudSDK.Me.ListAddresses(parameters);
+                    var options = {
+                        filters: type === 'shipping' ? {Shipping: true} : {Billing: true}
+                    }
+                    return OrderCloudSDK.Me.ListAddresses(options);
                 }
             }
         }).result;
@@ -200,9 +204,20 @@ function AddressSelectModalService($uibModal, OrderCloudSDK) {
     return service;
 }
 
-function AddressSelectController($uibModalInstance, Addresses) {
+function AddressSelectController($state, $uibModalInstance, Addresses, OrderCloudSDK) {
     var vm = this;
-    vm.addresses = Addresses.Items;
+    vm.addresses = Addresses;
+
+    vm.pageChanged = function() {
+        var options = {
+            page: vm.addresses.Meta.Page,
+            filters: vm.addresses.Items[0].Shipping ? {Shipping: true} : {Billing: true}
+        }
+        return OrderCloudSDK.Me.ListAddresses(options)
+            .then(function(newAddresses) {
+                vm.addresses = newAddresses;
+            });
+    };
 
     vm.select = function (address) {
         $uibModalInstance.close(address);

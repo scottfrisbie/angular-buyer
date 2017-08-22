@@ -14,24 +14,26 @@ function ProductConfig($stateProvider) {
             resolve: {
                 Product: function ($stateParams, OrderCloudSDK) {
                     return OrderCloudSDK.Me.GetProduct($stateParams.productid);
+                },
+                LineItemsList: function (OrderCloudSDK, CurrentOrder) {
+                    return OrderCloudSDK.LineItems.List('outgoing', CurrentOrder.ID);
                 }
             }
         });
 }
 
 
-function ProductDetailController($exceptionHandler, Product, CurrentOrder, ocLineItems, toastr) {
+function ProductDetailController($exceptionHandler, Product, CurrentOrder, ocLineItems, toastr, LineItemsList) {
     var vm = this;
+    vm.currentOrder = CurrentOrder;
     vm.item = Product;
+    vm.lineItemsList = LineItemsList;
     vm.finalPriceBreak = null;
 
     vm.addToCart = function() {
-        ocLineItems.AddItem(CurrentOrder, vm.item)
+        ocLineItems.AddItem(vm.currentOrder, vm.item, vm.lineItemsList)
             .then(function(){
                 toastr.success('Product added to cart', 'Success')
-            })
-            .catch(function(error){
-               $exceptionHandler(error);
             });
     };
 

@@ -11,7 +11,7 @@ angular.module('orderCloud')
         }
     });
 
-function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloudSDK){
+function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloudSDK, ocLineItems){
     var vm = this;
 
     $scope.$watch(function(){
@@ -21,33 +21,11 @@ function ocProductCard($rootScope, $scope, $exceptionHandler, toastr, OrderCloud
     });
 
     vm.addToCart = function(OCProductForm) {
-        var existingLI = _.findWhere(vm.lineItemsList.Items, {ProductID: vm.product.ID});
-        var li = {
-            ProductID: vm.product.ID,
-            Quantity: existingLI ? vm.product.Quantity + existingLI.Quantity : vm.product.Quantity
-        };
-        if (existingLI) {
-            return OrderCloudSDK.LineItems.Patch('outgoing', vm.currentOrder.ID, existingLI.ID, li)
-                .then(function(lineItem) {
-                    updateOrder(lineItem);
-                })
-                .catch(function(ex) {
-                    $exceptionHandler(ex);
-                })
-        } else {
-            return OrderCloudSDK.LineItems.Create('outgoing', vm.currentOrder.ID, li)
-                .then(function(lineItem) {
-                    updateOrder(lineItem);
-                })
-                .catch(function(ex) {
-                    $exceptionHandler(ex);
-                })
-        }
-        function updateOrder(lineItem) {
-            $rootScope.$broadcast('OC:UpdateOrder', vm.currentOrder.ID, 'Updating Order');
-            vm.product.Quantity = 1;
-            toastr.success('Product added to cart', 'Success');
-        };
+        ocLineItems.AddItem(vm.currentOrder, vm.product, vm.lineItemsList)
+			.then(function(){
+				toastr.success('Product added to cart', 'Success');
+				$uibModalInstance.close();
+			});
     };
 
     vm.findPrice = function(qty){
