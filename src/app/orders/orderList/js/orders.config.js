@@ -22,7 +22,7 @@ function OrdersConfig($stateProvider) {
 
                 },
                 GroupAssignments: function(OrderCloudSDK, ocUtility) {
-                    return ocUtility.ListAll(OrderCloudSDK.Me.ListUserGroups, {pageSize: 100, page: 'page'})
+                    return ocUtility.ListAll(OrderCloudSDK.Me.ListUserGroups, {pageSize: 100, page: 'page', filters: {ID: '!CanViewAllOrders'}})
                         .then(function(userGroups) {
                             return userGroups.Items;
                     });
