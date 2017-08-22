@@ -54,7 +54,7 @@ function OrdersController($state, $filter, $ocMedia, ocParameters, ocOrders, ocR
     vm.downloadReport = downloadReport;
 
     function downloadReport(){
-        return ocReporting.ExportOrders(vm.list.Items);
+        return ocReporting.ExportOrders(vm.list.Items, vm.stores);
     }
 
     function selectTab(tab){
