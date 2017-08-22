@@ -8,15 +8,17 @@
   "bootswatchtheme": "yeti",
   "scope": [
     "AdminAddressAdmin",
+    "AddressReader",
     "ApprovalRuleReader",
     "BuyerReader",
     "CatalogReader",
     "MeAdmin",
     "MeXpAdmin",
+    "OrderReader",
     "PasswordReset",
     "ShipmentReader",
     "Shopper",
-    "OrderReader",
-    "UnsubmittedOrderReader"
+    "UnsubmittedOrderReader",
+    "UserGroupReader"
   ]
 }
