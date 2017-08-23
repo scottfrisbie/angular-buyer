@@ -2,21 +2,24 @@
   "appname": "Cafe Rio",
   "clientid": "7FC87166-D42A-4F2D-9587-159D98156314",
   "catalogid": "caferio",
+  "buyerid": "caferio",
   "environment": "prod",
   "defaultstate": "home",
   "html5mode": true,
   "bootswatchtheme": "yeti",
   "scope": [
     "AdminAddressAdmin",
+    "AddressReader",
     "ApprovalRuleReader",
     "BuyerReader",
     "CatalogReader",
     "MeAdmin",
     "MeXpAdmin",
+    "OrderReader",
     "PasswordReset",
     "ShipmentReader",
     "Shopper",
-    "OrderReader",
-    "UnsubmittedOrderReader"
+    "UnsubmittedOrderReader",
+    "UserGroupReader"
   ]
 }
