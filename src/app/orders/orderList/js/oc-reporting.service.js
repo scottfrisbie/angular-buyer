@@ -9,13 +9,13 @@ function ocReportingService(ocCSVExport, $filter){
         ExportOrders: _exportOrders
     };
 
-    function _exportOrders(OrderList){
+    function _exportOrders(OrderList, Stores){
         //expects array of orders
-        buildOrderArray(OrderList);
+        buildOrderArray(OrderList, Stores);
         return _downloadOrder();
     }
 
-    function buildOrderArray(orderList){
+    function buildOrderArray(orderList, Stores){
         _.each(orderList, function(order){
             _formattedOrders.push(OrderModel(order));
         });
@@ -26,6 +26,7 @@ function ocReportingService(ocCSVExport, $filter){
                 OrderID: order.ID,
                 OrderStatus: order.Status,
                 Submitted: format(order.DateSubmitted, 'date'),
+                StoreName: Stores[order.ShippingAddressID].AddressName,
                 SubmittedBy: order.FromUser.FirstName + ' ' + order.FromUser.LastName,
                 Subtotal: format(order.Subtotal || 0, 'currency')
             };
@@ -35,11 +36,12 @@ function ocReportingService(ocCSVExport, $filter){
     function _downloadOrder(){
         //maps key names to table headers on csv
         var mapping = {
-            "OrderID": "Order ID",
-            "OrderStatus": "Order Status",
-            "Submitted": "Submitted",
-            "SubmittedBy": "Submitted By",
-            "Subtotal": "Subtotal"
+            'OrderID': 'Order ID',
+            'OrderStatus': 'Order Status',
+            'Submitted': 'Submitted',
+            'StoreName': 'Store Name',
+            'SubmittedBy': 'Submitted By',
+            'Subtotal': 'Subtotal'
         };
         return ocCSVExport.GenerateCSVContent(_formattedOrders, mapping)
             .then(function(ordercsv) {

@@ -2,7 +2,7 @@ angular.module('orderCloud')
     .factory('ocOrders', ocOrdersService)
 ;
 
-function ocOrdersService(OrderCloudSDK){
+function ocOrdersService(OrderCloudSDK, toastr, $log){
     var service = {
         List: _list
     };
@@ -52,11 +52,14 @@ function ocOrdersService(OrderCloudSDK){
                     filters: {
                         CompanyName: parameters.group
                     }
-
-                }
+                };
                 return OrderCloudSDK.Me.ListAddresses(options)
                     .then(function(addresses) {
                         var shippingAddress = addresses.Items[0];
+                        if(!shippingAddress) {
+                            $log.error('Unable to find an address with CompanyName: ' + parameters.group + '. There must be an address.CompanyName corresponding to this userGroup.ID (' + parameters.group + ')');
+                            return toastr.error('Store not configured correctly - please alert an administrator');
+                        }
                         angular.extend(parameters.filters, {ShippingAddressID: shippingAddress.ID});
                         return OrderCloudSDK.Orders.List('Outgoing', parameters);
                     });

@@ -1,158 +1,143 @@
 var request = require('request');
-var q = require('q');
-var bo = require('./back-office.config');
+var $q = require('q');
+var boconfig = require('./routes/config/back-office-user');
+var OrderCloudSDK = require('./routes/config/ordercloud');
 var _ = require('underscore');
+var fs = require('fs');
+var dateformat = require('dateFormat');
+var buyerid = JSON.parse(fs.readFileSync('./src/app/app.constants.json')).buyerid;
 
-var _impersonationToken;
-var _levelTwoGroupIds;
+var mandrill = require('mandrill-api/mandrill');
+var mandrillConfig = require('./routes/config/mandrill');
+var mandrill_client = new mandrill.Mandrill(mandrillConfig.apiKey);
 
-return getToken()
-    .then(function(token){
-        return getImpersonationToken(token);
-    })
-    .then(function(impersonationToken){
-        _impersonationToken = impersonationToken['access_token'];
-        return getLevelTwoGroups(); 
-    })
-    .then(function(levelTwoGroups){
-        _levelTwoGroupIds = _.pluck(levelTwoGroups.Items, 'ID');
-        return getApprovableOrderIDs(); 
-    })
-    .then(function(approvableOrderIds){
-        //return orders that have *only* level 1 approvals
-        return getLevelOneApprovables(approvableOrderIds); 
-    })
-    .then(function(levelOneApprovables){
-        return patchAndApprove(levelOneApprovables);
+/*  Config Error Handling   */
+if(!buyerid) console.error(new Error('Please define buyerid in src/app/app.constants.json'));
+if(!boconfig.ClientID) console.error(new Error('missing required ClientID for back office user'));
+if(!boconfig.ClientSecret) console.error(new Error('missing required ClientSecret for back office user'));
+if(!boconfig.scope) console.error(new Error('missing required scope for back office user'));
+
+
+return setBackOfficeToken()
+    .then(getOrdersAwaitingApproval)
+    .then(getApprovingUsers)
+    .then(function(emailData){
+        return $q.all([
+            emailUsers(emailData),
+            markComplete(emailData)
+        ]);
     });
 
-function getLevelTwoGroups(){
-    return makeApiCall({
-        method: 'get',
-        route: '/buyers/caferio/usergroups?pageSize=100&search=Level 2&searchOn=Name'
-    });
-}
-
-function getApprovableOrderIDs(){
+function getOrdersAwaitingApproval(){
+    //orders that have been on hold for at least 48 hours but have not been approved
     var now = new Date();
     now.setHours(now.getHours() - 48);
     var fortyEightHoursAgo = now.toISOString();
-    return makeApiCall({
-        method: 'get',
-        route: '/orders/outgoing?pageSize=100&Status=AwaitingApproval&DateSubmitted=<'+ fortyEightHoursAgo
-    })
-    .then(function(orders){
-        return _.pluck(orders.Items, 'ID');
+
+    return OrderCloudSDK.Orders.List('incoming', {
+        pageSize: 100, 
+        filters: {
+            Status: 'AwaitingApproval', 
+            DateSubmitted: '<' + fortyEightHoursAgo,
+            'xp.Over48': 'no' // user has not yet been reminded
+        }
     });
 }
 
-function getLevelOneApprovables(orders){
-    var queue = [];
-    _.each(orders, function(id){
-        queue.push(listApprovals(id));
+function getApprovingUsers(orders){
+    // list of users for each order on hold that can approve it
+    var emailData = {};
+    var approvalQueue = [];
+    _.each(orders.Items, function(order){
+        approvalQueue.push(function(){
+            return OrderCloudSDK.Orders.ListApprovals('incoming', order.ID, {filters: {Status: 'Pending'}})
+                .then(function(approvals){
+                    var usersQueue = [];
+                    _.each(approvals.Items, function(approval){
+                        usersQueue.push(function(){
+                            return OrderCloudSDK.Users.List(buyerid, {pageSize: 100, userGroupID: approval.ApprovingGroupID})
+                                .then(function(userList){
+                                    order = _.pick(order, ['ID', 'FromUser', 'FromUserID', 'DateSubmitted']);
+                                    var recipients = _.pluck(userList.Items, 'Email');
+                                    return emailData[order.ID] = {
+                                        Order: order,
+                                        Recipients: recipients
+                                    };
+                                });
+                        }());
+                    });
+                    return $q.all(usersQueue);
+                });
+        }());
     });
-    return q.all(queue)
-        .then(function(orderApprovals){
-            return _.compact(orderApprovals);
-        });
-
-    function listApprovals(orderid){
-        return makeApiCall({
-            method: 'get',
-            route: '/orders/outgoing/' + orderid + '/approvals?pageSize=100'
-        })
-        .then(function(approvals){
-            //only lists of approvals with no level two approvals will be returned
-            var allLevelOne = true;
-            var ApprovingGroups = [];
-            _.each(approvals.Items, function(approval){
-                ApprovingGroups.push(approval.ApprovingGroupID);
-                if(_levelTwoGroupIds.indexOf(approval.ApprovingGroupID) > -1) allLevelOne = false;
-            });
-            return allLevelOne ? {ID: orderid, ApprovingGroups: ApprovingGroups} : null;
-        });
-    }
-}
-
-function patchAndApprove(orders){
-    var patchQueue = [];
-    _.each(orders, function(order){
-        patchQueue.push(patchOrderXp(order.ID));
-    });
-    return q.all(patchQueue)
+    return $q.all(approvalQueue)
         .then(function(){
-            var approveQueue = [];
-            _.each(orders, function(order){
-                approveQueue.push(approve(order.ID));
-            });
-            return q.all(approveQueue);
+            return emailData;
         });
-
-    function patchOrderXp(orderid){
-        return makeApiCall({
-            method:'patch',
-            route: '/orders/outgoing/' + orderid,
-            body: {xp: {Over48:'yes'}}
-        });
-    }
-
-    function approve(orderid){
-        return makeApiCall({
-            method: 'post',
-            route: '/orders/outgoing/' + orderid + '/approve',
-            body: {Comments: 'Approval Auto Escalated to Level 2'}
-        });
-    }
 }
 
-function getImpersonationToken(token){
-    var impersonation = {
-        ClientID: bo.buyerclientid,
-        Roles: ['ApprovalRuleAdmin', 'OrderAdmin', 'UserGroupReader', 'BuyerUserReader', 'UnsubmittedOrderReader']
-    };
-    return makeApiCall({
-        method: 'post',
-        route: '/buyers/caferio/users/' + bo.user + '/accesstoken',
-        token: token,
-        body: impersonation
+function emailUsers(emailData){
+    var queue = [];
+    _.each(emailData, function(email){
+        var arrayRecipients = _.map(email.Recipients, function(email){
+            return {email: email, type: 'to'};
+        });
+        var datesubmitted = new Date(email.Order.DateSubmitted);
+        var message = {
+            to: arrayRecipients,
+            global_merge_vars: [
+                {name: 'OrderID', content: email.Order.ID},
+                {name: 'DATESUBMITTED', content: dateformat(datesubmitted, 'longDate')},
+                {name: 'FIRSTNAME', content: email.Order.FromUser.FirstName},
+                {name: 'LASTNAME', content: email.Order.FromUser.LastName},
+                {name: 'FROMUSERID', content: email.Order.FromUserID}
+            ]
+        };
+        var template_content = [{name: 'main', content: 'content'}];
+
+        queue.push(mandrill_client.messages.sendTemplate({template_name: 'approval-over-48-hours', template_content: template_content, message: message}));
     });
+    return $q.all(queue);
 }
 
-function getToken(){
-    var authurl = 'https://auth.ordercloud.io';
-    var deferred = q.defer();
+function markComplete(emailData){
+    //set order.xp.Over48 = 'yes' to indicate users have been emailed a reminder
+    var orderids = _.keys(emailData);
+    var queue = [];
+    _.each(orderids, function(orderid){
+        return OrderCloudSDK.Orders.Patch('incoming', orderid, {xp: {Over48:'yes'}});
+    });
+    return $q.all(queue);
+}
+
+function setBackOfficeToken(){
+    //TODO: there is a bug in javascript sdk that doesnt allow us
+    //to use OrderCloudSDK.Auth.ClientCredentials log in. once this
+    //is fixed replace with that call
+    var deferred = $q.defer();
     var requestBody = {
-        url: authurl + '/oauth/token',
+        url:  OrderCloudSDK.ApiClient.instance.baseAuthPath + '/oauth/token',
         headers: {
             'Content-Type': 'application/json'
         },
-        rejectUnauthorized: false,
-        body: 'client_id=' + bo.cid + '&grant_type=client_credentials&client_secret=' + bo.secret + '&scope=BuyerImpersonation'
+        body: 'client_id=' + boconfig.ClientID + '&grant_type=client_credentials&client_secret=' + boconfig.ClientSecret + '&scope=' + boconfig.scope.join('+')
     };
-    request.post(requestBody, 
-        function(error, response, body){
-            deferred.resolve( JSON.parse(body)['access_token'] );
-    });
-    return deferred.promise;
-}
 
-function makeApiCall(requestObj){
-    //requestObj = {method: method, route: route, body: body, token: token}
-    var apiurl = 'https://api.ordercloud.io/v1';
-    var deferred = q.defer();
-    var requestBody = {
-        url: apiurl + requestObj.route,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + (requestObj.token || _impersonationToken)
-        },
-        json: requestObj.body,
-        rejectUnauthorized: false
-    };
-    request[requestObj.method](requestBody,
-        function(error, response, body){
-            var result = typeof body === 'string' ? JSON.parse(body) : body;
-            deferred.resolve(result);
-        });
+    request.post(requestBody, function (error, response, body) {
+        if (error) {
+            deferred.reject(error);
+        } else {
+            if(body && body.Errors && body.Errors.length){
+                var msg = body.Errors[0].Message;
+                console.log('Error Auth', msg);
+                deferred.reject(msg);
+            } else {
+                var token = JSON.parse(body)['access_token'];
+                OrderCloudSDK.SetToken(token);
+                deferred.resolve();
+            }
+        }
+    });
+
     return deferred.promise;
 }
