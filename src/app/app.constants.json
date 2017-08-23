@@ -2,6 +2,7 @@
   "appname": "Cafe Rio",
   "clientid": "7FC87166-D42A-4F2D-9587-159D98156314",
   "catalogid": "caferio",
+  "buyerid": "caferio",
   "environment": "prod",
   "defaultstate": "home",
   "html5mode": true,
