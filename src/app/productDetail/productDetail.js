@@ -12,31 +12,33 @@ function ProductConfig($stateProvider) {
             controller: 'ProductDetailCtrl',
             controllerAs: 'productDetail',
             resolve: {
-                Product: function ($stateParams, OrderCloud) {
-                    return OrderCloud.Me.GetProduct($stateParams.productid);
+                Product: function ($stateParams, OrderCloudSDK) {
+                    return OrderCloudSDK.Me.GetProduct($stateParams.productid);
+                },
+                LineItemsList: function (OrderCloudSDK, CurrentOrder) {
+                    return OrderCloudSDK.LineItems.List('outgoing', CurrentOrder.ID);
                 }
             }
         });
 }
 
 
-function ProductDetailController($exceptionHandler, Product, CurrentOrder, ocLineItems, toastr) {
+function ProductDetailController($exceptionHandler, Product, CurrentOrder, ocLineItems, toastr, LineItemsList) {
     var vm = this;
+    vm.currentOrder = CurrentOrder;
     vm.item = Product;
+    vm.lineItemsList = LineItemsList;
     vm.finalPriceBreak = null;
 
     vm.addToCart = function() {
-        ocLineItems.AddItem(CurrentOrder, vm.item)
+        ocLineItems.AddItem(vm.currentOrder, vm.item, vm.lineItemsList)
             .then(function(){
                 toastr.success('Product added to cart', 'Success')
-            })
-            .catch(function(error){
-               $exceptionHandler(error);
             });
     };
 
     vm.findPrice = function(qty){
-        angular.forEach(vm.item.StandardPriceSchedule.PriceBreaks, function(priceBreak) {
+        angular.forEach(vm.item.PriceSchedule.PriceBreaks, function(priceBreak) {
             if (priceBreak.Quantity <= qty)
                 vm.finalPriceBreak = angular.copy(priceBreak);
         });

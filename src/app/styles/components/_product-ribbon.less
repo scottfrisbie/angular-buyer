@@ -1,0 +1,40 @@
+// ribbon
+.c-ribbon-wrap {
+    position: relative;
+    height: 30px;
+    .c-ribbon {
+        left: -25px;
+        bottom: 5px;
+    }
+}
+
+.c-ribbon {
+    width: auto;
+    position: absolute;
+    left: -10px;
+    bottom: 30px;
+    text-align: center;
+    background-color: @light-grey;
+    border-radius: 0 @border-radius-base @border-radius-base 0;
+    opacity: 0.9;
+}
+
+.c-ribbon__content {
+    text-transform: uppercase;
+    font-size: 11px;
+    padding: 5px 25px;
+}
+
+.c-ribbon .c-ribbon__content:after {
+    border-color: @grey transparent transparent transparent;
+    position: absolute;
+    display: block;
+    border-style: solid;
+    bottom: -10px;
+    content: '';
+}
+
+.c-ribbon .c-ribbon__content:after {
+    left: 0;
+    border-width: 10px 0 0 10px;
+}

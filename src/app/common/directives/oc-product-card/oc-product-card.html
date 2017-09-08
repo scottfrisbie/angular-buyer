@@ -1,0 +1,34 @@
+<div class="c-product-card__img-wrap">
+    <a ui-sref="productDetail({productid: productCard.product.ID})">
+        <img class="img-responsive c-product-card__img"
+             ng-src="{{productCard.product.xp.image.URL || 'assets/images/image-unavailable.jpg'}}">
+    </a>
+</div>
+<div class="caption c-product-card__body">
+    <h6>{{productCard.product.ID | limitTo:
+        12}}{{productCard.product.ID.length > 8 ? '...' : ''}}</h6>
+    <h4 class="c-product-card__name" ng-if="productCard.product.Name">{{productCard.product.Name}}</h4>
+    <div class="clearfix">
+        <h4 class="c-product-card__price text-primary">
+            {{productCard.product.PriceSchedule.PriceBreaks[0].Price | currency}}</h4>
+        <div class="c-product-card__icons pull-right hidden-xs" prevent-click>
+            <ordercloud-product-quick-view product="productCard.product"
+                                           current-order="productCard.currentOrder"></ordercloud-product-quick-view>
+            <ordercloud-favorite-product product="productCard.product"
+                                         current-user="productCard.currentUser"></ordercloud-favorite-product>
+        </div>
+    </div>
+    <div ng-if="productCard.product.xp.Unit">
+        <p class="text-muted">{{productCard.product.xp.Unit}}</p>
+    </div>
+    <fieldset class="form-group" ng-if="productCard.product.SpecCount > 0">
+        <button type="button" class="btn btn-block btn-primary" ui-sref="productDetail({productid: productCard.product.ID})">Product Details</button>
+    </fieldset>
+    <form ng-if="!(productCard.product.SpecCount > 0)" name="OCProductForm" class="c-product-card__add-to-cart" ng-submit="productCard.addToCart(OCProductForm)"
+          prevent-click="">
+        <oc-quantity-input product="productCard.product"></oc-quantity-input>
+        <fieldset class="form-group c-product-card__add-to-cart-btn">
+            <button type="submit" class="btn btn-block btn-primary">Add to Cart</button>
+        </fieldset>
+    </form>
+</div>

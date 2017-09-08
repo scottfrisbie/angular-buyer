@@ -19,8 +19,8 @@ function ProductSearchConfig($stateProvider) {
                 Parameters: function(ocParameters, $stateParams) {
                     return ocParameters.Get($stateParams);
                 },
-                ProductList: function(OrderCloud, Parameters) {
-                    return OrderCloud.Me.ListProducts(Parameters.searchTerm, Parameters.page, Parameters.pageSize || 12, null, Parameters.sortBy);
+                ProductList: function(OrderCloudSDK, Parameters) {
+                    return OrderCloudSDK.Me.ListProducts({search: Parameters.searchTerm, page: Parameters.page, pageSize: Parameters.pageSize || 12, searchOn: 'Name,ID', sortBy: Parameters.sortBy});
                 }
             }
         });
@@ -79,11 +79,11 @@ function OrderCloudProductSearchComponent() {
     };
 }
 
-function ProductSearchDirectiveController($state, OrderCloud) {
+function ProductSearchDirectiveController($state, $scope, OrderCloudSDK) {
     var vm = this;
 
     vm.getSearchResults = function() {
-        return OrderCloud.Me.ListProducts(vm.searchTerm, 1, vm.maxProducts || 5)
+        return OrderCloudSDK.Me.ListProducts({search: vm.searchTerm, page: 1, pageSize: vm.maxProducts || 5, searchOn:'Name,ID'})
             .then(function(data) {
                 return data.Items;
             });
@@ -92,12 +92,17 @@ function ProductSearchDirectiveController($state, OrderCloud) {
     vm.onSelect = function(productID) {
         $state.go('productDetail', {
             productid: productID
+        }).then(function(){
+            vm.searchTerm = null;
         });
     };
 
     vm.onHardEnter = function(searchTerm) {
         $state.go('productSearchResults', {
             searchTerm: searchTerm
+        }).then(function(){
+            vm.searchTerm = null;
+            $scope.loading = false;
         });
     };
 }
@@ -120,7 +125,7 @@ function ProductSearchService($uibModal) {
     return service;
 }
 
-function ProductSearchModalController($uibModalInstance, $timeout, $scope, OrderCloud) {
+function ProductSearchModalController($uibModalInstance, $timeout, $scope, OrderCloudSDK) {
     var vm = this;
 
     $timeout(function() {
@@ -128,7 +133,7 @@ function ProductSearchModalController($uibModalInstance, $timeout, $scope, Order
     }, 300);
 
     vm.getSearchResults = function() {
-        return OrderCloud.Me.ListProducts(vm.searchTerm, 1, vm.maxProducts || 5)
+        return OrderCloudSDK.Me.ListProducts({search: vm.searchTerm, page: 1, pageSize: vm.maxProducts || 5, searchOn:'Name,ID'})
             .then(function(data) {
                 return data.Items;
             });

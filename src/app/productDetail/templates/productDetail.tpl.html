@@ -8,7 +8,7 @@
             <!--PRODUCT IMAGE-->
             <div class="thumbnail">
                 <img class="img-responsive" alt="{{productDetail.item.xp.image.Name || 'Product Image'}}"
-                     ng-src="{{productDetail.item.xp.image.URL || 'http://placehold.it/600x600?text=' + productDetail.item.Name}}">
+                     ng-src="{{productDetail.item.xp.image.URL || 'assets/images/image-unavailable.jpg'}}">
             </div>
         </div>
         <div class="col-md-6">
@@ -20,7 +20,7 @@
                     {{productDetail.item.Description}}
                 </div>
             </div>
-            <div class="panel panel-default" ng-if="productDetail.item.StandardPriceSchedule.PriceBreaks">
+            <div class="panel panel-default" ng-if="productDetail.item.PriceSchedule.PriceBreaks">
                 <div class="panel-heading">
                     <h3 class="panel-title">Price Breaks</h3>
                 </div>
@@ -32,7 +32,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="priceBreak in productDetail.item.StandardPriceSchedule.PriceBreaks">
+                    <tr ng-repeat="priceBreak in productDetail.item.PriceSchedule.PriceBreaks">
                         <td>{{priceBreak.Quantity}}</td>
                         <td>{{priceBreak.Price | currency}}</td>
                     </tr>
@@ -44,7 +44,7 @@
                 <oc-quantity-input product="productDetail.item" label="Quantity"></oc-quantity-input>
             </fieldset>
             <fieldset class="form-group">
-                <button type="submit" class="btn btn-block btn-success">Add to Cart  <span ng-if="productDetail.item.Quantity"  class="badge badge-success">{{productDetail.findPrice(productDetail.item.Quantity) | currency}}</span></button>
+                <button type="submit" class="btn btn-block btn-primary">Add to Cart  <span ng-if="productDetail.item.Quantity"  class="badge badge-success">{{productDetail.findPrice(productDetail.item.Quantity) | currency}}</span></button>
             </fieldset>
         </div>
     </div>

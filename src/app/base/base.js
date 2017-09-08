@@ -19,37 +19,39 @@ function BaseConfig($stateProvider) {
             }
         },
         resolve: {
-            CurrentUser: function($q, $state, OrderCloud, buyerid) {
-                return OrderCloud.Me.Get()
-                    .then(function(data) {
-                        OrderCloud.BuyerID.Set(buyerid);
-                        return data;
-                    })
-            },
-            ExistingOrder: function($q, OrderCloud, CurrentUser) {
-                return OrderCloud.Me.ListOutgoingOrders(null, 1, 1, null, "!DateCreated", {Status:"Unsubmitted"})
-                    .then(function(data) {
-                        return data.Items[0];
+            Buyer: function(OrderCloudSDK){
+                return OrderCloudSDK.Buyers.List({pageSize:1})
+                    .then(function(buyerList){
+                        return buyerList.Items[0];
                     });
             },
-            CurrentOrder: function(ExistingOrder, NewOrder, CurrentUser) {
-                if (!ExistingOrder) {
-                    return NewOrder.Create({});
-                } else {
-                    return ExistingOrder;
-                }
+            Catalog: function(OrderCloudSDK, Buyer){
+                return OrderCloudSDK.Catalogs.Get(Buyer.DefaultCatalogID);
             },
-            AnonymousUser: function($q, OrderCloud, CurrentUser) {
-                CurrentUser.Anonymous = angular.isDefined(JSON.parse(atob(OrderCloud.Auth.ReadToken().split('.')[1])).orderid);
+            CurrentUser: function(OrderCloudSDK) {
+                return OrderCloudSDK.Me.Get();
+            },
+            ExistingOrder: function(OrderCloudSDK) {
+                return OrderCloudSDK.Me.ListOrders({sortBy:'!DateCreated', filters:{Status:'Unsubmitted'}})
+                    .then(function(orderList) {
+                        return orderList.Items[0];
+                    });
+            },
+            CurrentOrder: function(ExistingOrder, NewOrder) {
+                return !ExistingOrder ? NewOrder.Create({}) : ExistingOrder;
+            },
+            LineItemsList: function(OrderCloudSDK, CurrentOrder) {
+                return OrderCloudSDK.LineItems.List('outgoing', CurrentOrder.ID);
             }
         }
     });
 }
 
-function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder, OrderCloud) {
+function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentOrder, LineItemsList, OrderCloudSDK) {
     var vm = this;
     vm.currentUser = CurrentUser;
     vm.currentOrder = CurrentOrder;
+    vm.lineItems = LineItemsList;
 
     vm.mobileSearch = function() {
         ProductSearch.Open()
@@ -66,14 +68,18 @@ function BaseController($rootScope, $state, ProductSearch, CurrentUser, CurrentO
         vm.orderLoading = {
             message: message
         };
-        vm.orderLoading.promise = OrderCloud.Orders.Get(OrderID)
+        vm.orderLoading.promise = OrderCloudSDK.Orders.Get('outgoing', OrderID)
             .then(function(data) {
                 vm.currentOrder = data;
+                OrderCloudSDK.LineItems.List('outgoing', vm.currentOrder.ID)
+                    .then(function(lineitems) {
+                        vm.lineItems = lineitems;
+                    })
             });
     });
 }
 
-function NewOrderService($q, OrderCloud) {
+function NewOrderService($q, OrderCloudSDK) {
     var service = {
         Create: _create
     };
@@ -82,8 +88,8 @@ function NewOrderService($q, OrderCloud) {
         var deferred = $q.defer();
         var order = {};
 
-        //ShippingAddressID
-        OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {Shipping: true})
+        //ShippingAddressID{pageSize: 100, filters: {Shipping: true}}
+        OrderCloudSDK.Me.ListAddresses({pageSize: 100, filters: {Shipping: true}})
             .then(function(shippingAddresses) {
                 if (shippingAddresses.Items.length) order.ShippingAddressID = shippingAddresses.Items[0].ID;
                 setBillingAddress();
@@ -91,7 +97,7 @@ function NewOrderService($q, OrderCloud) {
 
         //BillingAddressID
         function setBillingAddress() {
-            OrderCloud.Me.ListAddresses(null, 1, 100, null, null, {Billing: true})
+            OrderCloudSDK.Me.ListAddresses({pageSize: 100, filters: {Billing: true}})
                 .then(function(billingAddresses) {
                     if (billingAddresses.Items.length) order.BillingAddressID = billingAddresses.Items[0].ID;
                     createOrder();
@@ -99,11 +105,36 @@ function NewOrderService($q, OrderCloud) {
         }
 
         function createOrder() {
-            OrderCloud.Orders.Create(order)
+            order.xp = {
+                ExpeditedShipping: "ground",
+                sellerOrderID: 0,
+                Over48: "no"
+            };
+            OrderCloudSDK.Orders.Create('outgoing', order)
                 .then(function(order) {
-                    deferred.resolve(order);
+                    var attempt = 0;
+                    generateOrderNumber(order); //generates an order number in the form WXXXXXXX
+                    
+                    function generateOrderNumber(order){
+                        var orderNumber = Math.floor((1000000 + Math.random() * 9000000)); //random # length 7 digits
+                        OrderCloudSDK.Orders.Patch('outgoing', order.ID, {ID: 'W' + orderNumber})
+                            .then(function(newOrder){
+                                deferred.resolve(newOrder);
+                            })
+                            .catch(function(error){
+                                if(attempt > 3) {
+                                    deferred.resolve();
+                                } else {
+                                    //there was a conflict, generate a new random # and try again
+                                    attempt++;
+                                    generateOrderNumber(); 
+                                }
+                            });
+                        }
                 });
         }
+
+        
 
         return deferred.promise;
     }

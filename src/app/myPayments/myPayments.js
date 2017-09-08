@@ -7,7 +7,7 @@ function MyPaymentsConfig($stateProvider) {
     $stateProvider
         .state('myPayments', {
             parent: 'account',
-            url: '/payments',
+            url: '/payments?page?pageSize',
             templateUrl: 'myPayments/templates/myPayments.tpl.html',
             controller: 'MyPaymentsCtrl',
             controllerAs: 'myPayments',
@@ -15,14 +15,20 @@ function MyPaymentsConfig($stateProvider) {
                 pageTitle: "Payment Methods"
             },
             resolve: {
-                UserCreditCards: function(OrderCloud) {
-                    return OrderCloud.Me.ListCreditCards(null, null, null, null, null, {'Editable':true});
+                Parameters: function ($stateParams, ocParameters) {
+                    return ocParameters.Get($stateParams);
                 },
-                UserSpendingAccounts: function(OrderCloud) {
-                   return OrderCloud.Me.ListSpendingAccounts(null, null, null, null, null, {'RedemptionCode': '!*'});
+                UserCreditCards: function(OrderCloudSDK, Parameters) {
+                    Parameters.filters = {Editable: true} 
+                    return OrderCloudSDK.Me.ListCreditCards(Parameters);
                 },
-                GiftCards: function(OrderCloud) {
-                    return OrderCloud.Me.ListSpendingAccounts(null, null, null,null, null, {'RedemptionCode': '*'});
+                UserSpendingAccounts: function(OrderCloudSDK, Parameters) {
+                    Parameters.filters = {RedemptionCode: '!*'} 
+                    return OrderCloudSDK.Me.ListSpendingAccounts(Parameters);
+                },
+                GiftCards: function(OrderCloudSDK, Parameters) {
+                    Parameters.filters = {RedemptionCode: '*'} 
+                    return OrderCloudSDK.Me.ListSpendingAccounts(Parameters);
                 }
             }
         });
@@ -33,6 +39,12 @@ function MyPaymentsController($q, $state, toastr, $exceptionHandler, ocConfirm, 
     vm.personalCreditCards =  UserCreditCards;
     vm.personalSpendingAccounts = UserSpendingAccounts;
     vm.giftCards = GiftCards;
+
+    vm.pageChanged = function() {
+        $state.go('.', {
+            page: vm.personalSpendingAccounts.Meta.Page
+        });
+    };
 
     vm.createCreditCard = function(){
         MyPaymentCreditCardModal.Create()
@@ -52,7 +64,10 @@ function MyPaymentsController($q, $state, toastr, $exceptionHandler, ocConfirm, 
 
     vm.delete = function(scope){
         vm.loading = [];
-        ocConfirm.Confirm("Are you sure you want to delete this Credit Card?")
+        ocConfirm.Confirm({
+                message:'Are you sure you want to delete <br> <b>' + 'xxxx-xxxx-xxxx-' + scope.creditCard.PartialAccountNumber + '</b>?',
+                confirmText: 'Delete credit card',
+                type: 'delete'})
             .then(function(){
                 vm.loading[scope.$index] = ocAuthNet.DeleteCreditCard(scope.creditCard)
                     .then(function(){

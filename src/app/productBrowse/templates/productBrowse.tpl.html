@@ -1,10 +1,10 @@
 <article>
     <ol class="breadcrumb">
         <li>
-            <a href="" ui-sref="productBrowse.products({categoryid:category.ID})">All Products</a>
+            <a href="" ui-sref="productBrowse.products({categoryID:category.ID})">All Products</a>
         </li>
         <li ng-repeat="crumb in productBrowse.breadcrumb">
-            <a href="" ui-sref="productBrowse.products({categoryid:crumb.ID})">{{crumb.Name}}</a>
+            <a href="" ui-sref="productBrowse.products({categoryID:crumb.ID})">{{crumb.Name}}</a>
         </li>
     </ol>
     <div class="row">
@@ -19,7 +19,7 @@
 
         <!--START CATEGORY TREE-->
         <aside class="col-md-3 visible-md visible-lg">
-            <div class="panel panel-default" hl-sticky anchor="top" offset-top="70" stick-limit="true" media-query="min-width: 992px">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <b class="panel-title">Categories</b>
                 </div>
@@ -46,6 +46,6 @@
         <!--END CATEGORY TREE-->
 
         <!--PRODUCT LIST VIEW-->
-        <div class="col-md-9" ui-view></div>
+        <div class="col-md-9" cg-busy="application.stateLoading('productBrowse')" ui-view></div>
     </div>
 </article>

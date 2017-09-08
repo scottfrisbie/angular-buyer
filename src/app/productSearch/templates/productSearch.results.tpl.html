@@ -39,8 +39,15 @@
         <!-- Product List -->
         <div class="row l-product-grid">
             <div class="col-sm-6 col-md-4 col-lg-3 l-product-grid__item"
-                 ng-repeat="product in productSearch.list.Items"
-                 ng-include="'common/templates/card.product.tpl.html'">
+                 ng-repeat="product in productSearch.list.Items">
+                <oc-product-card
+                        class="c-product-card"
+                        ui-sref="productDetail({productid: product.ID})"
+                        product="product"
+                        current-order="base.currentOrder"
+                        current-user="base.currentUser"
+                        line-items-list="base.lineItems">
+                </oc-product-card>
             </div>
         </div>
     </div>
@@ -49,12 +56,12 @@
         <b><i class="fa fa-search"></i> No products or categories match your search.</b>
     </div>
     <!-- Pagination -->
-    <uib-pagination 
+    <ul uib-pagination 
         boundary-links="productSearch.list.Meta.TotalPages > 5" 
         max-size="5" total-items="productSearch.list.Meta.TotalCount" 
         items-per-page="productSearch.list.Meta.PageSize" 
         ng-model="productSearch.list.Meta.Page" 
         ng-change="productSearch.pageChanged(productSearch.list.Meta.Page)"
         ng-if="productSearch.list.Meta.TotalPages > 1">
-    </uib-pagination>
+    </ul>
 </article>

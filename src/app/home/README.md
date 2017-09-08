@@ -18,7 +18,7 @@ src/
 - `home.js` - defines the module.
 - `home/less` - module-specific styles; these files are rolled into a
   `[root]/temp/imports.less` by the build process and immediately compiled to
-  `build/assets/OrderCloud-X.X.X.css`.
+  `build/assets/OrderCloudSDK-X.X.X.css`.
 - `home.spec.js` - module unit tests.
 - `home/templates/` - contains all the templates for the module.
 

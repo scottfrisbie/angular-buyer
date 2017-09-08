@@ -7,7 +7,7 @@ function MyAddressesConfig($stateProvider) {
     $stateProvider
         .state('myAddresses', {
             parent: 'account',
-            url: '/addresses',
+            url: '/addresses?page?pageSize?',
             templateUrl: 'myAddresses/templates/myAddresses.tpl.html',
             controller: 'MyAddressesCtrl',
             controllerAs: 'myAddresses',
@@ -15,21 +15,42 @@ function MyAddressesConfig($stateProvider) {
                 pageTitle: "Personal Addresses"
             },
             resolve: {
-                AddressList: function(OrderCloud) {
-                    return OrderCloud.Me.ListAddresses(null, null, null, null, null, {Editable:true});
+                Parameters: function ($stateParams, ocParameters) {
+                    return ocParameters.Get($stateParams);
+                },
+                ShippingAddresses: function(OrderCloudSDK, Parameters) {
+                    Parameters.filters = {
+                        Shipping: true
+                    }
+                    return OrderCloudSDK.Me.ListAddresses(Parameters);
+                },
+                BillingAddresses: function(OrderCloudSDK, Parameters) {
+                    Parameters.filters = {
+                        Billing: true
+                    }
+                    Parameters.page = 1;
+                    return OrderCloudSDK.Me.ListAddresses(Parameters);
                 }
             }
         });
 }
 
-function MyAddressesController(toastr, OrderCloud, ocConfirm, MyAddressesModal, AddressList) {
+function MyAddressesController($state, toastr, OrderCloudSDK, ocConfirm, MyAddressesModal, ShippingAddresses, BillingAddresses) {
     var vm = this;
-    vm.list = AddressList;
+    vm.shippingAddresses = ShippingAddresses;
+    vm.billingAddresses = BillingAddresses;
+
+    vm.pageChanged = function() {
+        $state.go('.', {
+            page: vm.shippingAddresses.Meta.Page
+        });
+    };
+
     vm.create = function() {
         MyAddressesModal.Create()
             .then(function(data) {
                 toastr.success('Address Created', 'Success');
-                vm.list.Items.push(data);
+                vm.shippingAddresses.Items.push(data);
             });
     };
 
@@ -43,12 +64,15 @@ function MyAddressesController(toastr, OrderCloud, ocConfirm, MyAddressesModal, 
 
     vm.delete = function(scope) {
         vm.loading = [];
-        ocConfirm.Confirm("Are you sure you want to delete this address?")
+        ocConfirm.Confirm({
+                message:'Are you sure you want to delete <br> <b>' + (scope.address.AddressName ? scope.address.AddressName : scope.address.ID) + '</b>?',
+                confirmText: 'Delete address',
+                type: 'delete'})
             .then(function() {
-                vm.loading[scope.$index] = OrderCloud.Me.DeleteAddress(scope.address.ID)
+                vm.loading[scope.$index] = OrderCloudSDK.Me.DeleteAddress(scope.address.ID)
                     .then(function() {
                         toastr.success('Address Deleted', 'Success');
-                        vm.list.Items.splice(scope.$index, 1);
+                        vm.shippingAddresses.Items.splice(scope.$index, 1);
                     })
             })
             .catch(function() {

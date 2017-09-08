@@ -6,9 +6,9 @@ describe('Component: FavoriteOrders', function(){
         ;
     beforeEach(module('orderCloud'));
     beforeEach(module('orderCloud.sdk'));
-    beforeEach(inject(function($q, OrderCloud, $rootScope, toastr){
+    beforeEach(inject(function($q, OrderCloudSDK, $rootScope, toastr){
         q = $q;
-        oc = OrderCloud;
+        oc = OrderCloudSDK;
         scope = $rootScope.$new();
         toaster = toastr;
     }));
@@ -17,7 +17,7 @@ describe('Component: FavoriteOrders', function(){
         beforeEach(inject(function($componentController){
             favoriteOrderCtrl = $componentController('ordercloudFavoriteOrder', {
                 $scope: scope,
-                OrderCloud: oc,
+                OrderCloudSDK: oc,
                 toastr: toaster
             });
 

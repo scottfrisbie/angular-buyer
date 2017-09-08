@@ -19,20 +19,28 @@ function RepeatOrderCtrl(toastr, RepeatOrderFactory, $uibModal) {
     };
 
     vm.openReorderModal = function(){
-        $uibModal.open({
-            templateUrl: 'repeatOrder/templates/repeatOrder.modal.html',
-            controller:  RepeatOrderModalCtrl,
-            controllerAs: 'repeatModal',
-            size: 'md',
-            resolve: {
-                OrderID: function() {
-                    return vm.currentOrderId;
-                },
-                LineItems: function() {
-                    return RepeatOrderFactory.GetValidLineItems(vm.originalOrderId);
-                }
-            }
-        });
+
+        var lineItems = function getLineItems(){
+            return RepeatOrderFactory.GetValidLineItems(vm.originalOrderId);
+        };
+
+        vm.loading = lineItems()
+            .then(function(lineItems){
+                $uibModal.open({
+                    templateUrl: 'repeatOrder/templates/repeatOrder.modal.html',
+                    controller:  RepeatOrderModalCtrl,
+                    controllerAs: 'repeatModal',
+                    size: 'md',
+                    resolve: {
+                        OrderID: function() {
+                            return vm.currentOrderId;
+                        },
+                        LineItems: function() {
+                            return lineItems;
+                        }
+                    }
+                });
+            })
     };
 }
 
@@ -42,17 +50,12 @@ function RepeatOrderModalCtrl(LineItems, OrderID, $uibModalInstance, $state, Rep
     vm.invalidLI = LineItems.invalid;
     vm.validLI = LineItems.valid;
 
-
     vm.cancel = function(){
         $uibModalInstance.dismiss();
     };
 
     vm.submit = function(){
-        vm.loading = {
-            templateUrl:'common/loading-indicators/templates/view.loading.tpl.html',
-            message:'Adding Products to Cart'
-        };
-        vm.loading.promise = RepeatOrderFactory.AddLineItemsToCart(vm.validLI, vm.orderid)
+        RepeatOrderFactory.AddLineItemsToCart(vm.validLI, vm.orderid)
             .then(function(){
                 $uibModalInstance.close();
                 $state.go('cart', {}, {reload: true});
@@ -60,57 +63,47 @@ function RepeatOrderModalCtrl(LineItems, OrderID, $uibModalInstance, $state, Rep
     };
 }
 
-function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderCloud, ocLineItems) {
+function RepeatOrderFactory($q, toastr, $exceptionHandler, OrderCloudSDK, ocUtility) {
     return {
         GetValidLineItems: getValidLineItems,
         AddLineItemsToCart: addLineItemsToCart
     };
 
     function getValidLineItems(originalOrderID) {
-        var dfd = $q.defer();
-        ListAllMeProducts()
-            .then(function(productList) {
-                var productIds = _.pluck(productList, 'ID');
-                ocLineItems.ListAll(originalOrderID)
-                    .then(function(lineItemList) {
-                        lineItemList.ProductIds = productIds;
-                        var valid = [];
-                        var invalid = [];
-                        angular.forEach(lineItemList, function(li) {
-                            productIds.indexOf(li.ProductID) > -1 ? valid.push(li) : invalid.push(li);
+        return ocUtility.ListAll(OrderCloudSDK.LineItems.List, 'outgoing', originalOrderID, {})
+            .then(function(li){
+                var productIds = _.pluck(li.Items, 'ProductID');
+                return getValidProducts(productIds)
+                    .then(function(productList){
+                        var validLI = [];
+                        var invalidLI = [];
+                        var validProductIDs = _.pluck(productList, 'ID');
+                        _.each(li.Items, function(lineItem){
+                            if(validProductIDs.indexOf(lineItem.ProductID) > -1){
+                                validLI.push(lineItem)
+                            } else {
+                                invalidLI.push(lineItem);
+                            }
                         });
-                        dfd.resolve({valid: valid, invalid: invalid});
+                        return {valid: validLI, invalid: invalidLI};
                     });
             });
-        return dfd.promise;
 
-        function ListAllMeProducts() {
-            var dfd = $q.defer();
-            var queue = [];
-            OrderCloud.Me.ListProducts(null, 1, 100)
-                .then(function(data) {
-                    var productList = data;
-                    if (data.Meta.TotalPages > data.Meta.Page) {
-                        var page = data.Meta.Page;
-                        while (page < data.Meta.TotalPages) {
-                            page += 1;
-                            queue.push(OrderCloud.Me.ListProducts(null, page, 100));
+            function getValidProducts(ids, products){
+                var validProducts = products || []; 
+                var chunk = ids.splice(0, 25); //keep small so query params dont get overloaded;
+                return OrderCloudSDK.Me.ListProducts({filters: {ID: chunk.join('|')}})
+                    .then(function(productList){
+                        validProducts = validProducts.concat(productList.Items);
+                        if(ids.length) {
+                            return getValidProducts(ids, validProducts);
+                        } else {
+                            return validProducts;
                         }
-                    }
-                    $q.all(queue)
-                        .then(function(results) {
-                            angular.forEach(results, function(result) {
-                                productList.Items = [].concat(productList.Items, result.Items);
-                            });
-                            dfd.resolve(productList.Items);
-                        })
-                        .catch(function(err) {
-                            dfd.reject(err);
-                        });
-                });
-            return dfd.promise;
-        }
+                    });
+            }
     }
+
 
     function addLineItemsToCart(validLI, orderID) {
         var queue = [];
@@ -121,7 +114,7 @@ function RepeatOrderFactory($q, $rootScope, toastr, $exceptionHandler, OrderClou
                 Quantity: li.Quantity,
                 Specs: li.Specs
             };
-            queue.push(OrderCloud.LineItems.Create(orderID, lineItemToAdd));
+            queue.push(OrderCloudSDK.LineItems.Create('outgoing', orderID, lineItemToAdd));
         });
         $q.all(queue)
             .then(function(){

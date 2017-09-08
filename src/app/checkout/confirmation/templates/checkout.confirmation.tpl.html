@@ -1,16 +1,18 @@
 <article>
 	<h2 class="page-header">
 		Order Submitted <br>
-		<small>Thank you for your order. Check your <a href="" ui-sref="myOrders.detail({orderid:checkoutConfirmation.order.ID})">order history</a> to track your delivery!</small>
+		<small>Thank you for your order. Check your <a href="" ui-sref="orderDetail({orderid:checkoutConfirmation.order.ID})">order history</a> to track your delivery!</small>
 	</h2>
 	<div class="row">
 		<div class="col-md-5">
 			<h5>Order ID: <span class="pull-right">{{checkoutConfirmation.order.ID}}</span></h5>
 			<h5>Date Submitted: <span class="pull-right">{{checkoutConfirmation.order.DateSubmitted | date:'short'}}</span></h5>
 			<h5>Subtotal: <span class="pull-right">{{checkoutConfirmation.order.Subtotal | currency}}</span></h5>
+			<h5>Taxes: <span class="pull-right">{{checkoutConfirmation.order.TaxCost | currency}}</span></h5>
+			<h5>PO ID: <span class="pull-right">{{checkoutConfirmation.order.xp.POID}}</span></h5>
 			<h5 ng-if="checkoutConfirmation.order.ShippingCost" class="text-muted">Shipping: <span class="pull-right"> + {{checkoutConfirmation.order.ShippingCost | currency}}</span></h5>
 			<h5 ng-repeat="promotion in checkoutConfirmation.promotions" class="text-danger">
-				{{promotion.Code}}
+				{{checkoutConfirmation.rebateCode ? promotion.Name : promotion.Code}}
 				<span class="pull-right">- {{promotion.Amount | currency}}</span></h5>
 			<hr>
 			<h4>Total: <b class="pull-right text-primary">{{checkoutConfirmation.order.Total | currency}}</b></h4>
@@ -92,7 +94,7 @@
 	<div class="row c-line-item" ng-repeat="lineItem in checkoutConfirmation.lineItems.Items track by $index">
 		<div class="col-xs-3 col-sm-2">
 			<div class="thumbnail c-line-item__img">
-				<img class="img-responsive" ng-src="{{lineItem.xp.image.URL || 'http://placehold.it/100x100?text=' + lineItem.Product.Name}}"
+				<img class="img-responsive" ng-src="{{lineItem.Product.xp.image.URL || 'assets/images/image-unavailable.jpg'}}"
 					 alt="{{lineItem.Product.xp.image.Name || 'Product Image'}}">
 			</div>
 		</div>

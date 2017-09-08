@@ -10,28 +10,11 @@ function checkoutReviewConfig($stateProvider) {
 			controller: 'CheckoutReviewCtrl',
 			controllerAs: 'checkoutReview',
 			resolve: {
-				LineItemsList: function($q, $state, toastr, OrderCloud, ocLineItems, CurrentOrder) {
-					var dfd = $q.defer();
-					OrderCloud.LineItems.List(CurrentOrder.ID)
-						.then(function(data) {
-							if (!data.Items.length) {
-								dfd.resolve(data);
-							}
-							else {
-								ocLineItems.GetProductInfo(data.Items)
-									.then(function() {
-										dfd.resolve(data);
-									});
-							}
-						})
-						.catch(function() {
-							toastr.error('Your order does not contain any line items.', 'Error');
-							dfd.reject();
-						});
-					return dfd.promise;
+				LineItemsList: function(OrderCloudSDK, CurrentOrder) {
+					return OrderCloudSDK.LineItems.List('outgoing', CurrentOrder.ID);
 				},
-				OrderPaymentsDetail: function($q, OrderCloud, CurrentOrder, $state) {
-					return OrderCloud.Payments.List(CurrentOrder.ID)
+				OrderPaymentsDetail: function($q, OrderCloudSDK, CurrentOrder, $state) {
+					return OrderCloudSDK.Payments.List('outgoing', CurrentOrder.ID)
 						.then(function(data) {
 							//TODO: create a queue that can be resolved
 							var dfd = $q.defer();
@@ -44,7 +27,7 @@ function checkoutReviewConfig($stateProvider) {
 								if (payment.Type === 'CreditCard' && payment.CreditCardID) {
 									queue.push((function() {
 										var d = $q.defer();
-										OrderCloud.Me.GetCreditCard(payment.CreditCardID)
+										OrderCloudSDK.Me.GetCreditCard(payment.CreditCardID)
 											.then(function(cc) {
 												data.Items[index].Details = cc;
 												d.resolve();
@@ -55,7 +38,7 @@ function checkoutReviewConfig($stateProvider) {
 								if (payment.Type === 'SpendingAccount' && payment.SpendingAccountID) {
 									queue.push((function() {
 										var d = $q.defer();
-										OrderCloud.Me.GetSpendingAccount(payment.SpendingAccountID)
+										OrderCloudSDK.Me.GetSpendingAccount(payment.SpendingAccountID)
 											.then(function(sa) {
 												data.Items[index].Details = sa;
 												d.resolve();
@@ -69,15 +52,16 @@ function checkoutReviewConfig($stateProvider) {
 									dfd.resolve(data);
 								});
 							return dfd.promise;
-						})
+						});
 
 				}
 			}
 		});
 }
 
-function CheckoutReviewController(LineItemsList, OrderPaymentsDetail) {
+function CheckoutReviewController(LineItemsList, OrderPaymentsDetail, rebateCode) {
 	var vm = this;
 	vm.payments = OrderPaymentsDetail;
 	vm.lineItems = LineItemsList;
+	vm.rebateCode = rebateCode;
 }
